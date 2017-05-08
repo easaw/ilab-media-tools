@@ -29,6 +29,63 @@
       }
     }
   },
+  "video": {
+    "title": "Elastic Transcoder",
+    "description": "Provides an easy to use tool for using elastic transcoder to encode uploaded videos.",
+    "source": "ilab-media-video-tool.php",
+    "class": "ILabMediaVideoTool",
+    "dependencies": ["s3"],
+    "env": "ILAB_MEDIA_VIDEO_ENABLED",
+    "settings": {
+      "title": "Video Settings",
+      "menu": "Video Settings",
+      "options-page": "media-tools-video",
+      "options-group": "ilab-media-video",
+      "groups": {
+        "ilab-media-video-aws-settings": {
+          "title": "Elastic Transcoder Settings",
+          "description": "Choose the elastic transcoder settings.",
+          "options": {
+            "ilab-media-et-region": {
+              "title": "Region",
+              "description": "Select the region that contains the pipelines you will be using for processing.",
+              "type": "select",
+              "options": {
+                "us-east-1" : "US East (N. Virginia)",
+                "us-west-1" : "US West (N. California)",
+                "us-west-2" : "US West (Oregon)",
+                "ap-south-1" : "Asia Pacific (Mumbai)",
+                "ap-southeast-1" : "Asia Pacific (Singapore)",
+                "ap-southeast-2" : "Asia Pacific (Sydney)",
+                "ap-northeast-1" : "Asia Pacific (Tokyo)",
+                "eu-west-1" : "EU (Ireland)"
+              }
+            },
+            "ilab-media-et-pipeline": {
+              "title": "Pipeline",
+              "description": "Each transcoding job is placed in a pipeline for processing.  If you don't see the pipelines you've created in the AWS console, make sure you have the correct region selected.  Also, the pipeline's input and output buckets must be the same bucket configured in the <a href='admin.php?page=media-tools-s3'>S3 settings</a>.",
+              "type": "select",
+              "options": "getPipelineOptions"
+            },
+            "ilab-media-et-output-prefix": {
+              "title": "Output Prefix",
+              "description": "This will prepend a prefix to any transcoded output files.  For dynamically created prefixes, you can use the following variables: <code>@{date:format}<\/code>, <code>@{site-name}<\/code>, <code>@{site-host}<\/code>, <code>@{site-id}<\/code>, <code>@{versioning}<\/code>, <code>@{user-name}<\/code>, <code>@{unique-id}<\/code>, <code>@{unique-path}<\/code>.  For the date token, format is any format string that you can use with php's date() function.  WordPress's default prefix would look like: <code>@{date:Y\/m}<\/code>.",
+              "type": "text-field",
+              "watch": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "media-upload": {
+    "title": "Media Uploader",
+    "description": "Provides an easy to use tool for uploading media directly to S3.",
+    "source": "ilab-media-upload-tool.php",
+    "class": "ILabMediaUploadTool",
+    "dependencies": ["s3", ["video", "imgix"]],
+    "env": "ILAB_MEDIA_UPLOAD_ENABLED"
+  },
   /** Imgix Tool */
   "imgix": {
     "title": "Imgix Support",

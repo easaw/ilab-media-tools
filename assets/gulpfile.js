@@ -149,7 +149,7 @@ var writeToManifest = function(directory) {
 // `gulp styles` - Compiles, combines, and optimizes Bower CSS and project CSS.
 // By default this task will only log a warning if a precompiler error is
 // raised. If the `--production` flag is set: this task will fail outright.
-gulp.task('styles', ['wiredep'], function() {
+gulp.task('styles', function() {
     var merged = merge();
     manifest.forEachDependency('css', function(dep) {
         var cssTasksInstance = cssTasks(dep.name);
@@ -194,7 +194,6 @@ gulp.task('fonts', function() {
 // ### Icons
 // `gulp icons` - Grabs font-awesome
 gulp.task('icons', function() {
-    console.log(path.bowerDir + '/font-awesome/fonts/*');
     return gulp.src(path.bowerDir + '/font-awesome/fonts/*')
         .pipe(gulp.dest(path.dist + 'fonts'))
         .pipe(browserSync.stream());
@@ -230,7 +229,7 @@ gulp.task('watch', function() {
         snippetOptions: {
         }
     });
-    gulp.watch([path.source + 'css/**/*'], ['styles']);
+    gulp.watch([path.source + 'styles/**/*'], ['styles']);
     gulp.watch([path.source + 'js/**/*'], ['scripts']);
     gulp.watch([path.source + 'fonts/**/*'], ['fonts']);
     gulp.watch([path.source + 'img/**/*'], ['images']);
@@ -247,18 +246,6 @@ gulp.task('build', function(callback) {
         callback);
 });
 
-// ### Wiredep
-// `gulp wiredep` - Automatically inject Less and Sass Bower dependencies. See
-// https://github.com/taptapship/wiredep
-gulp.task('wiredep', function() {
-    var wiredep = require('wiredep').stream;
-    return gulp.src(project.css)
-        .pipe(wiredep())
-        .pipe(changed(path.source + 'css', {
-            hasChanged: changed.compareSha1Digest
-        }))
-        .pipe(gulp.dest(path.source + 'css'));
-});
 
 // ### Gulp
 // `gulp` - Run a complete build. To compile for production run `gulp --production`.
