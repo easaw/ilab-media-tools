@@ -27,7 +27,7 @@ use ILAB\MediaCloud\Utilities\View;
 
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
-abstract class BatchTool {
+abstract class BatchTool implements BatchToolInterface {
     /** @var null|ToolBase */
     protected $owner = null;
 
@@ -432,5 +432,11 @@ abstract class BatchTool {
         json_response(['status' => 'ok']);
     }
 
+    //endregion
+
+    //region BatchToolInterface
+    public function toolInfo() {
+        return [];
+    }
     //endregion
 }

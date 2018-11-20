@@ -146,4 +146,14 @@ class ThumbnailBatchTool extends BatchTool {
         json_response(["status" => 'ok']);
     }
     //endregion
+
+    //region BatchToolInterface
+    public function toolInfo() {
+        return [
+            'title' => 'Rebuild Thumbnails',
+            'link' => admin_url('admin.php?page=media-tools-cloud-regeneration'),
+            'description' => 'Rebuilds the thumbnails and various theme specified image sizes for the media in your media library.'
+        ];
+    }
+    //endregion
 }

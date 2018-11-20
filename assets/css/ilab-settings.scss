@@ -320,3 +320,24 @@
   0 1px 1px #b97800,
   -1px 0 1px #b97800 !important;;
 }
+
+.media-cloud-tool-description {
+  padding: 24px;
+  background: #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+
+
+  h2 {
+    font-family: 'millarregular_4';
+    text-transform: uppercase;
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+
+  p {
+    margin-top: 0px;
+    font-size: 1.2em;
+  }
+}

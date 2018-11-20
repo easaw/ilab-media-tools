@@ -302,6 +302,20 @@ abstract class ToolBase {
         return true;
     }
 
+    public function hasBatchTools() {
+        return (count($this->batchTools) > 0);
+    }
+
+    public function batchToolInfo() {
+        $results = [];
+
+        foreach($this->batchTools as $batchTool) {
+            $results[] = $batchTool->toolInfo();
+        }
+
+        return $results;
+    }
+
     /**
      * Register any settings
      */
@@ -380,16 +394,31 @@ abstract class ToolBase {
         if (!isset($this->toolInfo['settings']))
             return;
 
-	    if ($this->only_when_enabled && (!$this->enabled())) {
-		    return;
-	    }
+        if ($this->only_when_enabled && (!$this->enabled())) {
+            return;
+        }
 
         $settings=$this->toolInfo['settings'];
         add_submenu_page( $top_menu_slug, $settings['title'], $settings['menu'], 'manage_options', $this->options_page, [$this,'renderSettings']);
+    }
+
+    /**
+     * Register tool menu pages
+     *
+     * @param $top_menu_slug
+     */
+    public function registerToolMenu($tool_menu_slug)
+    {
+        if (!isset($this->toolInfo['settings']))
+            return;
+
+        if ($this->only_when_enabled && (!$this->enabled())) {
+            return;
+        }
 
         foreach($this->batchTools as $batchTool) {
             if ($batchTool->enabled()) {
-                add_submenu_page($top_menu_slug, $batchTool->pageTitle(), $batchTool->menuTitle(), $batchTool->capabilityRequirement(), $batchTool->menuSlug(), [
+                add_submenu_page($tool_menu_slug, $batchTool->pageTitle(), $batchTool->menuTitle(), $batchTool->capabilityRequirement(), $batchTool->menuSlug(), [
                     $batchTool,
                     'renderBatchTool'
                 ]);

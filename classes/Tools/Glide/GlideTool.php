@@ -63,10 +63,8 @@ class GlideTool extends DynamicImagesToolBase {
 
                 $this->renderImage($file);
 
-                vomit($file);
+                return false;
             }
-
-            vomit($_REQUEST);
 
             return $do;
         }, 100, 2);
