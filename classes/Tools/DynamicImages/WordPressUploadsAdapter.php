@@ -33,7 +33,10 @@ class WordPressUploadsAdapter extends Local {
         }
 
         if ($this->storageAdapter->has($path)) {
-            return parent::writeStream($path, $this->storageAdapter->readStream($path), null);
+            $streamData = $this->storageAdapter->readStream($path);
+            if (is_array($streamData) && isset($streamData['stream'])) {
+                return parent::writeStream($path, $streamData['stream'], new Config());
+            }
         }
 
         return false;

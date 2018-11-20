@@ -113,6 +113,10 @@ class GlideTool extends DynamicImagesToolBase {
     //endregion
 
     //region URL Generation
+    private function createAbsoluteURL($relativeURL) {
+        return home_url($relativeURL);
+    }
+
     /**
      * Builds the parameters for generating Imgix URLs
      *
@@ -234,7 +238,7 @@ class GlideTool extends DynamicImagesToolBase {
         $imageFile = (isset($meta['s3'])) ? $meta['s3']['key'] : $meta['file'];
 
         $result = [
-            $builder->getUrl($imageFile, $params),
+            $this->createAbsoluteURL($builder->getUrl($imageFile, $params)),
             $size[0],
             $size[1]
         ];
@@ -284,7 +288,7 @@ class GlideTool extends DynamicImagesToolBase {
             $params = apply_filters('ilab-imgix-filter-parameters', $params, $size, $id, $meta);
 
             $result = [
-                $builder->getUrl($imageFile, ($skipParams) ? [] : $params),
+                $this->createAbsoluteURL($builder->getUrl($imageFile, ($skipParams) ? [] : $params)),
                 $meta['width'],
                 $meta['height'],
                 false
@@ -401,7 +405,7 @@ class GlideTool extends DynamicImagesToolBase {
         $imageFile = (isset($meta['s3'])) ? $meta['s3']['key'] : $meta['file'];
 
         $result = [
-            $builder->getUrl($imageFile, $params),
+            $this->createAbsoluteURL($builder->getUrl($imageFile, $params)),
             $params['w'],
             $params['h'],
             true
