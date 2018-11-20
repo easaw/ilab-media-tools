@@ -18,7 +18,8 @@
         <p style="font-size:12px; margin-top:5px;">
             <strong>Requires:</strong>
 		    <?php
-		    $required=[];
+            $required=[];
+            $notRequired=[];
 		    foreach($tool->toolInfo['dependencies'] as $dep) {
 			    if (is_array($dep)) {
 				    $depTitles = [];
@@ -28,10 +29,19 @@
 
 				    $required[] = implode(' and/or ', $depTitles);
 			    } else {
-				    $required[]=$manager->tools[$dep]->toolInfo['title'];
+			        if (strpos($dep, '!') === 0) {
+			            $notRequiredDep = trim($dep, '!');
+			            $notRequired[] = $manager->tools[$notRequiredDep]->toolInfo['title'];
+                    } else {
+                        $required[]=$manager->tools[$dep]->toolInfo['title'];
+                    }
 			    }
 		    }
-		    $required=implode(', ',$required);
+            $required=implode(', ',$required);
+            if (!empty($required) && !empty($notRequired)) {
+                $notRequired=implode(', ',$notRequired);
+                $required .= '&nbsp; &nbsp; <strong>Not compatible:</strong> '.$notRequired;
+            }
 		    ?>
             {{$required}}
         </p>

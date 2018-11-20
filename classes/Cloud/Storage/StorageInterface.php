@@ -17,6 +17,7 @@
 namespace ILAB\MediaCloud\Cloud\Storage;
 
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
+use League\Flysystem\AdapterInterface;
 
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
@@ -204,4 +205,9 @@ interface StorageInterface {
 	 * Enqueue any scripts need for direct uploading.
 	 */
 	public function enqueueUploaderScripts();
+
+    /**
+     * @return AdapterInterface
+     */
+	public function adapter();
 }

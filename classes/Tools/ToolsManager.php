@@ -139,6 +139,18 @@ class ToolsManager
 
         return false;
     }
+    /**
+     * Determines if a tool is enabled or not via environment settings
+     *
+     * @param $toolName
+     * @return bool
+     */
+    public function toolEnvEnabled($toolName) {
+        if (isset($this->tools[$toolName]))
+            return $this->tools[$toolName]->envEnabled();
+
+        return false;
+    }
 	//endregion
 
 
