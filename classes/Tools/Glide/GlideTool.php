@@ -37,6 +37,7 @@ if(!defined('ABSPATH')) {
  */
 class GlideTool extends DynamicImagesToolBase {
     protected $basePath = null;
+    protected $cdnHost = null;
 
     public function __construct($toolName, $toolInfo, $toolManager) {
         parent::__construct($toolName, $toolInfo, $toolManager);
@@ -56,6 +57,7 @@ class GlideTool extends DynamicImagesToolBase {
 
         $this->imageQuality = EnvironmentOptions::Option('ilab-media-glide-default-quality');
         $this->keepThumbnails = EnvironmentOptions::Option('ilab-media-glide-generate-thumbnails', null, true);
+        $this->cdnHost = EnvironmentOptions::Option('ilab-media-glide-cdn', null, null);
 
         add_filter('do_parse_request', function($do, \WP $wp) {
             if (strpos($_SERVER['REQUEST_URI'], $this->basePath) === 0) {
@@ -112,6 +114,10 @@ class GlideTool extends DynamicImagesToolBase {
 
     //region URL Generation
     private function createAbsoluteURL($relativeURL) {
+        if (!empty($this->cdnHost)) {
+            return trim($this->cdnHost, '/').$relativeURL;
+        }
+        
         return home_url($relativeURL);
     }
 

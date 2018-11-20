@@ -70,7 +70,13 @@ return [
                         "description" => "This option will cache any master images that are fetched from remote storage (S3, Google Cloud Storage, etc) locally.  If this option is turned off, everytime you request a dynamic size for an image, that image will be pulled from storage.  It is very much recommended that you keep this option <strong>turned on</strong>.",
                         "type" => "checkbox",
                         "default" => "true"
-                    ]
+                    ],
+                    "ilab-media-glide-cdn" => [
+                        "title" => "CDN",
+                        "description" => "The base path for the generated image URLs.  This cannot be blank or empty.  This path is prepended to the URL for the generated images and when the URL is requested, the plugin will intercept them, render the dynamic image (if needed) and send the image to the requester.",
+                        "type" => "text-field",
+                        "default" => "/__images/"
+                    ],
                 ]
             ],
             "ilab-media-glide-image-settings" => [
