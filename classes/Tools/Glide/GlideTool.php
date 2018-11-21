@@ -38,6 +38,10 @@ if(!defined('ABSPATH')) {
 class GlideTool extends DynamicImagesToolBase {
     protected $basePath = null;
     protected $cdnHost = null;
+    protected $convertPNG = false;
+    protected $usePJPEG = true;
+    protected $cacheMasterImages = true;
+    protected $maxWidth = 4000;
 
     public function __construct($toolName, $toolInfo, $toolManager) {
         parent::__construct($toolName, $toolInfo, $toolManager);
@@ -58,6 +62,10 @@ class GlideTool extends DynamicImagesToolBase {
         $this->imageQuality = EnvironmentOptions::Option('ilab-media-glide-default-quality');
         $this->keepThumbnails = EnvironmentOptions::Option('ilab-media-glide-generate-thumbnails', null, true);
         $this->cdnHost = EnvironmentOptions::Option('ilab-media-glide-cdn', null, null);
+        $this->convertPNG = EnvironmentOptions::Option('ilab-media-glide-convert-png', null, false);
+        $this->usePJPEG = EnvironmentOptions::Option('ilab-media-glide-progressive-jpeg', null, true);
+        $this->maxWidth = EnvironmentOptions::Option('ilab-media-glide-max-size', null, 4000);
+        $this->cacheMasterImages = EnvironmentOptions::Option('ilab-media-glide-cache-remote', null, true);
 
         add_filter('do_parse_request', function($do, \WP $wp) {
             if (strpos($_SERVER['REQUEST_URI'], $this->basePath) === 0) {
@@ -84,7 +92,11 @@ class GlideTool extends DynamicImagesToolBase {
 
 
         if ($this->toolManager->toolEnabled('storage')) {
-            $source = new Filesystem(new WordPressUploadsAdapter($this->toolManager->tools['storage']->client()->adapter()));
+            if (!$this->cacheMasterImages) {
+                $source = new Filesystem($this->toolManager->tools['storage']->client()->adapter());
+            } else {
+                $source = new Filesystem(new WordPressUploadsAdapter($this->toolManager->tools['storage']->client()->adapter()));
+            }
         } else {
             $source = new Files(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads'));
         }
@@ -92,6 +104,7 @@ class GlideTool extends DynamicImagesToolBase {
         $server = ServerFactory::create([
             'source' => $source,
             'cache' => new Filesystem(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads/glide-cache/')),
+            'max_image_size' => $this->maxWidth * $this->maxWidth,
             'base_url' => $this->basePath
         ]);
 
@@ -117,7 +130,7 @@ class GlideTool extends DynamicImagesToolBase {
         if (!empty($this->cdnHost)) {
             return trim($this->cdnHost, '/').$relativeURL;
         }
-        
+
         return home_url($relativeURL);
     }
 
@@ -135,9 +148,13 @@ class GlideTool extends DynamicImagesToolBase {
             if ($mimetype == 'image/gif') {
                 $format = 'gif';
             } else if ($mimetype == 'image/png') {
-                $format = 'png';
+                if ($this->convertPNG) {
+                    $format = ($this->usePJPEG) ? 'pjpg' : 'jpg';
+                } else {
+                    $format = 'png';
+                }
             } else {
-                $format = 'pjpg';
+                $format = ($this->usePJPEG) ? 'pjpg' : 'jpg';
             }
         } else {
             $format = $params['fm'];
@@ -201,8 +218,9 @@ class GlideTool extends DynamicImagesToolBase {
             return false;
         }
 
-        if(!isset($meta['s3'])) {
-            return [];
+        $imageFile = (!empty($meta['s3']['key'])) ? $meta['s3']['key'] : $meta['file'];
+        if (empty($imageFile)) {
+            return false;
         }
 
         $builder = new UrlBuilder($this->basePath, $this->signingKey);
@@ -237,9 +255,8 @@ class GlideTool extends DynamicImagesToolBase {
             'h' => $size[1],
             'fm' => 'jpg'
         ];
+        
         $params = apply_filters('ilab-imgix-filter-parameters', $params, $size, $id, $meta);
-
-        $imageFile = (isset($meta['s3'])) ? $meta['s3']['key'] : $meta['file'];
 
         $result = [
             $this->createAbsoluteURL($builder->getUrl($imageFile, $params)),

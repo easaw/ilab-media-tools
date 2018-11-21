@@ -96,13 +96,25 @@ return [
                         "type" => "number",
                         "max" => 10000,
                         "min" => 1,
-                        "default" => 2000
+                        "default" => 4000
+                    ],
+                    "ilab-media-glide-convert-png" => [
+                        "title" => "Convert PNG to JPEG",
+                        "description" => "Selecting this will convert all uploaded PNG files to JPEG files when rendering.",
+                        "type" => "checkbox",
+                        "default" => false
+                    ],
+                    "ilab-media-glide-progressive-jpeg" => [
+                        "title" => "Use Progressive JPEG",
+                        "description" => "When rendering an image and the output is JPEG, turning this on will generate a progressive JPEG file.",
+                        "type" => "checkbox",
+                        "default" => true
                     ],
                     "ilab-media-glide-generate-thumbnails" => [
                         "title" => "Keep WordPress Thumbnails",
                         "description" => "Because Glide can dynamically create new sizes for existing images, having WordPress create thumbnails is potentially pointless, a probable waste of space and definitely slows down uploads.  However, if you plan to stop using Glide, having those thumbnails on S3 or locally will save you having to regenerate thumbnails later.  <strong>IMPORTANT:</strong> Thumbnails will not be generated when you perform a direct upload because those uploads are sent directly to S3 without going through your WordPress server.",
                         "type" => "checkbox",
-                        "default" => "true"
+                        "default" => true
                     ]
                 ]
             ]
