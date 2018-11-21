@@ -72,8 +72,7 @@ class GlideTool extends DynamicImagesToolBase {
                 $file = str_replace($this->basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
                 $this->renderImage($file);
-
-                return false;
+                die;
             }
 
             return $do;
@@ -85,7 +84,6 @@ class GlideTool extends DynamicImagesToolBase {
     protected function renderImage($file) {
         try {
             SignatureFactory::create($this->signingKey)->validateRequest(trim($this->basePath.$file,'/'), $_GET);
-
         } catch (SignatureException $e) {
             return false;
         }
@@ -335,7 +333,7 @@ class GlideTool extends DynamicImagesToolBase {
 
         $doCrop = !empty($sizeInfo['crop']);
 
-        if(!$params) {
+        if(empty($params)) {
             $sizeParams = (!empty($sizeInfo['imgix']) && is_array($sizeInfo['imgix'])) ? $sizeInfo['imgix'] : [];
 
             // get the settings for this image at this size
@@ -344,7 +342,7 @@ class GlideTool extends DynamicImagesToolBase {
             }
 
 
-            if(!$params || (count($params) == 0)) // see if a preset has been globally assigned to a size and use that
+            if(empty($params)) // see if a preset has been globally assigned to a size and use that
             {
                 $presets = get_option('ilab-imgix-presets');
                 $sizePresets = get_option('ilab-imgix-size-presets');
@@ -355,9 +353,9 @@ class GlideTool extends DynamicImagesToolBase {
             }
 
             // still no parameters?  use any that may have been assigned to the full size image
-            if((!$params || (count($params) == 0)) && (isset($meta['imgix-params']))) {
+            if(empty($params) && (isset($meta['imgix-params']))) {
                 $params = array_merge($sizeParams, $meta['imgix-params']);
-            } else if(!$params) // too bad so sad
+            } else if(empty($params)) // too bad so sad
             {
                 $params = $sizeParams;
             }
@@ -375,7 +373,7 @@ class GlideTool extends DynamicImagesToolBase {
                     $metaSize['crop']['y'] = round($metaSize['crop']['y']);
                     $metaSize['crop']['w'] = round($metaSize['crop']['w']);
                     $metaSize['crop']['h'] = round($metaSize['crop']['h']);
-                    $params['crop'] = implode(',', $metaSize['crop']);
+                    $params['crop'] = "{$metaSize['crop']['w']},{$metaSize['crop']['h']},{$metaSize['crop']['x']},{$metaSize['crop']['y']}";
                 }
             }
 

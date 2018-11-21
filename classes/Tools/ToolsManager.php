@@ -41,7 +41,9 @@ class ToolsManager
             $this->tools[$toolName]=new $className($toolName,$toolInfo,$this);
         }
 
-        $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
+        if (isset(static::$registeredTools['troubleshooting'])) {
+            $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
+        }
 
         foreach($this->tools as $key => $tool) {
             $tool->setup();
