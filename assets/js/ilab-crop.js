@@ -9,12 +9,6 @@ var ILabCrop=function($,settings){
     this.cropperData={};
     this.modal_id=settings.modal_id;
 
-    var resizeTimerId;
-    var isResizing=false;
-
-    var didResize = false;
-    var hadResized = false;
-
     this.modalContainer.find('.ilabm-editor-tabs').ilabTabs({
         currentValue: this.settings.size,
         tabSelected:function(tab){
@@ -23,35 +17,6 @@ var ILabCrop=function($,settings){
             }.bind(this));
         }.bind(this)
     });
-
-    $(window).resize(function() {
-        didResize = true;
-    });
-
-    this.animFrame = function() {
-        if (didResize) {
-            this.updatePreviewWidth();
-            clearTimeout(resizeTimerId);
-            resizeTimerId = setTimeout(function(){
-                this.bindUI(this.settings);
-            }.bind(this), 125);
-            hadResized = true;
-        } else if (hadResized) {
-            data=this.cropper.cropper('getData');
-            this.settings.prev_crop_x=data.x;
-            this.settings.prev_crop_y=data.y;
-            this.settings.prev_crop_width=data.width;
-            this.settings.prev_crop_height=data.height;
-        }
-
-        didResize = false;
-        hadResized = false;
-
-        requestAnimationFrame(this.animFrame);
-    }.bind(this);
-
-    requestAnimationFrame(this.animFrame);
-
 
     this.modalContainer.find('.ilabc-button-crop').on('click',function(e){
         e.preventDefault();
@@ -68,6 +33,8 @@ var ILabCrop=function($,settings){
     }.bind(this);
 
     this.bindUI=function(settings){
+        console.log(settings);
+
         this.settings=settings;
 
         this.cropper.cropper('destroy');
@@ -102,19 +69,22 @@ var ILabCrop=function($,settings){
                 //console.log(e.x, e.y, e.width, e.height);
             }).cropper({
                 viewMode: 1,
+                dragMode: 'none',
                 aspectRatio : settings.aspect_ratio,
                 minWidth : settings.min_width,
                 minHeight : settings.min_height,
                 modal : true,
-                zoomable: false,
-                mouseWheelZoom: false,
-                dragCrop: false,
-                autoCropArea: 1,
                 movable: false,
+                cropBoxMovable: true,
+                zoomable: false,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                autoCropArea: 1,
                 data : this.cropperData,
                 checkImageOrigin: false,
                 checkCrossOrigin: false,
                 responsive: true,
+                restore: true,
                 preview: '#ilabm-container-'+this.modal_id+' .ilab-crop-preview'
             });
         }
