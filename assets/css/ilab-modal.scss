@@ -10,10 +10,10 @@
   z-index: 160000 !important;
   background-color: rgb(252, 252, 252);
   position: absolute;
-  left: 30px;
-  top: 30px;
-  right: 30px;
-  bottom: 30px;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
   border-radius: 0px;
 
   display: flex;
@@ -138,54 +138,63 @@ a.button-reset {
 }
 
 .ilabm-editor-tabs {
+  background: #ddd;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid #ddd;
-  background: #ddd;
+  overflow: hidden;
 
-  .ilabm-editor-tab {
-    white-space: nowrap;
-    min-width: 50px;
-    text-align: center;
-    min-height: 32px;
-    max-height: 33px;
-    margin-top: 3px;
-    background-color: #ccc;
-    line-height: 31px;
-    padding: 0px 15px;
-    margin-right: 3px;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #888;
-    font-weight: bold;
-    cursor: pointer !important;
+  .ilabm-tabs-select-ui {
+    display: flex;
+    flex-direction: row;
+
+    .ilabm-tabs-select-label {
+      margin-top: 3px;
+      line-height: 32px;
+      padding: 0px 5px 0px 15px;
+      margin-right: 3px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #888;
+      font-weight: bold;
+      cursor: pointer !important;
+    }
+
+    .ilabm-tabs-select {
+      margin-top: 4px;
+      line-height: 32px;
+      font-size: 11px;
+    }
   }
 
-  .active-tab {
-    background: white;
-    margin-bottom:-1px;
-    margin-top: 2px;
-    border-right:1px solid #ddd;
-    border-left:1px solid #ddd;
-    border-top:1px solid #ddd;
-  }
+  .ilabm-tabs-ui {
+    display: flex;
+    flex-direction: row;
 
-  .ilabm-tabs-select-label {
-    margin-top: 3px;
-    line-height: 32px;
-    padding: 0px 5px 0px 15px;
-    margin-right: 3px;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #888;
-    font-weight: bold;
-    cursor: pointer !important;
-  }
+    .ilabm-editor-tab {
+      white-space: nowrap;
+      min-width: 50px;
+      text-align: center;
+      min-height: 32px;
+      max-height: 33px;
+      margin-top: 3px;
+      background-color: #ccc;
+      line-height: 31px;
+      padding: 0px 15px;
+      margin-right: 3px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #888;
+      font-weight: bold;
+      cursor: pointer !important;
+    }
 
-  .ilabm-tabs-select {
-    margin-top: 4px;
-    line-height: 32px;
-    font-size: 11px;
+    .active-tab {
+      background: white;
+      margin-top: 2px;
+      border-right:1px solid #ddd;
+      border-left:1px solid #ddd;
+      border-top:1px solid #ddd;
+    }
   }
 }
 

@@ -1,1 +1,74 @@
-var ilabMediaGoogleUploader=function(a,e,o){this.start=function(){var t=o.type;"application/x-photoshop"==t&&(t="image/psd");var r={action:"ilab_upload_prepare",filename:o.name,type:t};a.post(ajaxurl,r,function(t){if("ready"==t.status){e.updateStatusText("Uploading ...");var r=t.key;t.acl;a.ajax({url:t.url,method:"POST",headers:{"x-goog-resumable":"start","Content-Type":o.type},success:function(t,i,n){var s=n.getResponseHeader("location");a.ajax({url:s,method:"PUT",processData:!1,crossDomain:!0,data:o,contentType:o.type,xhr:function(){var o=a.ajaxSettings.xhr();return o.upload.onprogress=function(a){e.updateProgress(a.loaded/a.total)},o},success:function(o){var t={action:"ilab_upload_import_cloud_file",key:r};a.post(ajaxurl,t,function(a){e.itemUploaded("success"==a.status,a)})},error:function(a){e.itemUploadError()}})},error:function(a){e.itemUploadError()}})}else e.itemUploadError()})}};ilabMediaUploadItem.prototype.storageUploader=ilabMediaGoogleUploader;
+var ilabMediaGoogleUploader = function($, item, file) {
+    this.start = function() {
+        var mimeType = file.type;
+        if (mimeType == 'application/x-photoshop') {
+            mimeType = 'image/psd';
+        }
+
+        var data = {
+            "action": "ilab_upload_prepare",
+            "filename": file.name,
+            "type": mimeType
+        };
+
+        $.post(ajaxurl, data, function(response){
+            if (response.status == 'ready') {
+                item.updateStatusText('Uploading ...');
+
+                var key = response.key;
+                var acl = response.acl;
+
+                $.ajax({
+                    url: response.url,
+                    method: 'POST',
+                    headers: {
+                        "x-goog-resumable": "start",
+                        // "x-goog-acl": acl,
+                        "Content-Type": file.type
+                    },
+                    success: function(response, status, xhr) {
+                        var location = xhr.getResponseHeader('location');
+
+                        $.ajax({
+                            url: location,
+                            method: 'PUT',
+                            processData: false,
+                            crossDomain: true,
+                            data:file,
+                            contentType: file.type,
+                            xhr: function() {
+                                var xhr = $.ajaxSettings.xhr();
+                                xhr.upload.onprogress = function (e) {
+                                    item.updateProgress(e.loaded / e.total);
+                                };
+                                return xhr;
+                            },
+                            success: function(successResponse) {
+                                var importData = {
+                                    "action": "ilab_upload_import_cloud_file",
+                                    "key": key
+                                };
+
+                                $.post(ajaxurl, importData, function(importResponse) {
+                                    item.itemUploaded((importResponse.status == 'success'), importResponse);
+                                });
+                            },
+                            error: function(response) {
+                                item.itemUploadError();
+                            }
+                        });
+                    },
+                    error: function(response) {
+                        item.itemUploadError();
+                    }
+                });
+            } else {
+                item.itemUploadError();
+            }
+        });
+
+    }
+};
+
+ilabMediaUploadItem.prototype.storageUploader = ilabMediaGoogleUploader;
+//# sourceMappingURL=ilab-media-upload-google.js.map

@@ -1,1 +1,49 @@
-var ilabMediaOtherS3Uploader=function(a,o,e){this.start=function(){var t=e.type;"application/x-photoshop"==t&&(t="image/psd");var r={action:"ilab_upload_prepare",filename:e.name,type:t};a.post(ajaxurl,r,function(t){if("ready"==t.status){o.updateStatusText("Uploading ...");var r=new XMLHttpRequest;r.open("PUT",t.url,!0),r.upload.onprogress=function(a){o.updateProgress(a.loaded/a.total)},r.onload=function(){var e={action:"ilab_upload_import_cloud_file",key:t.key};a.post(ajaxurl,e,function(a){o.itemUploaded("success"==a.status,a)})},r.onerror=function(){o.itemUploadError()},r.send(e)}else o.itemUploadError()})}};ilabMediaUploadItem.prototype.storageUploader=ilabMediaOtherS3Uploader;
+var ilabMediaOtherS3Uploader = function($, item, file) {
+    this.start = function() {
+        var mimeType = file.type;
+        if (mimeType == 'application/x-photoshop') {
+            mimeType = 'image/psd';
+        }
+
+        var data = {
+            "action": "ilab_upload_prepare",
+            "filename": file.name,
+            "type": mimeType
+        };
+
+        $.post(ajaxurl, data, function(response){
+            if (response.status == 'ready') {
+                item.updateStatusText('Uploading ...');
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('PUT', response.url, true);
+                xhr.upload.onprogress = function(e) {
+                    item.updateProgress(e.loaded / e.total);
+                };
+
+                xhr.onload = function() {
+                    var importData = {
+                        "action": "ilab_upload_import_cloud_file",
+                        "key": response.key
+                    };
+
+                    $.post(ajaxurl, importData, function(importResponse) {
+                        item.itemUploaded((importResponse.status == 'success'), importResponse);
+                    });
+                };
+
+                xhr.onerror = function() {
+                    item.itemUploadError();
+                };
+
+                xhr.send(file);
+            } else {
+                item.itemUploadError();
+            }
+        });
+
+    }
+};
+
+ilabMediaUploadItem.prototype.storageUploader = ilabMediaOtherS3Uploader;
+//# sourceMappingURL=ilab-media-upload-other-s3.js.map

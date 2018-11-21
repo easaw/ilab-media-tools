@@ -1,2 +1,178 @@
-!function(a){a.fn.ilabTabs=function(e){var t=a.extend({},e),n=null;return this.each(function(){for(var e=a(this),r=e,s=e.parent();;){if(s.hasClass("ilabm-container")){r=s;break}if(!(s=s.parent()))break}var i=e.find(".ilabm-tabs-select-label"),l=e.find(".ilabm-tabs-select"),c=e.find(".ilabm-editor-tab"),d=0,o=null,u=0,h=0,v=0,b=0;c.each(function(){var e,t,r,s=a(this);null===o&&(o=s.css("font"),u=parseInt(s.css("margin-left")),h=parseInt(s.css("margin-right")),v=parseInt(s.css("padding-left")),b=parseInt(s.css("padding-right"))),tabWidth=(e=s.text(),t=o,(r=(n||(n=document.createElement("canvas"))).getContext("2d")).font=t,r.measureText(e).width+u+h+v+b+15),d+=tabWidth}),i&&t.hasOwnProperty("label")&&i.text(t.label),c.removeClass("active-tab"),c.on("click",function(e){e.preventDefault(),c.removeClass("active-tab");var n=a(this);return n.addClass("active-tab"),l&&l.val(n.data("value")),t.currentValue=n.data("value"),t.hasOwnProperty("tabSelected")&&t.tabSelected(n),!1}),l&&l.on("change",function(){c.removeClass("active-tab"),c.each(function(){var e=a(this);e.data("value")==l.val()&&e.addClass("active-tab")});var e=l.find(":selected");t.hasOwnProperty("tabSelected")&&t.tabSelected(e)}),t.hasOwnProperty("currentValue")&&(l&&l.val(t.currentValue),c.each(function(){var e=a(this);e.data("value")==t.currentValue&&e.addClass("active-tab")}));var f=function(){d>r.width()-350?(i.show(),l.show(),c.hide()):(i.hide(),l.hide(),c.show())};a(window).on("resize",f),f()})}}(jQuery);
-var ILabModal=function(){var n=!1;return{cancel:function(){jQuery(".ilabm-backdrop").remove()},makeDirty:function(){n=!0},isDirty:function(){return n},makeClean:function(){n=!1},loadURL:function(e,t,a){if(n&&!confirm("You've made changes, continuing will lose them.\n\nContinue?"))return!1;n=!1,jQuery.get(e,function(n){t?a(n):jQuery("body").append(n)})}}}();jQuery(document).ready(function(n){n(document).on("click","a.ilab-thickbox",function(e){e.preventDefault();var t=n(this),a=t.hasClass("ilab-thickbox-partial");return ILabModal.loadURL(t.attr("href"),a,null),!1})});
+(function($){
+    $.fn.ilabTabs=function(options){
+        var settings= $.extend({},options);
+
+        var lastTabWidth = null;
+        var tabsVisible = true;
+
+        return this.each(function(){
+            var container=$(this);
+            var windowContainer = container;
+
+            var parentContainer = container.parent();
+            while(true) {
+                if (parentContainer.hasClass('ilabm-container')) {
+                    windowContainer = parentContainer;
+                    break;
+                }
+
+                parentContainer = parentContainer.parent();
+                if (!parentContainer) {
+                    break;
+                }
+            }
+
+            var sidebar = parentContainer.find('.ilabm-sidebar');
+
+            var selectContainer = container.find('.ilabm-tabs-select-ui');
+
+            var tabsContainer = container.find('.ilabm-tabs-ui');
+            var tabs=tabsContainer.find('.ilabm-editor-tab');
+
+            var label=selectContainer.find('.ilabm-tabs-select-label');
+            if (label && settings.hasOwnProperty('label')) {
+                label.text(settings.label);
+            }
+
+            tabs.removeClass('active-tab');
+            tabs.on('click',function(e){
+                e.preventDefault();
+
+                tabs.removeClass('active-tab');
+                var tab=$(this);
+                tab.addClass('active-tab');
+
+                if (select)
+                    select.val(tab.data('value'));
+
+                settings.currentValue=tab.data('value');
+
+                if (settings.hasOwnProperty('tabSelected'))
+                    settings.tabSelected(tab);
+
+                return false;
+            });
+
+            var select=selectContainer.find('.ilabm-tabs-select');
+            if (select)  {
+                select.on('change',function(){
+                    tabs.removeClass('active-tab');
+                    tabs.each(function(){
+                        var tab=$(this);
+                        if (tab.data('value')==select.val())
+                            tab.addClass('active-tab');
+                    });
+                    var option=select.find(":selected");
+                    if (settings.hasOwnProperty('tabSelected'))
+                        settings.tabSelected(option);
+                });
+            }
+
+            if (settings.hasOwnProperty('currentValue'))
+            {
+                if (select) {
+                    select.val(settings.currentValue);
+                }
+
+                tabs.each(function(){
+                   var tab=$(this);
+                    if (tab.data('value')==settings.currentValue)
+                        tab.addClass('active-tab');
+                });
+            }
+
+            var checkOverflow=function(){
+                if (lastTabWidth == null) {
+                    lastTabWidth = tabsContainer.width();
+                }
+
+                if (sidebar.width() + lastTabWidth > windowContainer.width()) {
+                    if (tabsVisible) {
+                        tabsVisible = false;
+                        selectContainer.show();
+                        tabsContainer.hide();
+                    }
+                } else {
+                    if (!tabsVisible) {
+                        tabsVisible = true;
+                        selectContainer.hide();
+                        tabsContainer.show();
+                    }
+                }
+            };
+
+            $(window).on('resize',checkOverflow);
+
+            selectContainer.hide();
+            checkOverflow();
+        });
+    };
+
+}(jQuery));
+
+/**
+ * Created by jong on 8/1/15.
+ */
+
+var ILabModal=(function(){
+    var _dirty=false;
+    var _data={};
+
+    var cancel=function(){
+        jQuery('.ilabm-backdrop').remove();
+    };
+
+    var makeDirty=function(){
+        _dirty=true;
+    };
+
+    var isDirty=function(){
+        return _dirty;
+    };
+
+    var makeClean=function(){
+        _dirty=false;
+    };
+
+    var loadURL=function(url,partial,partialCallback){
+        if (_dirty)
+        {
+            if (!confirm('You\'ve made changes, continuing will lose them.\n\nContinue?'))
+                return false;
+        }
+
+        _dirty=false;
+
+        jQuery.get(url, function(data) {
+            if (partial) {
+                partialCallback(data);
+                //jQuery('#ilabm-container').remove();
+                //jQuery('body').append(data);
+                //jQuery('#ilabm-window-area').unbind().html('').append(data);
+            } else {
+                jQuery('body').append(data);
+            }
+        });
+    };
+
+    return {
+        cancel: cancel,
+        makeDirty:makeDirty,
+        isDirty:isDirty,
+        makeClean:makeClean,
+        loadURL:loadURL
+    };
+})();
+
+jQuery(document).ready(function($){
+    $(document).on('click', 'a.ilab-thickbox', function(e) {
+        e.preventDefault();
+        var currEl = $(this);
+        var partial=currEl.hasClass('ilab-thickbox-partial');
+
+        ILabModal.loadURL(currEl.attr('href'),partial,null);
+
+        return false;
+    });
+});
+//# sourceMappingURL=ilab-modal.js.map
