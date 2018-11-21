@@ -26,6 +26,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 class ToolsManager
 {
 	//region Class variables
+    private static $registeredTools = [];
     private static $instance;
     public $tools;
     //endregion
@@ -33,16 +34,14 @@ class ToolsManager
 	//region Constructor
     public function __construct()
     {
-        $toolList=include ILAB_CONFIG_DIR.'/tools.config.php';
-
 	    $this->tools=[];
 
-        foreach($toolList as $toolName => $toolInfo) {
+        foreach(static::$registeredTools as $toolName => $toolInfo) {
             $className=$toolInfo['class'];
             $this->tools[$toolName]=new $className($toolName,$toolInfo,$this);
         }
 
-        $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', $toolList['troubleshooting'], $this);
+        $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
 
         foreach($this->tools as $key => $tool) {
             $tool->setup();
@@ -118,6 +117,16 @@ class ToolsManager
         }
 
         return self::$instance;
+    }
+
+    /**
+     * Registers a tool
+     *
+     * @param $identifier string The identifier of the tool
+     * @param $config array The configuration for the tool
+     */
+    public static function registerTool($identifier, $config) {
+        static::$registeredTools[$identifier] = $config;
     }
     //endregion
 

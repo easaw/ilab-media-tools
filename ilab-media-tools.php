@@ -86,6 +86,16 @@ if (file_exists(ILAB_VENDOR_DIR.'/autoload.php')) {
 require_once('helpers/ilab-media-tool-wordpress-helpers.php');
 require_once('helpers/ilab-media-tool-geometry-helpers.php');
 
+// Register Tools
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("crop", include ILAB_CONFIG_DIR.'/crop.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("storage", include ILAB_CONFIG_DIR.'/storage.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("imgix", include ILAB_CONFIG_DIR.'/imgix.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("glide", include ILAB_CONFIG_DIR.'/glide.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("media-upload", include ILAB_CONFIG_DIR.'/media-upload.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("rekognition", include ILAB_CONFIG_DIR.'/rekognition.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("debugging", include ILAB_CONFIG_DIR.'/debugging.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("troubleshooting", include ILAB_CONFIG_DIR.'/troubleshooting.config.php');
+
 // Register storage drivers
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('s3', \ILAB\MediaCloud\Cloud\Storage\Driver\S3\S3Storage::class);
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('minio', \ILAB\MediaCloud\Cloud\Storage\Driver\S3\MinioStorage::class);

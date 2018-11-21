@@ -255,7 +255,7 @@ class GlideTool extends DynamicImagesToolBase {
             'h' => $size[1],
             'fm' => 'jpg'
         ];
-        
+
         $params = apply_filters('ilab-imgix-filter-parameters', $params, $size, $id, $meta);
 
         $result = [
