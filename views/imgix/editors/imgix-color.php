@@ -7,6 +7,8 @@
             <input class="imgix-param imgix-param-color" type="text" value="{{imgixCurrentColorValue($param,$settings,'#FF0000')}}">
         </div>
     </div>
+    {% if (empty($paramInfo['no-alpha'])) %}
     <input class="imgix-param-alpha" type="range" min="0" max="100" value="{{imgixCurrentAlphaValue($param,$settings,0)}}" />
+    {% endif %}
     <a class="imgix-param-reset" href="#">{{__('Reset')}}</a>
 </div>

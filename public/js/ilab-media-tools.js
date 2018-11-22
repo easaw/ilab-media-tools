@@ -4095,6 +4095,10 @@ var ImgixComponents=(function(){
         this.container=container;
         this.colorPicker=container.find('.imgix-param-color');
         this.alphaSlider=container.find('.imgix-param-alpha');
+        if (this.alphaSlider && (this.alphaSlider.length == 0)) {
+            this.alphaSlider = null;
+        }
+
         this.type=container.data('param-type');
         this.resetButton=container.find('.imgix-param-reset');
         this.param=container.data('param');
@@ -4121,9 +4125,11 @@ var ImgixComponents=(function(){
             }
         });
 
-        this.alphaSlider.on('change',function(){
-            colorPickerRef.delegate.preview();
-        });
+        if (this.alphaSlider) {
+            this.alphaSlider.on('change',function(){
+                colorPickerRef.delegate.preview();
+            });
+        }
 
         this.resetButton.on('click',function(){
             colorPickerRef.reset();
@@ -4131,7 +4137,10 @@ var ImgixComponents=(function(){
     };
 
     ImgixComponents.ImgixColor.prototype.destroy=function() {
-        this.alphaSlider.off('change');
+        if (this.alphaSlider) {
+            this.alphaSlider.off('change');
+        }
+
         if (this.type=='blend-color') {
             this.blendSelect.off('change');
         }
@@ -4159,10 +4168,11 @@ var ImgixComponents=(function(){
         {
             var alpha=(parseInt('0x'+val.substring(0,2))/255.0)*100.0;
             val=val.substring(2);
-
-            this.alphaSlider.val(Math.round(alpha));
-            this.alphaSlider.hide().show(0);
-        } else {
+            if (this.alphaSlider) {
+                this.alphaSlider.val(Math.round(alpha));
+                this.alphaSlider.hide().show(0);
+            }
+        } else if (this.alphaSlider) {
             this.alphaSlider.val(0);
             this.alphaSlider.hide().show(0);
         }
@@ -4178,7 +4188,9 @@ var ImgixComponents=(function(){
     };
 
     ImgixComponents.ImgixColor.prototype.saveValue=function(data) {
-        if (this.alphaSlider.val()>0) {
+        if (this.alphaSlider == null) {
+            data[this.param] = '#' + this.colorPicker.val().replace('#', '');
+        } else if (this.alphaSlider.val()>0) {
             data[this.param] = '#' + ImgixComponents.utilities.byteToHex(Math.round((parseFloat(this.alphaSlider.val()) / 100.0) * 255.0)) + this.colorPicker.val().replace('#', '');
 
             if (this.type == 'blend-color') {
@@ -4353,8 +4365,25 @@ var ImgixComponents=(function(){
         this.values=container.data('param-values').split(',');
         this.buttons=container.find('.ilabm-pill');
         this.inputs={};
+        this.radioMode = container.data('radio-mode');
+        this.mustSelect = container.data('must-select');
 
         var pillboxRef=this;
+
+        this.deselectOthers = function(targetButton) {
+            this.buttons.each(function(){
+                if (targetButton == this) {
+                    return;
+                }
+
+                var button = $(this);
+                var valueName=button.data('param');
+                pillboxRef.inputs[valueName].val(0);
+
+                button.removeClass('pill-selected');
+                $(document).trigger(valueName+'-deselected');
+            });
+        }.bind(this);
 
         this.buttons.each(function(){
             var button=$(this);
@@ -4369,8 +4398,12 @@ var ImgixComponents=(function(){
                     button.addClass('pill-selected');
 
                     $(document).trigger(valueName+'-selected');
+
+                    if (pillboxRef.radioMode) {
+                        pillboxRef.deselectOthers(this);
+                    }
                 }
-                else
+                else if (!pillboxRef.mustSelect)
                 {
                     pillboxRef.inputs[valueName].val(0);
                     button.removeClass('pill-selected');
@@ -4529,7 +4562,7 @@ var ILabImgixPresets=function($,delegate,container) {
             if (self.presetDefaultCheckbox.is(':checked'))
                 data['make_default']=1;
 
-            self.delegate.postAjax('ilab_imgix_new_preset', data, function(response) {
+            self.delegate.postAjax('ilab_dynamic_images_new_preset', data, function(response) {
                 self.delegate.hideStatus();
                 if (response.status=='ok')
                 {
@@ -4553,7 +4586,7 @@ var ILabImgixPresets=function($,delegate,container) {
         if (self.presetDefaultCheckbox.is(':checked'))
             data['make_default']=1;
 
-        self.delegate.postAjax('ilab_imgix_save_preset', data, function(response) {
+        self.delegate.postAjax('ilab_dynamic_images_save_preset', data, function(response) {
             self.delegate.hideStatus();
         });
     };
@@ -4570,7 +4603,7 @@ var ILabImgixPresets=function($,delegate,container) {
         var data={};
         data['key']=self.presetSelect.val();
 
-        self.delegate.postAjax('ilab_imgix_delete_preset', data, function(response) {
+        self.delegate.postAjax('ilab_dynamic_images_delete_preset', data, function(response) {
             self.delegate.hideStatus();
             if (response.status=='ok')
             {
@@ -5118,7 +5151,7 @@ var ILabImageEdit=function($, settings){
 
         self.waitModal.removeClass('is-hidden');
 
-        self.postAjax('ilab_imgix_preview',{},function(response) {
+        self.postAjax('ilab_dynamic_images_preview',{},function(response) {
             if (response.status=='ok')
             {
                 var sameSrc = (response.src == self.previewImage.attr('src'));
@@ -5220,7 +5253,7 @@ var ILabImageEdit=function($, settings){
     this.apply=function(){
         self.displayStatus('Saving adjustments ...');
 
-        self.postAjax('ilab_imgix_save', {}, function(response) {
+        self.postAjax('ilab_dynamic_images_save', {}, function(response) {
             self.hideStatus();
             ILabModal.makeClean();
 

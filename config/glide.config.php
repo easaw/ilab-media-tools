@@ -121,27 +121,28 @@ return [
         ],
         "params" => [
             "adjust" => [
-                "--Auto" => [
-                    "auto" => [
+                "Orientation" => [
+                    "or" => [
                         "type" => "pillbox",
+                        "radio" => true,
+                        "no-icon" => true,
                         "options" => [
-                            "enhance" => [
-                                "title" => "Auto Enhance",
+                            "90" => [
+                                "title" => "90°",
                                 "default" => 0
                             ],
-                            "redeye" => [
-                                "title" => "Remove Red Eye",
+                            "180" => [
+                                "title" => "180°",
                                 "default" => 0
-                            ]
+                            ],
+                            "270" => [
+                                "title" => "270°",
+                                "default" => 0
+                            ],
                         ],
                         "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
-                            if (isset($settings['auto'])) {
-                                $parts=explode(',',$settings['auto']);
-                                foreach($parts as $part) {
-                                    if ($part==$currentValue) {
-                                        return $selectedOutput;
-                                    }
-                                }
+                            if (isset($settings['or']) && ($settings['or'] == $currentValue)) {
+                                return $selectedOutput;
                             }
 
                             return $unselectedOutput;
@@ -190,59 +191,16 @@ return [
                         "max" => 100,
                         "default" => 0
                     ],
-                    "exp" => [
-                        "title" => "Exposure",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
                     "gam" => [
                         "title" => "Gamma",
                         "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "high" => [
-                        "title" => "Highlight",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "shad" => [
-                        "title" => "Shadow",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
+                        "min" => 0.1,
+                        "max" => 9.99,
+                        "inc" => 0.01,
+                        "default" => 1
                     ]
                 ],
-                "Color Controls" => [
-                    "hue" => [
-                        "title" => "Hue",
-                        "type" => "slider",
-                        "min" => -359,
-                        "max" => 359,
-                        "default" => 0
-                    ],
-                    "sat" => [
-                        "title" => "Saturation",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "vib" => [
-                        "title" => "Vibrancy",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ]
-                ],
-                "Noise/Sharpen/Blur" => [
+                "Sharpen/Blur" => [
                     "sharp" => [
                         "title" => "Sharpen",
                         "type" => "slider",
@@ -250,112 +208,95 @@ return [
                         "max" => 100,
                         "default" => 0
                     ],
-                    "nr" => [
-                        "title" => "Noise Reduction",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "nrs" => [
-                        "title" => "Noise Reduction Sharpen Bound",
-                        "type" => "slider",
-                        "min" => -100,
-                        "max" => 100,
-                        "default" => 0
-                    ],
                     "blur" => [
                         "title" => "Blur",
                         "type" => "slider",
                         "min" => 0,
-                        "max" => 2000,
+                        "max" => 100,
                         "default" => 0
-                    ]
-                ],
-                "Transform" => [
-                    "rot" => [
-                        "title" => "Rotation",
+                    ],
+                    "pixel" => [
+                        "title" => "Pixelate",
                         "type" => "slider",
-                        "min" => -359,
-                        "max" => 359,
+                        "min" => 0,
+                        "max" => 1000,
                         "default" => 0
                     ]
                 ]
             ],
             "stylize" => [
-                "Stylize" => [
-                    "blend" => [
-                        "title" => "Tint",
-                        "type" => "blend-color",
-                        "blend-param" => "bm",
-                        "blends" => [
-                            "none" => "Normal",
-                            "color" => "Color",
-                            "burn" => "Burn",
-                            "dodge" => "Dodge",
-                            "darken" => "Darken",
-                            "difference" => "Difference",
-                            "exclusion" => "Exclusion",
-                            "hardlight" => "Hard Light",
-                            "hue" => "Hue",
-                            "lighten" => "Lighten",
-                            "luminosity" => "Luminosity",
-                            "multiply" => "Multiply",
-                            "overlay" => "Overlay",
-                            "saturation" => "Saturation",
-                            "screen" => "Screen",
-                            "softlight" => "Soft Light"
-                        ]
-                    ],
-                    "htn" => [
-                        "title" => "Halftone",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "px" => [
-                        "title" => "Pixellate",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 100,
-                        "default" => 0
-                    ],
-                    "mono" => [
-                        "title" => "Monochrome",
-                        "type" => "color"
-                    ],
-                    "sepia" => [
-                        "title" => "Sepia",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 100,
-                        "default" => 0
+                "Filter" => [
+                    "filt" => [
+                        "type" => "pillbox",
+                        "radio" => true,
+                        "no-icon" => true,
+                        "options" => [
+                            "greyscale" => [
+                                "title" => "Greyscale",
+                                "default" => 0
+                            ],
+                            "sepia" => [
+                                "title" => "Sepia",
+                                "default" => 0
+                            ]
+                        ],
+                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
+                            if (isset($settings['or']) && ($settings['or'] == $currentValue)) {
+                                return $selectedOutput;
+                            }
+
+                            return $unselectedOutput;
+                        }
                     ]
                 ],
                 "Border" => [
+                    "border-type" => [
+                        "type" => "pillbox",
+                        "radio" => true,
+                        "no-icon" => true,
+                        "must-select" => true,
+                        "classes" => "bottom-gap",
+                        "options" => [
+                            "overlay" => [
+                                "title" => "Overlay",
+                                "default" => 0,
+                                "selected" => true
+                            ],
+                            "shrink" => [
+                                "title" => "Shrink",
+                                "default" => 0
+                            ],
+                            "expand" => [
+                                "title" => "Expand",
+                                "default" => 0
+                            ]
+                        ],
+                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
+                            if (isset($settings['border-type'])) {
+                                if ($settings['border-type'] == $currentValue) {
+                                    return $selectedOutput;
+                                }
+
+                                return $unselectedOutput;
+                            }
+
+                            if ($currentValue == 'overlay') {
+                                return $selectedOutput;
+                            }
+
+                            return $unselectedOutput;
+                        }
+                    ],
                     "border-color" => [
                         "title" => "Border Color",
-                        "type" => "color"
+                        "type" => "color",
+                        "no-alpha" => true
                     ],
                     "border-width" => [
                         "title" => "Border Width",
                         "type" => "slider",
                         "min" => 0,
-                        "max" => 100,
-                        "default" => 0
-                    ]
-                ],
-                "Padding" => [
-                    "padding-color" => [
-                        "title" => "Padding Color",
-                        "type" => "color"
-                    ],
-                    "padding-width" => [
-                        "title" => "Padding Width",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 100,
+                        "max" => 500,
                         "default" => 0
                     ]
                 ]
@@ -399,57 +340,6 @@ return [
                         "min" => 0,
                         "max" => 200,
                         "default" => 100
-                    ]
-                ]
-            ],
-            "focus-crop" => [
-                "--Focus" => [
-                    "focalpoint" => [
-                        "type" => "pillbox",
-                        "exclusive" => true,
-                        "options" => [
-                            "focalpoint" => [
-                                "title" => "Focal Point",
-                                "default" => 0
-                            ],
-                            "usefaces" => [
-                                "title" => "Use Faces",
-                                "default" => 0
-                            ],
-                            "entropy" => [
-                                "title" => "Entropy",
-                                "default" => 0
-                            ],
-                            "edges" => [
-                                "title" => "Edges",
-                                "default" => 0
-                            ]
-                        ],
-                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
-                            if (isset($settings['focalpoint']) && ($settings['focalpoint'] == $currentValue)) {
-                                return $selectedOutput;
-                            }
-
-                            return $unselectedOutput;
-                        }
-                    ]
-                ],
-                "Focal Point" => [
-                    "fp-z" => [
-                        "title" => "Focal Point Zoom",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 5,
-                        "default" => 1
-                    ]
-                ],
-                "Faces" => [
-                    "faceindex" => [
-                        "title" => "Face Index",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 5,
-                        "default" => 0
                     ]
                 ]
             ]

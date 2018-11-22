@@ -8,8 +8,25 @@
         this.values=container.data('param-values').split(',');
         this.buttons=container.find('.ilabm-pill');
         this.inputs={};
+        this.radioMode = container.data('radio-mode');
+        this.mustSelect = container.data('must-select');
 
         var pillboxRef=this;
+
+        this.deselectOthers = function(targetButton) {
+            this.buttons.each(function(){
+                if (targetButton == this) {
+                    return;
+                }
+
+                var button = $(this);
+                var valueName=button.data('param');
+                pillboxRef.inputs[valueName].val(0);
+
+                button.removeClass('pill-selected');
+                $(document).trigger(valueName+'-deselected');
+            });
+        }.bind(this);
 
         this.buttons.each(function(){
             var button=$(this);
@@ -24,8 +41,12 @@
                     button.addClass('pill-selected');
 
                     $(document).trigger(valueName+'-selected');
+
+                    if (pillboxRef.radioMode) {
+                        pillboxRef.deselectOthers(this);
+                    }
                 }
-                else
+                else if (!pillboxRef.mustSelect)
                 {
                     pillboxRef.inputs[valueName].val(0);
                     button.removeClass('pill-selected');

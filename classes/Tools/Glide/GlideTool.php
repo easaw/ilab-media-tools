@@ -165,7 +165,7 @@ class GlideTool extends DynamicImagesToolBase {
 
 
         if (isset($params['flip']) && (strpos($params['flip'], ',') > 0)) {
-            $params['flip'] = 'hv';
+            $params['flip'] = 'both';
         }
 
 
@@ -194,11 +194,23 @@ class GlideTool extends DynamicImagesToolBase {
         }
 
         if(isset($params['border-width']) && isset($params['border-color'])) {
-            $params['border'] = $params['border-width'].','.str_replace('#', '', $params['border-color']);
+            $color = $params['border-color'];
+            if (strpos($color, '#') === 0) {
+                $color = substr($color, 1);
+            }
+
+            if (strlen($color) == 8) {
+                $color = substr($color, 2);
+            }
+
+            $borderType = (empty($params['border-type'])) ? 'overlay' : $params['border-type'];
+
+            $params['border'] = $params['border-width'].','.$color.','.$borderType;
         }
 
         unset($params['border-width']);
         unset($params['border-color']);
+        unset($params['border-type']);
 
         unset($params['padding-width']);
         unset($params['padding-color']);

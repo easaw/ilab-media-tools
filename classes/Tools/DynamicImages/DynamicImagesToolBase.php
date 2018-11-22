@@ -14,6 +14,10 @@
 namespace ILAB\MediaCloud\Tools\DynamicImages;
 
 use ILAB\MediaCloud\Tools\ToolBase;
+use function ILAB\MediaCloud\Utilities\gen_uuid;
+use function ILAB\MediaCloud\Utilities\json_response;
+use function ILAB\MediaCloud\Utilities\parse_req;
+use ILAB\MediaCloud\Utilities\View;
 
 abstract class DynamicImagesToolBase extends ToolBase {
     protected $signingKey = null;
@@ -269,7 +273,7 @@ abstract class DynamicImagesToolBase extends ToolBase {
                                 button.on('click', function (e) {
                                     e.preventDefault();
 
-                                    ILabModal.loadURL("<?php echo get_admin_url(null, 'admin-ajax.php')?>?action=ilab_imgix_edit_page&image_id=" + image_id, false, null);
+                                    ILabModal.loadURL("<?php echo get_admin_url(null, 'admin-ajax.php')?>?action=ilab_dynamic_images_edit_page&image_id=" + image_id, false, null);
 
                                     return false;
                                 });
@@ -280,7 +284,7 @@ abstract class DynamicImagesToolBase extends ToolBase {
                             var image_id = button.data('id');
                             e.preventDefault();
 
-                            ILabModal.loadURL("<?php echo get_admin_url(null, 'admin-ajax.php')?>?action=ilab_imgix_edit_page&image_id=" + image_id, false, null);
+                            ILabModal.loadURL("<?php echo get_admin_url(null, 'admin-ajax.php')?>?action=ilab_dynamic_images_edit_page&image_id=" + image_id, false, null);
 
                             return false;
                         });
@@ -316,7 +320,7 @@ abstract class DynamicImagesToolBase extends ToolBase {
      * @return string
      */
     public function editPageURL($id, $size = 'full', $partial = false, $preset = null) {
-        $url = get_admin_url(null, 'admin-ajax.php')."?action=ilab_imgix_edit_page&image_id=$id";
+        $url = get_admin_url(null, 'admin-ajax.php')."?action=ilab_dynamic_images_edit_page&image_id=$id";
 
         if($size != 'full') {
             $url .= "&size=$size";

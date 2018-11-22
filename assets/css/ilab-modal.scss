@@ -221,11 +221,16 @@ a.button-reset {
 
 .ilabm-pillbox {
   padding: 10px 0px 20px 0px;
-  text-align: center;
+  align-items: center;
   margin-bottom: 10px !important;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  border-bottom: 0px none !important;
+
+  &.bottom-gap {
+    margin-bottom: 20px;
+  }
 
   .ilabm-pill {
     white-space: nowrap;
@@ -274,6 +279,22 @@ a.button-reset {
     background-color: #ccc;
     box-shadow: inset 1px 1px 1px rgba(0,0,0,0.25);
     color: white;
+  }
+}
+
+.ilabm-pillbox-no-icon {
+  .ilabm-pill {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+
+    span {
+      margin-right: 0px;
+    }
+
+    span.icon {
+      display: none;
+    }
   }
 }
 

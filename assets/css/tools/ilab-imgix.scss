@@ -21,6 +21,12 @@
   margin-bottom: 0px !important;
   overflow: scroll;
   padding-bottom:  0px !important;
+  display: flex;
+  flex-direction: column;
+
+  &.is-hidden {
+    display: none;
+  }
 
   select {
     font-size: 12px;
@@ -57,7 +63,7 @@
   border-bottom: 1px solid rgba(0,0,0,0.125);
 
   &:first-child {
-    margin-top:15px !important;
+    //margin-top:15px !important;
   }
 
   &:last-child {
@@ -459,3 +465,17 @@
   border: 3px solid white;
   filter: drop-shadow(0px 2px 3px black);
 }
+
+//.imgix-pill-90, .imgix-pill-180, .imgix-pill-270, .imgix-pill-greyscale, .imgix-pill-sepia {
+//    width: 100px !important;
+//    min-width: 100px !important;
+//    max-width: 100px !important;
+//
+//    span {
+//      margin-right: 0px !important;
+//    }
+//
+//    span.icon {
+//      display: none !important;
+//    }
+//}

@@ -329,7 +329,16 @@
   margin-top: 10px;
   margin-bottom: 0px !important;
   overflow: scroll;
-  padding-bottom: 0px !important; }
+  padding-bottom: 0px !important;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+  .imgix-parameters-container.is-hidden {
+    display: none; }
   .imgix-parameters-container select {
     font-size: 12px; }
   .imgix-parameters-container::-webkit-scrollbar {
@@ -355,8 +364,6 @@
   margin: 0px !important;
   margin-bottom: 15px !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
-  .imgix-parameter:first-child {
-    margin-top: 15px !important; }
   .imgix-parameter:last-child {
     border-bottom: 0px none;
     margin-bottom: 30px !important; }

@@ -241,7 +241,9 @@ a.button-reset {
 
 .ilabm-pillbox {
   padding: 10px 0px 20px 0px;
-  text-align: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin-bottom: 10px !important;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -250,7 +252,10 @@ a.button-reset {
       flex-wrap: wrap;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
-          justify-content: center; }
+          justify-content: center;
+  border-bottom: 0px none !important; }
+  .ilabm-pillbox.bottom-gap {
+    margin-bottom: 20px; }
   .ilabm-pillbox .ilabm-pill {
     white-space: nowrap;
     display: -webkit-box;
@@ -295,6 +300,15 @@ a.button-reset {
     -webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.25);
             box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.25);
     color: white; }
+
+.ilabm-pillbox-no-icon .ilabm-pill {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px; }
+  .ilabm-pillbox-no-icon .ilabm-pill span {
+    margin-right: 0px; }
+  .ilabm-pillbox-no-icon .ilabm-pill span.icon {
+    display: none; }
 
 .ilabm-preview-wait-modal {
   position: absolute;

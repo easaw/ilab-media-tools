@@ -6,21 +6,25 @@
 
 {% block main-tabs %}
 <div class="ilabm-editor-tabs">
-    <div class="ilabm-tabs-select-label">Size:</div>
-    <select class="ilabm-tabs-select">
-        <option value="full" data-url="{{$tool->editPageURL($image_id,'full',true) }}" {{(($size=='full')?'selected':'')}}>Source Image</option>
+    <div class="ilabm-tabs-select-ui">
+        <div class="ilabm-tabs-select-label">Size:</div>
+        <select class="ilabm-tabs-select">
+            <option value="full" data-url="{{$tool->editPageURL($image_id,'full',true) }}" {{(($size=='full')?'selected':'')}}>Source Image</option>
+            {% foreach ($sizes as $name => $info) %}
+            {% if (strpos($name,'__')!==0) %}
+            <option value="{{$name}}" data-url="{{$tool->editPageURL($image_id,$name,true) }}" {{(($size==$name)?'selected':'')}}>{{ ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))) }}</option>
+            {% endif %}
+            {% endforeach %}
+        </select>
+    </div>
+    <div class="ilabm-tabs-ui">
+        <div data-url="{{$tool->editPageURL($image_id,'full',true) }}" data-value="full" class="ilabm-editor-tab {{(($size=='full')?'active-tab':'')}}">Source Image</div>
         {% foreach ($sizes as $name => $info) %}
         {% if (strpos($name,'__')!==0) %}
-        <option value="{{$name}}" data-url="{{$tool->editPageURL($image_id,$name,true) }}" {{(($size==$name)?'selected':'')}}>{{ ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))) }}</option>
+        <div data-url="{{$tool->editPageURL($image_id,$name,true) }}" data-value="{{$name}}" class="ilabm-editor-tab {{(($size==$name)?'active-tab':'')}}">{{ ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))) }}</div>
         {% endif %}
         {% endforeach %}
-    </select>
-    <div data-url="{{$tool->editPageURL($image_id,'full',true) }}" data-value="full" class="ilabm-editor-tab {{(($size=='full')?'active-tab':'')}}">Source Image</div>
-    {% foreach ($sizes as $name => $info) %}
-    {% if (strpos($name,'__')!==0) %}
-    <div data-url="{{$tool->editPageURL($image_id,$name,true) }}" data-value="{{$name}}" class="ilabm-editor-tab {{(($size==$name)?'active-tab':'')}}">{{ ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))) }}</div>
-    {% endif %}
-    {% endforeach %}
+    </div>
 </div>
 {% end block %}
 

@@ -6,6 +6,10 @@
         this.container=container;
         this.colorPicker=container.find('.imgix-param-color');
         this.alphaSlider=container.find('.imgix-param-alpha');
+        if (this.alphaSlider && (this.alphaSlider.length == 0)) {
+            this.alphaSlider = null;
+        }
+
         this.type=container.data('param-type');
         this.resetButton=container.find('.imgix-param-reset');
         this.param=container.data('param');
@@ -32,9 +36,11 @@
             }
         });
 
-        this.alphaSlider.on('change',function(){
-            colorPickerRef.delegate.preview();
-        });
+        if (this.alphaSlider) {
+            this.alphaSlider.on('change',function(){
+                colorPickerRef.delegate.preview();
+            });
+        }
 
         this.resetButton.on('click',function(){
             colorPickerRef.reset();
@@ -42,7 +48,10 @@
     };
 
     ImgixComponents.ImgixColor.prototype.destroy=function() {
-        this.alphaSlider.off('change');
+        if (this.alphaSlider) {
+            this.alphaSlider.off('change');
+        }
+
         if (this.type=='blend-color') {
             this.blendSelect.off('change');
         }
@@ -70,10 +79,11 @@
         {
             var alpha=(parseInt('0x'+val.substring(0,2))/255.0)*100.0;
             val=val.substring(2);
-
-            this.alphaSlider.val(Math.round(alpha));
-            this.alphaSlider.hide().show(0);
-        } else {
+            if (this.alphaSlider) {
+                this.alphaSlider.val(Math.round(alpha));
+                this.alphaSlider.hide().show(0);
+            }
+        } else if (this.alphaSlider) {
             this.alphaSlider.val(0);
             this.alphaSlider.hide().show(0);
         }
@@ -89,7 +99,9 @@
     };
 
     ImgixComponents.ImgixColor.prototype.saveValue=function(data) {
-        if (this.alphaSlider.val()>0) {
+        if (this.alphaSlider == null) {
+            data[this.param] = '#' + this.colorPicker.val().replace('#', '');
+        } else if (this.alphaSlider.val()>0) {
             data[this.param] = '#' + ImgixComponents.utilities.byteToHex(Math.round((parseFloat(this.alphaSlider.val()) / 100.0) * 255.0)) + this.colorPicker.val().replace('#', '');
 
             if (this.type == 'blend-color') {

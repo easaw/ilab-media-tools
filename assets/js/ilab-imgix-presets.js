@@ -88,7 +88,7 @@ var ILabImgixPresets=function($,delegate,container) {
             if (self.presetDefaultCheckbox.is(':checked'))
                 data['make_default']=1;
 
-            self.delegate.postAjax('ilab_imgix_new_preset', data, function(response) {
+            self.delegate.postAjax('ilab_dynamic_images_new_preset', data, function(response) {
                 self.delegate.hideStatus();
                 if (response.status=='ok')
                 {
@@ -112,7 +112,7 @@ var ILabImgixPresets=function($,delegate,container) {
         if (self.presetDefaultCheckbox.is(':checked'))
             data['make_default']=1;
 
-        self.delegate.postAjax('ilab_imgix_save_preset', data, function(response) {
+        self.delegate.postAjax('ilab_dynamic_images_save_preset', data, function(response) {
             self.delegate.hideStatus();
         });
     };
@@ -129,7 +129,7 @@ var ILabImgixPresets=function($,delegate,container) {
         var data={};
         data['key']=self.presetSelect.val();
 
-        self.delegate.postAjax('ilab_imgix_delete_preset', data, function(response) {
+        self.delegate.postAjax('ilab_dynamic_images_delete_preset', data, function(response) {
             self.delegate.hideStatus();
             if (response.status=='ok')
             {
