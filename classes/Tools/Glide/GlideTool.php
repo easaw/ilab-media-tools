@@ -15,7 +15,9 @@ namespace ILAB\MediaCloud\Tools\Glide;
 
 use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
 use ILAB\MediaCloud\Tools\DynamicImages\WordPressUploadsAdapter;
+use ILAB\MediaCloud\Tools\Glide\Server\GlideServerFactory;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
+use ILAB\MediaCloud\Utilities\NoticeManager;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Glide\ServerFactory;
@@ -79,9 +81,21 @@ class GlideTool extends DynamicImagesToolBase {
         }, 100, 2);
     }
 
+    public function setup() {
+        parent::setup();
+
+        if ($this->enabled()) {
+            if (!class_exists("Imagick")) {
+                NoticeManager::instance()->displayAdminNotice('warning', "Installing the <a target='_blank' href='http://php.net/manual/en/book.imagick.php'>ImageMagick PHP extension</a> will improve the quality and performance of the Glide server, as well as enable features that are otherwise not available.", true, 'ilab-glide-imagick-forever');
+            }
+        }
+    }
+
     //region Render Image
 
     protected function renderImage($file) {
+        $imagickInstalled = class_exists("Imagick");
+
         try {
             SignatureFactory::create($this->signingKey)->validateRequest(trim($this->basePath.$file,'/'), $_GET);
         } catch (SignatureException $e) {
@@ -99,9 +113,11 @@ class GlideTool extends DynamicImagesToolBase {
             $source = new Files(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads'));
         }
 
-        $server = ServerFactory::create([
+        $server = GlideServerFactory::create([
             'source' => $source,
             'cache' => new Filesystem(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads/glide-cache/')),
+            'watermarks' => $source,
+            'driver' => ($imagickInstalled) ? 'imagick' : 'gd',
             'max_image_size' => $this->maxWidth * $this->maxWidth,
             'base_url' => $this->basePath
         ]);
@@ -140,7 +156,7 @@ class GlideTool extends DynamicImagesToolBase {
      *
      * @return array
      */
-    private function buildGlideParams($params, $mimetype = '') {
+    private function buildGlideParams($params, $mimetype = '', $width = 0, $height = 0) {
         $format = null;
         if(empty($params['fm'])) {
             if ($mimetype == 'image/gif') {
@@ -173,6 +189,7 @@ class GlideTool extends DynamicImagesToolBase {
             $params['q'] = $this->imageQuality;
         }
 
+        $markMeta = [];
         foreach($this->paramPropsByType['media-chooser'] as $key => $info) {
             if(isset($params[$key]) && !empty($params[$key])) {
                 $media_id = $params[$key];
@@ -193,7 +210,53 @@ class GlideTool extends DynamicImagesToolBase {
             }
         }
 
-        if(isset($params['border-width']) && isset($params['border-color'])) {
+        if (!empty($params['mark'])) {
+            if (empty($params['markalign'])) {
+                $params['markpos'] = 'bottom-right';
+            } else {
+                $params['markpos'] = str_replace(',','-', $params['markalign']);
+            }
+            unset($params['markalign']);
+
+            $posMap = [
+                'top-center' => 'top',
+                'middle-right' => 'right',
+                'bottom-center' => 'bottom',
+                'middle-left' => 'left',
+                'middle-center' => 'center'
+            ];
+
+            if (isset($posMap[$params['markpos']])) {
+                $params['markpos'] = $posMap[$params['markpos']];
+            }
+
+            if ($params['markpos'] == 'bottom-center') {
+                $params['markpos'] = 'bottom';
+            }
+
+            if (!empty($params['markpad'])) {
+                if ($width > $height) {
+                    $params['markpad'] = $params['markpad'].'h';
+                } else {
+                    $params['markpad'] = $params['markpad'].'w';
+                }
+            }
+
+            if (!empty($params['markscale'])) {
+                if (!empty($markMeta['width']) && !empty($markMeta['height'])) {
+                    $mw = floor($markMeta['width'] * ($params['markscale'] / 100.0));
+                    $mh = floor($markMeta['height'] * ($params['markscale'] / 100.0));
+
+                    $params['markw'] = $mw;
+                    $params['markh'] = $mh;
+                }
+
+                unset($params['markscale']);
+            }
+
+        }
+
+        if(isset($params['border-width']) && isset($params['border-color']) && ($params['border-width'] > 0)) {
             $color = $params['border-color'];
             if (strpos($color, '#') === 0) {
                 $color = substr($color, 1);
@@ -203,19 +266,38 @@ class GlideTool extends DynamicImagesToolBase {
                 $color = substr($color, 2);
             }
 
-            $borderType = (empty($params['border-type'])) ? 'overlay' : $params['border-type'];
-
-            $params['border'] = $params['border-width'].','.$color.','.$borderType;
+            $params['border'] = $params['border-width'].','.$color.',overlay';
         }
+
+        if(isset($params['padding-width']) && isset($params['padding-color']) && ($params['padding-width'] > 0)) {
+            $color = $params['padding-color'];
+            if (strpos($color, '#') === 0) {
+                $color = substr($color, 1);
+            }
+
+            if (strlen($color) == 8) {
+                $color = substr($color, 2);
+            }
+
+            $params['padding'] = $params['padding-width'].','.$color.',shrink';
+        }
+
+        if (!empty($params['px'])) {
+            $params['pixel'] = $params['px'] * 5;
+        }
+
+        unset($params['px']);
 
         unset($params['border-width']);
         unset($params['border-color']);
-        unset($params['border-type']);
 
         unset($params['padding-width']);
         unset($params['padding-color']);
 
-        unset($params['auto']);
+        if (!empty($params['auto']) && ($params['auto'] != 'enhance')) {
+            unset($params['auto']);
+        }
+
         unset($params['enhance']);
         unset($params['redeye']);
 
@@ -315,7 +397,7 @@ class GlideTool extends DynamicImagesToolBase {
                 }
             }
 
-            $params = $this->buildGlideParams($params, $mimetype);
+            $params = $this->buildGlideParams($params, $mimetype, $meta['width'], $meta['height']);
             $params = apply_filters('ilab-imgix-filter-parameters', $params, $size, $id, $meta);
 
             $result = [
@@ -430,7 +512,7 @@ class GlideTool extends DynamicImagesToolBase {
             $params['wpsize'] = $size;
         }
 
-        $params = $this->buildGlideParams($params, $mimetype);
+        $params = $this->buildGlideParams($params, $mimetype, $meta['width'], $meta['height']);
         $params = apply_filters('ilab-imgix-filter-parameters', $params, $size, $id, $meta);
 
         $imageFile = (isset($meta['s3'])) ? $meta['s3']['key'] : $meta['file'];

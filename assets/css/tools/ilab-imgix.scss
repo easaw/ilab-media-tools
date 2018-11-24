@@ -53,6 +53,7 @@
     background-color: #ddd;
     padding: 5px;
     padding-left: 20px;
+    user-select: none;
   }
 }
 
@@ -61,6 +62,7 @@
   margin:0px !important;
   margin-bottom: 15px !important;
   border-bottom: 1px solid rgba(0,0,0,0.125);
+  user-select: none;
 
   &:first-child {
     //margin-top:15px !important;

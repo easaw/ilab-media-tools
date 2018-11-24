@@ -176,6 +176,39 @@ return [
                         }
                     ]
                 ],
+                "Transform" => [
+                    "rot" => [
+                        "title" => "Rotation",
+                        "type" => "slider",
+                        "min" => -359,
+                        "max" => 359,
+                        "default" => 0
+                    ]
+                ],
+                "Enhance" => [
+                    "auto" => [
+                        "type" => "pillbox",
+                        "options" => [
+                            "enhance" => [
+                                "title" => "Auto Enhance",
+                                "default" => 0
+                            ]
+                        ],
+                        "hidden" => (!class_exists("Imagick")),
+                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
+                            if (isset($settings['auto'])) {
+                                $parts=explode(',',$settings['auto']);
+                                foreach($parts as $part) {
+                                    if ($part==$currentValue) {
+                                        return $selectedOutput;
+                                    }
+                                }
+                            }
+
+                            return $unselectedOutput;
+                        }
+                    ]
+                ],
                 "Luminosity Controls" => [
                     "bri" => [
                         "title" => "Brightness",
@@ -200,6 +233,24 @@ return [
                         "default" => 1
                     ]
                 ],
+                "Color Controls" => [
+                    "hue" => [
+                        "title" => "Hue",
+                        "type" => "slider",
+                        "min" => -359,
+                        "max" => 359,
+                        "default" => 0,
+                        "hidden" => (!class_exists("Imagick"))
+                    ],
+                    "sat" => [
+                        "title" => "Saturation",
+                        "type" => "slider",
+                        "min" => -100,
+                        "max" => 100,
+                        "default" => 0,
+                        "hidden" => (!class_exists("Imagick"))
+                    ]
+                ],
                 "Sharpen/Blur" => [
                     "sharp" => [
                         "title" => "Sharpen",
@@ -208,85 +259,60 @@ return [
                         "max" => 100,
                         "default" => 0
                     ],
+                    "usm" => [
+                        "title" => "Unsharp Mask",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 100,
+                        "default" => 0,
+                        "hidden" => (!class_exists("Imagick"))
+                    ],
+                    "usmrad" => [
+                        "title" => "Unsharp Mask Radius",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 500,
+                        "default" => 0,
+                        "hidden" => (!class_exists("Imagick"))
+                    ],
                     "blur" => [
                         "title" => "Blur",
                         "type" => "slider",
                         "min" => 0,
                         "max" => 100,
                         "default" => 0
-                    ],
-                    "pixel" => [
-                        "title" => "Pixelate",
-                        "type" => "slider",
-                        "min" => 0,
-                        "max" => 1000,
-                        "default" => 0
                     ]
                 ]
             ],
             "stylize" => [
-                "Filter" => [
-                    "filt" => [
-                        "type" => "pillbox",
-                        "radio" => true,
-                        "no-icon" => true,
-                        "options" => [
-                            "greyscale" => [
-                                "title" => "Greyscale",
-                                "default" => 0
-                            ],
-                            "sepia" => [
-                                "title" => "Sepia",
-                                "default" => 0
-                            ]
-                        ],
-                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
-                            if (isset($settings['or']) && ($settings['or'] == $currentValue)) {
-                                return $selectedOutput;
-                            }
-
-                            return $unselectedOutput;
-                        }
+                "Stylize" => [
+                    "blend" => [
+                        "title" => "Tint",
+                        "type" => "color",
+                        "hidden" => (!class_exists("Imagick"))
+                    ],
+                    "px" => [
+                        "title" => "Pixellate",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 100,
+                        "default" => 0
+                    ],
+                    "mono" => [
+                        "title" => "Monochrome",
+                        "type" => "color",
+                        "hidden" => (!class_exists("Imagick"))
+                    ],
+                    "sepia" => [
+                        "title" => "Sepia",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 100,
+                        "default" => 0,
+                        "hidden" => (!class_exists("Imagick"))
                     ]
                 ],
                 "Border" => [
-                    "border-type" => [
-                        "type" => "pillbox",
-                        "radio" => true,
-                        "no-icon" => true,
-                        "must-select" => true,
-                        "classes" => "bottom-gap",
-                        "options" => [
-                            "overlay" => [
-                                "title" => "Overlay",
-                                "default" => 0,
-                                "selected" => true
-                            ],
-                            "shrink" => [
-                                "title" => "Shrink",
-                                "default" => 0
-                            ],
-                            "expand" => [
-                                "title" => "Expand",
-                                "default" => 0
-                            ]
-                        ],
-                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
-                            if (isset($settings['border-type'])) {
-                                if ($settings['border-type'] == $currentValue) {
-                                    return $selectedOutput;
-                                }
-
-                                return $unselectedOutput;
-                            }
-
-                            if ($currentValue == 'overlay') {
-                                return $selectedOutput;
-                            }
-
-                            return $unselectedOutput;
-                        }
-                    ],
                     "border-color" => [
                         "title" => "Border Color",
                         "type" => "color",
@@ -294,6 +320,20 @@ return [
                     ],
                     "border-width" => [
                         "title" => "Border Width",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 500,
+                        "default" => 0
+                    ]
+                ],
+                "Padding" => [
+                    "padding-color" => [
+                        "title" => "Padding Color",
+                        "type" => "color",
+                        "no-alpha" => true
+                    ],
+                    "padding-width" => [
+                        "title" => "Padding Width",
                         "type" => "slider",
                         "min" => 0,
                         "max" => 500,

@@ -32,7 +32,7 @@ class StorageImageEditor extends \WP_Image_Editor {
     public function __construct($file) {
         parent::__construct($file);
 
-        $this->imageEditor = (\WP_Image_Editor_GD::test()) ? new \WP_Image_Editor_GD($file) : new \WP_Image_Editor_Imagick($file);
+        $this->imageEditor = (\WP_Image_Editor_Imagick::test()) ? new \WP_Image_Editor_Imagick($file) : new \WP_Image_Editor_GD($file);
 
         if (isset($_POST['action']) && ($_POST['action'] == 'image-editor') && isset($_POST['do']) && ($_POST['do'] == 'save')) {
             if (isset($_POST['postid'])) {

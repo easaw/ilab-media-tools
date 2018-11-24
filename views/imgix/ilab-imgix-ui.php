@@ -70,6 +70,7 @@
         {% endif %}
         <div>
             {% foreach($groupParams as $param => $paramInfo) %}
+                <?php if (!empty($paramInfo['hidden'])) { continue; } ?>
                 {% if ($paramInfo['type']=='slider') %}
                     {% include imgix/editors/imgix-slider.php %}
                 {% elseif ($paramInfo['type']=='color') %}
