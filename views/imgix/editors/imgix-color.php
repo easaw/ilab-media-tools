@@ -4,11 +4,13 @@
             <h3>{{__($paramInfo['title'])}}</h3>
         </div>
         <div class="imgix-param-title-right">
-            <input class="imgix-param imgix-param-color" type="text" value="{{imgixCurrentColorValue($param,$settings,'#FF0000')}}">
+            <input type="text" class="ilab-color-input" data-opacity="{{imgixCurrentAlphaValue($param,$settings,'0.00')}}" value="{{imgixCurrentColorValue($param,$settings,'#FF0000')}}" size="7">
         </div>
     </div>
-    {% if (empty($paramInfo['no-alpha'])) %}
-    <input class="imgix-param-alpha" type="range" min="0" max="100" value="{{imgixCurrentAlphaValue($param,$settings,0)}}" />
-    {% endif %}
     <a class="imgix-param-reset" href="#">{{__('Reset')}}</a>
+    {% if (!empty($paramInfo['hidden'])) %}
+    <div class="imgix-param-imagick-warning">
+        <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
+    </div>
+    {% endif %}
 </div>

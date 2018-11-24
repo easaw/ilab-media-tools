@@ -20,4 +20,9 @@
         </div>
     </div>
     <a class="imgix-param-reset" href="#">{{__('Remove')}}</a>
+    {% if (!empty($paramInfo['hidden'])) %}
+    <div class="imgix-param-imagick-warning">
+        <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
+    </div>
+    {% endif %}
 </div>

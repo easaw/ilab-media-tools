@@ -65,26 +65,27 @@
     {% for each($params as $paramSection => $paramSectionInfo) %}
     <div class="imgix-params-section-{{$paramSection}} imgix-parameters-container is-hidden">
         {% for each($paramSectionInfo as $group => $groupParams) %}
-        {% if (strpos($group,'--')!==0) %}
-        <h4>{{str_replace('-',' ',$group)}}</h4>
-        {% endif %}
-        <div>
-            {% foreach($groupParams as $param => $paramInfo) %}
-                <?php if (!empty($paramInfo['hidden'])) { continue; } ?>
-                {% if ($paramInfo['type']=='slider') %}
-                    {% include imgix/editors/imgix-slider.php %}
-                {% elseif ($paramInfo['type']=='color') %}
-                    {% include imgix/editors/imgix-color.php %}
-                {% elseif ($paramInfo['type']=='pillbox') %}
-                    {% include imgix/editors/imgix-pillbox.php %}
-                {% elseif ($paramInfo['type']=='blend-color') %}
-                    {% include imgix/editors/imgix-blend-color.php %}
-                {% elseif ($paramInfo['type']=='media-chooser') %}
-                    {% include imgix/editors/imgix-media-chooser.php %}
-                {% elseif ($paramInfo['type']=='alignment') %}
-                    {% include imgix/editors/imgix-alignment.php %}
-                {% endif %}
-            {% endforeach %}
+        <div class="imgix-parameter-group">
+            {% if (strpos($group,'--')!==0) %}
+            <h4>{{str_replace('-',' ',$group)}}</h4>
+            {% endif %}
+            <div>
+                {% foreach($groupParams as $param => $paramInfo) %}
+                    {% if ($paramInfo['type']=='slider') %}
+                        {% include imgix/editors/imgix-slider.php %}
+                    {% elseif ($paramInfo['type']=='color') %}
+                        {% include imgix/editors/imgix-color.php %}
+                    {% elseif ($paramInfo['type']=='pillbox') %}
+                        {% include imgix/editors/imgix-pillbox.php %}
+                    {% elseif ($paramInfo['type']=='blend-color') %}
+                        {% include imgix/editors/imgix-blend-color.php %}
+                    {% elseif ($paramInfo['type']=='media-chooser') %}
+                        {% include imgix/editors/imgix-media-chooser.php %}
+                    {% elseif ($paramInfo['type']=='alignment') %}
+                        {% include imgix/editors/imgix-alignment.php %}
+                    {% endif %}
+                {% endforeach %}
+            </div>
         </div>
         {% endforeach %}
     </div>

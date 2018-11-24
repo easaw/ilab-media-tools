@@ -1,13 +1,12 @@
-<div class="imgix-parameter" data-default-value="#FF0000" data-param="{{$param}}" data-param-type="{{$paramInfo['type']}}" data-blend-param="{{$paramInfo['blend-param']}}" data-blend-value="{{(isset($settings[$paramInfo['blend-param']]) ? $settings[$paramInfo['blend-param']] : 'none')}}">
+<div class="imgix-parameter" data-default-value="#00FF0000" data-param="{{$param}}" data-param-type="{{$paramInfo['type']}}" data-blend-param="{{$paramInfo['blend-param']}}" data-blend-value="{{(isset($settings[$paramInfo['blend-param']]) ? $settings[$paramInfo['blend-param']] : 'none')}}">
     <div class="imgix-param-title imgix-param-title-colortype">
         <div class="imgix-param-title-left">
             <h3>{{__($paramInfo['title'])}}</h3>
         </div>
         <div class="imgix-param-title-right">
-            <input class="imgix-param imgix-param-color" type="text" value="{{imgixCurrentColorValue($param,$settings,'#FF0000')}}">
+            <input type="text" class="ilab-color-input" data-opacity="{{imgixCurrentAlphaValue($param,$settings,'0.00')}}" value="{{imgixCurrentColorValue($param,$settings,'#FF0000')}}" size="7">
         </div>
     </div>
-    <input class="imgix-param-alpha" type="range" min="0" max="100" value="{{imgixCurrentAlphaValue($param,$settings,0)}}" />
     <div class="imgix-param-blend-mode">
         <h3>Blend Mode</h3>
         <select class="imgix-param-blend">
@@ -17,4 +16,9 @@
         </select>
     </div>
     <a class="imgix-param-reset" href="#">{{__('Reset')}}</a>
+    {% if (!empty($paramInfo['hidden'])) %}
+    <div class="imgix-param-imagick-warning">
+        <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
+    </div>
+    {% endif %}
 </div>

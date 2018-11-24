@@ -18,4 +18,9 @@
         <a href="#" class="imgix-alignment-button {{imgixIsSelected($param,$settings,'bottom,right','bottom,right','selected-alignment')}}" data-param-value="bottom,right"><img src="{{ILAB_PUB_IMG_URL}}/wm-align-bottom-right.png"></a>
     </div>
     <a class="imgix-param-reset" href="#">{{__('Reset')}}</a>
+    {% if (!empty($paramInfo['hidden'])) %}
+    <div class="imgix-param-imagick-warning">
+        <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
+    </div>
+    {% endif %}
 </div>

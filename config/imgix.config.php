@@ -457,7 +457,7 @@ return [
 				]
 			],
 			"focus-crop" => [
-				"--Focus" => [
+				"Focus" => [
 					"focalpoint" => [
 						"type" => "pillbox",
 						"exclusive" => true,

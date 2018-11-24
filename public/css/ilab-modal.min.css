@@ -167,7 +167,8 @@ a.button-reset {
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  overflow: hidden; }
+  overflow: hidden;
+  min-height: 37px; }
   .ilabm-editor-tabs .ilabm-tabs-select-ui {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -238,77 +239,6 @@ a.button-reset {
 
 .ilabm-status-label {
   font-size: 13px; }
-
-.ilabm-pillbox {
-  padding: 10px 0px 20px 0px;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  margin-bottom: 10px !important;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  border-bottom: 0px none !important; }
-  .ilabm-pillbox.bottom-gap {
-    margin-bottom: 20px; }
-  .ilabm-pillbox .ilabm-pill {
-    white-space: nowrap;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    line-height: 1;
-    height: 14px;
-    min-height: 32px;
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    font-size: 10px;
-    background-color: #eaeaea;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: #444;
-    text-decoration: none;
-    border-radius: 8px;
-    margin: 3px; }
-    .ilabm-pillbox .ilabm-pill span {
-      display: block;
-      margin-right: 8px; }
-    .ilabm-pillbox .ilabm-pill span.icon {
-      width: 18px;
-      height: 18px;
-      min-width: 18px;
-      min-height: 18px;
-      max-width: 18px;
-      max-height: 18px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      margin-left: 8px; }
-  .ilabm-pillbox .pill-selected {
-    background-color: #ccc;
-    -webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.25);
-            box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.25);
-    color: white; }
-
-.ilabm-pillbox-no-icon .ilabm-pill {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px; }
-  .ilabm-pillbox-no-icon .ilabm-pill span {
-    margin-right: 0px; }
-  .ilabm-pillbox-no-icon .ilabm-pill span.icon {
-    display: none; }
 
 .ilabm-preview-wait-modal {
   position: absolute;

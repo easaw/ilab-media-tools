@@ -2,13 +2,12 @@
 
     ImgixComponents.ImgixColor=function(delegate, container)
     {
+        this.color;
+        this.opacity;
+        this.hasOpacity = false;
+
         this.delegate=delegate;
         this.container=container;
-        this.colorPicker=container.find('.imgix-param-color');
-        this.alphaSlider=container.find('.imgix-param-alpha');
-        if (this.alphaSlider && (this.alphaSlider.length == 0)) {
-            this.alphaSlider = null;
-        }
 
         this.type=container.data('param-type');
         this.resetButton=container.find('.imgix-param-reset');
@@ -16,6 +15,8 @@
         this.defaultValue=container.data('default-value');
 
         var colorPickerRef=this;
+
+        var minicolor = null;
 
         if (this.type=='blend-color') {
             this.blendParam=container.data('blend-param');
@@ -27,20 +28,40 @@
             this.blendSelect.on('change',function(){
                 colorPickerRef.delegate.preview();
             });
+        } else {
+            this.blendSelect = null;
         }
 
-        this.colorPicker.wpColorPicker({
-            palettes: false,
-            change: function(event, ui) {
-                colorPickerRef.delegate.preview();
-            }
-        });
 
-        if (this.alphaSlider) {
-            this.alphaSlider.on('change',function(){
-                colorPickerRef.delegate.preview();
+
+        container.find('.ilab-color-input').each(function(){
+            colorPickerRef.hasOpacity = (($(this).data('opacity') != null) && ($(this).data('opacity') !== false));
+
+            colorPickerRef.color = $(this).val().replace('#', '');
+            colorPickerRef.opacity = (colorPickerRef.hasOpacity) ? $(this).data('opacity') : 0;
+
+            $(this).minicolors({
+                format: 'hex',
+                position: 'bottom right',
+                opacity: colorPickerRef.hasOpacity ? "'"+$(this).data('opacity')+"'" : false,
+                change:function(newColor, newOpacity) {
+                    var oldOpacity = colorPickerRef.opacity;
+
+                    colorPickerRef.color = newColor.replace('#', '');
+                    colorPickerRef.opacity = newOpacity;
+
+                    if (colorPickerRef.hasOpacity) {
+                        if ((colorPickerRef.opacity > 0) || (oldOpacity != colorPickerRef.opacity)) {
+                            colorPickerRef.delegate.preview();
+                        }
+                    } else {
+                        colorPickerRef.delegate.preview();
+                    }
+                }
             });
-        }
+
+            colorPickerRef.minicolor = $(this);
+        });
 
         this.resetButton.on('click',function(){
             colorPickerRef.reset();
@@ -48,10 +69,6 @@
     };
 
     ImgixComponents.ImgixColor.prototype.destroy=function() {
-        if (this.alphaSlider) {
-            this.alphaSlider.off('change');
-        }
-
         if (this.type=='blend-color') {
             this.blendSelect.off('change');
         }
@@ -77,19 +94,15 @@
         val=val.replace('#','');
         if (val.length==8)
         {
-            var alpha=(parseInt('0x'+val.substring(0,2))/255.0)*100.0;
-            val=val.substring(2);
-            if (this.alphaSlider) {
-                this.alphaSlider.val(Math.round(alpha));
-                this.alphaSlider.hide().show(0);
-            }
-        } else if (this.alphaSlider) {
-            this.alphaSlider.val(0);
-            this.alphaSlider.hide().show(0);
+            this.opacity=parseInt('0x'+val.substring(0,2))/255.0;
+            val = val.substring(2);
         }
 
-        this.colorPicker.val('#'+val);
-        this.colorPicker.wpColorPicker('color', '#'+val);
+        this.color = val;
+        this.minicolor.minicolors('value', '#'+this.color);
+        if (this.hasOpacity) {
+            this.minicolor.minicolors('opacity', this.opacity);
+        }
 
         if (this.type=='blend-color') {
             this.blendSelect.val(blend);
@@ -99,16 +112,17 @@
     };
 
     ImgixComponents.ImgixColor.prototype.saveValue=function(data) {
-        if (this.alphaSlider == null) {
-            data[this.param] = '#' + this.colorPicker.val().replace('#', '');
-        } else if (this.alphaSlider.val()>0) {
-            data[this.param] = '#' + ImgixComponents.utilities.byteToHex(Math.round((parseFloat(this.alphaSlider.val()) / 100.0) * 255.0)) + this.colorPicker.val().replace('#', '');
-
-            if (this.type == 'blend-color') {
-                if (this.blendSelect.val()!='none') {
-                    data[this.blendParam] = this.blendSelect.val();
+        if (this.hasOpacity) {
+            if (this.opacity > 0) {
+                data[this.param] = '#'+ImgixComponents.utilities.byteToHex(Math.round(parseFloat(this.opacity) * 255.0))+this.color;
+                if (this.type == 'blend-color') {
+                    if (this.blendSelect && (this.blendSelect.val() != 'none')) {
+                        data[this.blendParam] = this.blendSelect.val();
+                    }
                 }
             }
+        } else {
+            data[this.param] = '#'+this.color;
         }
 
         return data;

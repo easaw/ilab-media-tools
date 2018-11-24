@@ -3,4 +3,9 @@
     <input type="hidden" name="{{$optionKey}}" value="{{$paramInfo['selected']($settings, $optionKey, '1','0')}}">
     <a data-param="{{$optionKey}}" class="ilabm-pill imgix-pill-{{$optionKey}} {{$paramInfo['selected']($settings, $optionKey, 'pill-selected', '')}}" href="#"><span class="icon"></span><span>{{$optionInfo['title']}}</span></a>
     {% endforeach %}
+    {% if (!empty($paramInfo['hidden'])) %}
+    <div class="imgix-param-imagick-warning">
+        <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
+    </div>
+    {% endif %}
 </div>
