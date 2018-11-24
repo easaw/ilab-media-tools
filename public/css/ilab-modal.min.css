@@ -169,7 +169,7 @@ a.button-reset {
       -ms-flex-direction: row;
           flex-direction: row;
   overflow: hidden;
-  min-height: 37px; }
+  min-height: 36px; }
   .ilabm-editor-tabs .ilabm-tabs-select-ui {
     display: -webkit-box;
     display: -ms-flexbox;
