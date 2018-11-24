@@ -5140,7 +5140,8 @@ var ImgixComponents=(function(){
         this.container=container;
         this.valueLabel=container.find('.imgix-param-title-right > h3');
         this.slider=container.find('.imgix-param');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
+        console.log(this.resetButton);
 
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
@@ -5162,8 +5163,10 @@ var ImgixComponents=(function(){
             }
         });
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             sliderRef.reset();
+            return false;
         });
 
         this.slider.on('input',function(){
@@ -5225,7 +5228,7 @@ var ImgixComponents=(function(){
         this.container=container;
 
         this.type=container.data('param-type');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
         this.param=container.data('param');
         this.defaultValue=container.data('default-value');
 
@@ -5278,8 +5281,10 @@ var ImgixComponents=(function(){
             colorPickerRef.minicolor = $(this);
         });
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             colorPickerRef.reset();
+            return false;
         });
     };
 
@@ -5314,10 +5319,7 @@ var ImgixComponents=(function(){
         }
 
         this.color = val;
-        this.minicolor.minicolors('value', '#'+this.color);
-        if (this.hasOpacity) {
-            this.minicolor.minicolors('opacity', this.opacity);
-        }
+        this.minicolor.minicolors('value', {color:'#'+this.color, opacity: this.opacity });
 
         if (this.type=='blend-color') {
             this.blendSelect.val(blend);
@@ -5352,14 +5354,16 @@ var ImgixComponents=(function(){
         this.delegate=delegate;
         this.container=container;
         this.alignmentParam=container.find('.imgix-param');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
 
         var alignmentRef=this;
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             alignmentRef.reset();
+            return false;
         });
 
         container.find('.imgix-alignment-button').on('click',function(){
@@ -5419,7 +5423,7 @@ var ImgixComponents=(function(){
         this.preview=container.find('.imgix-media-preview img');
         this.mediaInput=container.find('.imgix-param');
         this.selectButton=container.find('.imgix-media-button');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
 
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
@@ -5434,8 +5438,10 @@ var ImgixComponents=(function(){
 
         var mediaRef=this;
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             mediaRef.reset();
+            return false;
         });
 
         this.uploader.on('select', function() {

@@ -940,15 +940,20 @@
     -webkit-appearance: none;
     margin-top: -6px; }
 
-.imgix-parameter a.imgix-param-reset {
-  font-size: 11px;
-  display: block;
+.imgix-parameter .imgix-param-reset {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   width: 100%;
-  text-align: right;
-  font-style: italic;
-  outline: none !important;
-  border: 0px none !important;
-  text-decoration: none; }
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end; }
+  .imgix-parameter .imgix-param-reset a {
+    font-size: 11px;
+    font-style: italic;
+    outline: none !important;
+    border: 0px none !important;
+    text-decoration: none; }
 
 .imgix-parameter a:focus {
   outline: none !important;
@@ -1204,6 +1209,50 @@
   border: 3px solid white;
   -webkit-filter: drop-shadow(0px 2px 3px black);
           filter: drop-shadow(0px 2px 3px black); }
+
+input[type=range].imgix-param {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+  input[type=range].imgix-param:focus {
+    outline: none; }
+    input[type=range].imgix-param:focus::-webkit-slider-runnable-track {
+      background: #BABABA; }
+  input[type=range].imgix-param::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 17px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #CFCFCF;
+    border-radius: 17px;
+    -webkit-box-shadow: none;
+            box-shadow: none; }
+  input[type=range].imgix-param::-moz-range-track {
+    width: 100%;
+    height: 17px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #CFCFCF;
+    border-radius: 17px;
+    box-shadow: none; }
+  input[type=range].imgix-param::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 17px;
+    width: 18px;
+    cursor: pointer;
+    width: 18px;
+    height: 17px;
+    border-radius: 17px;
+    margin-top: 0px; }
+  input[type=range].imgix-param::-moz-range-thumb {
+    -webkit-appearance: none;
+    height: 17px;
+    width: 18px;
+    cursor: pointer;
+    width: 18px;
+    height: 17px;
+    border-radius: 17px;
+    margin-top: 0px; }
 
 .ilab-crop-preview {
   overflow: hidden; }

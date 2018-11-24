@@ -5,14 +5,16 @@
         this.delegate=delegate;
         this.container=container;
         this.alignmentParam=container.find('.imgix-param');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
 
         var alignmentRef=this;
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             alignmentRef.reset();
+            return false;
         });
 
         container.find('.imgix-alignment-button').on('click',function(){

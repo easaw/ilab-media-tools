@@ -10,7 +10,7 @@
         this.container=container;
 
         this.type=container.data('param-type');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
         this.param=container.data('param');
         this.defaultValue=container.data('default-value');
 
@@ -63,8 +63,10 @@
             colorPickerRef.minicolor = $(this);
         });
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             colorPickerRef.reset();
+            return false;
         });
     };
 
@@ -99,10 +101,7 @@
         }
 
         this.color = val;
-        this.minicolor.minicolors('value', '#'+this.color);
-        if (this.hasOpacity) {
-            this.minicolor.minicolors('opacity', this.opacity);
-        }
+        this.minicolor.minicolors('value', {color:'#'+this.color, opacity: this.opacity });
 
         if (this.type=='blend-color') {
             this.blendSelect.val(blend);

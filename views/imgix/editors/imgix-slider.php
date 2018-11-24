@@ -8,7 +8,7 @@
         </div>
     </div>
     <input class="imgix-param" type="range" min="{{$paramInfo['min']}}" max="{{$paramInfo['max']}}" step="{{empty($paramInfo['inc']) ? '1' : $paramInfo['inc']}}" value="{{imgixCurrentValue($param,$settings,$paramInfo['default'])}}" />
-    <a class="imgix-param-reset" href="#">{{__('Reset')}}</a>
+    <div class="imgix-param-reset"><a href="#">{{__('Reset')}}</a></div>
     {% if (!empty($paramInfo['hidden'])) %}
     <div class="imgix-param-imagick-warning">
         <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
