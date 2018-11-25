@@ -16,6 +16,7 @@ namespace ILAB\MediaCloud\Tools\Glide;
 use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
 use ILAB\MediaCloud\Tools\DynamicImages\WordPressUploadsAdapter;
 use ILAB\MediaCloud\Tools\Glide\Server\GlideServerFactory;
+use ILAB\MediaCloud\Tools\Glide\Server\WordpressResponseFactory;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use League\Flysystem\Adapter\Local;
@@ -119,10 +120,11 @@ class GlideTool extends DynamicImagesToolBase {
             'watermarks' => $source,
             'driver' => ($imagickInstalled) ? 'imagick' : 'gd',
             'max_image_size' => $this->maxWidth * $this->maxWidth,
-            'base_url' => $this->basePath
+            'base_url' => $this->basePath,
+            'response' => new WordpressResponseFactory()
         ]);
 
-        $server->outputImage($file, $_GET);
+        $server->getImageResponse($file, $_GET);
     }
 
     //endregion

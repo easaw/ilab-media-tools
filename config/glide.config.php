@@ -77,6 +77,14 @@ return [
                         "type" => "text-field",
                         "default" => "/__images/"
                     ],
+                    "ilab-media-glide-cache-ttl" => [
+                        "title" => "Cache TTL",
+                        "description" => "The number of minutes to cache the rendered image in the user's browser.  Use <code>0</code> to disable client side caching.  Default is <code>525600</code> minutes (1 year).",
+                        "type" => "number",
+                        "default" => 525600,
+                        "max" => 525600,
+                        "min" => 0
+                    ],
                 ]
             ],
             "ilab-media-glide-image-settings" => [
