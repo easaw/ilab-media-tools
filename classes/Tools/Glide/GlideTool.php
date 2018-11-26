@@ -111,7 +111,7 @@ class GlideTool extends DynamicImagesToolBase {
                 $source = new Filesystem(new WordPressUploadsAdapter($this->toolManager->tools['storage']->client()->adapter()));
             }
         } else {
-            $source = new Files(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads'));
+            $source = new Filesystem(new Local(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'uploads'));
         }
 
         $server = GlideServerFactory::create([
