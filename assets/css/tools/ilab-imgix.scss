@@ -57,7 +57,8 @@
 
   .imgix-param-imagick-warning {
     position: absolute;
-    left: 0px; top: 0px; right: 0px; bottom: 0px;
+    left: -10px; top: -5px; right: -10px; bottom: 0px;
+    padding: 0px 5px;
     display: flex;
     align-items: center;
     justify-content: center;

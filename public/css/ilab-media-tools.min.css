@@ -785,10 +785,11 @@
   margin-bottom: 15px; }
   .imgix-parameter .imgix-param-imagick-warning {
     position: absolute;
-    left: 0px;
-    top: 0px;
-    right: 0px;
+    left: -10px;
+    top: -5px;
+    right: -10px;
     bottom: 0px;
+    padding: 0px 5px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
