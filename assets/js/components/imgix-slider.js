@@ -6,7 +6,8 @@
         this.container=container;
         this.valueLabel=container.find('.imgix-param-title-right > h3');
         this.slider=container.find('.imgix-param');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
+        console.log(this.resetButton);
 
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
@@ -28,8 +29,10 @@
             }
         });
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             sliderRef.reset();
+            return false;
         });
 
         this.slider.on('input',function(){

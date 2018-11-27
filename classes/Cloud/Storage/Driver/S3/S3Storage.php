@@ -30,6 +30,9 @@ use ILAB_Aws\Exception\AwsException;
 use ILAB_Aws\S3\PostObjectV4;
 use ILAB_Aws\S3\S3Client;
 use ILAB_Aws\S3\S3MultiRegionClient;
+use ILAB_League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\AdapterInterface;
+use League\Flysystem\Filesystem;
 
 if(!defined('ABSPATH')) {
 	header('Location: /');
@@ -70,6 +73,9 @@ class S3Storage implements StorageInterface {
 
 	/** @var int  */
 	protected $presignedURLExpiration = 10;
+
+	/** @var null|AdapterInterface */
+	protected $adapter = null;
 
 	//endregion
 
@@ -167,8 +173,8 @@ class S3Storage implements StorageInterface {
 		return "https://console.aws.amazon.com/s3/buckets/$bucket";
 	}
 
-	public static function pathLink($bucket, $key) {
-		return "https://console.aws.amazon.com/s3/buckets/{$bucket}/{$key}/details";
+	public function pathLink($bucket, $key) {
+		return "https://console.aws.amazon.com/s3/object/{$bucket}/{$key}?region={$this->region}&tab=overview";
 	}
 	//endregion
 	
@@ -664,4 +670,15 @@ class S3Storage implements StorageInterface {
 		});
 	}
 	//endregion
+
+    //region Filesystem
+    public function adapter() {
+	    if (!empty($this->adapter)) {
+	        return $this->adapter;
+        }
+
+	    $this->adapter = new AwsS3Adapter($this->client, $this->bucket);
+	    return $this->adapter;
+    }
+    //endregion
 }

@@ -111,7 +111,7 @@ var ILabImageEdit=function($, settings){
 
         self.waitModal.removeClass('is-hidden');
 
-        self.postAjax('ilab_imgix_preview',{},function(response) {
+        self.postAjax('ilab_dynamic_images_preview',{},function(response) {
             if (response.status=='ok')
             {
                 var sameSrc = (response.src == self.previewImage.attr('src'));
@@ -213,7 +213,7 @@ var ILabImageEdit=function($, settings){
     this.apply=function(){
         self.displayStatus('Saving adjustments ...');
 
-        self.postAjax('ilab_imgix_save', {}, function(response) {
+        self.postAjax('ilab_dynamic_images_save', {}, function(response) {
             self.hideStatus();
             ILabModal.makeClean();
 

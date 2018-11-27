@@ -38,6 +38,7 @@
     },
     "ilab-media-tools.js": {
       "files": [
+        "node_modules/@claviska/jquery-minicolors/jquery.minicolors.js",
         "vendor/cropper/dist/cropper.js",
         "js/ilab-crop.js",
         "js/components/imgix-component.js",

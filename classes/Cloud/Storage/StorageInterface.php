@@ -17,6 +17,7 @@
 namespace ILAB\MediaCloud\Cloud\Storage;
 
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
+use League\Flysystem\AdapterInterface;
 
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
@@ -77,7 +78,7 @@ interface StorageInterface {
 	 *
 	 * @return string|null
 	 */
-	public static function pathLink($bucket, $key);
+	public function pathLink($bucket, $key);
 
     /**
      * Returns true/false if this storage is using signed URLs.
@@ -204,4 +205,9 @@ interface StorageInterface {
 	 * Enqueue any scripts need for direct uploading.
 	 */
 	public function enqueueUploaderScripts();
+
+    /**
+     * @return AdapterInterface
+     */
+	public function adapter();
 }

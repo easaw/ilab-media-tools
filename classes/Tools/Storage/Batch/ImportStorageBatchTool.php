@@ -48,7 +48,7 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function batchProcessClassName() {
-        return "\\ILAB\\MediaCloud\\Tasks\\StorageImportProcess";
+        return "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\ImportStorageBatchProcess";
     }
 
     /**
@@ -139,6 +139,16 @@ class ImportStorageBatchTool extends BatchTool {
         $this->owner->processImport(0, $pid, null);
 
         json_response(["status" => 'ok']);
+    }
+    //endregion
+
+    //region BatchToolInterface
+    public function toolInfo() {
+        return [
+          'title' => 'Storage Importer',
+          'link' => admin_url('admin.php?page=media-tools-s3-importer'),
+          'description' => 'Uploads your existing media library to Amazon S3, Google Cloud Storage or any other storage provider that you have configured.'
+        ];
     }
     //endregion
 }

@@ -111,7 +111,7 @@ class GoogleStorage implements StorageInterface {
 		return "https://console.cloud.google.com/storage/browser/$bucket";
 	}
 
-	public static function pathLink($bucket, $key) {
+	public function pathLink($bucket, $key) {
 		$keyParts = explode('/', $key);
 		array_pop($keyParts);
 		$key = implode('/', $keyParts).'/';

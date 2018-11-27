@@ -48,7 +48,7 @@ class WasabiStorage extends OtherS3Storage {
 		return "https://console.wasabisys.com/#/file_manager/$bucket";
 	}
 
-	public static function pathLink($bucket, $key) {
+	public function pathLink($bucket, $key) {
 		$keyParts = explode('/', $key);
 		array_pop($keyParts);
 		$key = implode('/', $keyParts).'/';

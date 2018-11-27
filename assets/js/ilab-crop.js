@@ -9,56 +9,32 @@ var ILabCrop=function($,settings){
     this.cropperData={};
     this.modal_id=settings.modal_id;
 
-    var cropRef=this;
-    var resizeTimerId;
-    var isResizing=false;
-
     this.modalContainer.find('.ilabm-editor-tabs').ilabTabs({
         currentValue: this.settings.size,
         tabSelected:function(tab){
             ILabModal.loadURL(tab.data('url'),true,function(response){
-                cropRef.bindUI(response);
-            });
-        }
+                this.bindUI(response);
+            }.bind(this));
+        }.bind(this)
     });
-
-    $(window).resize(function() {
-        if (!isResizing)
-        {
-            data=cropRef.cropper.cropper('getData');
-            cropRef.settings.prev_crop_x=data.x;
-            cropRef.settings.prev_crop_y=data.y;
-            cropRef.settings.prev_crop_width=data.width;
-            cropRef.settings.prev_crop_height=data.height;
-        }
-
-        isResizing=true;
-        cropRef.updatePreviewWidth();
-        clearTimeout(resizeTimerId);
-        resizeTimerId = setTimeout(cropRef._resized, 250);
-    });
-
 
     this.modalContainer.find('.ilabc-button-crop').on('click',function(e){
         e.preventDefault();
-        cropRef.crop();
+        this.crop();
         return false;
-    });
-
-    this._resized=function(){
-        cropRef.bindUI(cropRef.settings);
-        isResizing=false;
-    };
+    }.bind(this));
 
     this.updatePreviewWidth=function() {
         var width =  this.modalContainer.find('.ilab-crop-preview-title').width();
         this.modalContainer.find('.ilab-crop-preview').css({
-            'height' : (width / cropRef.settings.aspect_ratio) + 'px',
+            'height' : (width / this.settings.aspect_ratio) + 'px',
             'width' : width + 'px'
         });
-    };
+    }.bind(this);
 
     this.bindUI=function(settings){
+        console.log(settings);
+
         this.settings=settings;
 
         this.cropper.cropper('destroy');
@@ -88,32 +64,33 @@ var ILabCrop=function($,settings){
             }
 
             this.cropper.on('built.cropper',function(){
-                cropRef.updatePreviewWidth();
-            }).on('crop.cropper',function(e){
+                this.updatePreviewWidth();
+            }.bind(this)).on('crop.cropper',function(e){
                 //console.log(e.x, e.y, e.width, e.height);
             }).cropper({
                 viewMode: 1,
+                dragMode: 'none',
                 aspectRatio : settings.aspect_ratio,
                 minWidth : settings.min_width,
                 minHeight : settings.min_height,
                 modal : true,
-                zoomable: false,
-                mouseWheelZoom: false,
-                dragCrop: false,
-                autoCropArea: 1,
                 movable: false,
+                cropBoxMovable: true,
+                zoomable: false,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                autoCropArea: 1,
                 data : this.cropperData,
                 checkImageOrigin: false,
                 checkCrossOrigin: false,
                 responsive: true,
+                restore: true,
                 preview: '#ilabm-container-'+this.modal_id+' .ilab-crop-preview'
             });
         }
-    };
+    }.bind(this);
 
     this.crop=function(){
-        var cropRef=this;
-
         this.displayStatus('Saving crop ...');
 
         var data = this.cropper.cropper('getData');
@@ -122,24 +99,24 @@ var ILabCrop=function($,settings){
         data['size'] = this.settings.size;
         jQuery.post(ajaxurl, data, function(response) {
             if (response.status=='ok') {
-                cropRef.modalContainer.find('.ilab-current-crop-img').one('load',function(){
-                   cropRef.hideStatus();
-                });
-                cropRef.modalContainer.find('.ilab-current-crop-img').attr('src', response.src);
+                this.modalContainer.find('.ilab-current-crop-img').one('load',function(){
+                   this.hideStatus();
+                }.bind(this));
+                this.modalContainer.find('.ilab-current-crop-img').attr('src', response.src);
             }
             else
-                cropRef.hideStatus();
-        });
-    };
+                this.hideStatus();
+        }.bind(this));
+    }.bind(this);
 
     this.displayStatus=function(message){
-        cropRef.modalContainer.find('.ilabm-status-label').text(message);
-        cropRef.modalContainer.find('.ilabm-status-container').removeClass('is-hidden');
-    };
+        this.modalContainer.find('.ilabm-status-label').text(message);
+        this.modalContainer.find('.ilabm-status-container').removeClass('is-hidden');
+    }.bind(this);
 
     this.hideStatus=function(){
-        cropRef.modalContainer.find('.ilabm-status-container').addClass('is-hidden');
-    };
+        this.modalContainer.find('.ilabm-status-container').addClass('is-hidden');
+    }.bind(this);
 
     this.bindUI(settings);
 };

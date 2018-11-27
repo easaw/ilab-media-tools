@@ -26,6 +26,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 class ToolsManager
 {
 	//region Class variables
+    private static $registeredTools = [];
     private static $instance;
     public $tools;
     //endregion
@@ -33,41 +34,54 @@ class ToolsManager
 	//region Constructor
     public function __construct()
     {
-        $toolList=include ILAB_CONFIG_DIR.'/tools.config.php';
-
 	    $this->tools=[];
 
-        foreach($toolList as $toolName => $toolInfo) {
+        foreach(static::$registeredTools as $toolName => $toolInfo) {
             $className=$toolInfo['class'];
             $this->tools[$toolName]=new $className($toolName,$toolInfo,$this);
         }
 
-        $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', $toolList['troubleshooting'], $this);
+        if (isset(static::$registeredTools['troubleshooting'])) {
+            $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
+        }
 
         foreach($this->tools as $key => $tool) {
             $tool->setup();
         }
 
         add_action('admin_menu', function() {
-            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-tools-top', [$this,'renderSettings'],'dashicons-cloud');
-            add_submenu_page( 'media-tools-top', 'Media Cloud Tools', 'Enable/Disable Tools', 'manage_options', 'media-tools-top', [$this,'renderSettings']);
+            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-cloud-top', [$this,'renderSettings'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTk4NCAxMTUycTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNWgtMTA4OHEtMTg1IDAtMzE2LjUtMTMxLjV0LTEzMS41LTMxNi41cTAtMTMyIDcxLTI0MS41dDE4Ny0xNjMuNXEtMi0yOC0yLTQzIDAtMjEyIDE1MC0zNjJ0MzYyLTE1MHExNTggMCAyODYuNSA4OHQxODcuNSAyMzBxNzAtNjIgMTY2LTYyIDEwNiAwIDE4MSA3NXQ3NSAxODFxMCA3NS00MSAxMzggMTI5IDMwIDIxMyAxMzQuNXQ4NCAyMzkuNXoiLz48L3N2Zz4=');
+            add_submenu_page( 'media-cloud-top', 'Media Cloud Features', 'Enable/Disable Features', 'manage_options', 'media-cloud-top', [$this,'renderSettings']);
 
-            add_settings_section('ilab-media-tools','Enabled Tools',[$this,'renderSettingsSection'],'media-tools-top');
 
+
+            add_settings_section('ilab-media-tools','Enabled Features',[$this,'renderSettingsSection'],'media-cloud-top');
+
+            $hasTools = false;
             foreach($this->tools as $key => $tool)
             {
                 register_setting('ilab-media-tools',"ilab-media-tool-enabled-$key");
 
                 if ($key != 'troubleshooting') {
-                    add_settings_field("ilab-media-tool-enabled-$key",$tool->toolInfo['title'],[$this,'renderToolSettings'],'media-tools-top','ilab-media-tools',['key'=>$key]);
+                    add_settings_field("ilab-media-tool-enabled-$key",$tool->toolInfo['title'],[$this,'renderToolSettings'],'media-cloud-top','ilab-media-tools',['key'=>$key]);
                 }
 
-
-                $tool->registerMenu('media-tools-top');
+                $tool->registerMenu('media-cloud-top');
                 $tool->registerSettings();
+
+                if (!$hasTools && $tool->hasBatchTools()) {
+                    $hasTools = true;
+                }
             }
 
-	        add_submenu_page( 'media-tools-top', 'Plugin Support', 'Help / Support', 'manage_options', 'media-tools-support', [$this,'renderSupport']);
+	        add_submenu_page( 'media-cloud-top', 'Plugin Support', 'Help / Support', 'manage_options', 'media-tools-support', [$this,'renderSupport']);
+
+            if ($hasTools) {
+                add_menu_page('Tools', 'Media Tools', 'manage_options', 'media-tools-top', [$this,'renderTools'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTM0NCA4NjRxMC0xNC05LTIzbC0zNTItMzUycS05LTktMjMtOXQtMjMgOWwtMzUxIDM1MXEtMTAgMTItMTAgMjQgMCAxNCA5IDIzdDIzIDloMjI0djM1MnEwIDEzIDkuNSAyMi41dDIyLjUgOS41aDE5MnExMyAwIDIyLjUtOS41dDkuNS0yMi41di0zNTJoMjI0cTEzIDAgMjIuNS05LjV0OS41LTIyLjV6bTY0MCAyODhxMCAxNTktMTEyLjUgMjcxLjV0LTI3MS41IDExMi41aC0xMDg4cS0xODUgMC0zMTYuNS0xMzEuNXQtMTMxLjUtMzE2LjVxMC0xMzAgNzAtMjQwdDE4OC0xNjVxLTItMzAtMi00MyAwLTIxMiAxNTAtMzYydDM2Mi0xNTBxMTU2IDAgMjg1LjUgODd0MTg4LjUgMjMxcTcxLTYyIDE2Ni02MiAxMDYgMCAxODEgNzV0NzUgMTgxcTAgNzYtNDEgMTM4IDEzMCAzMSAyMTMuNSAxMzUuNXQ4My41IDIzOC41eiIvPjwvc3ZnPg==');
+                foreach($this->tools as $key => $tool) {
+                    $tool->registerToolMenu('media-tools-top');
+                }
+            }
         });
 
 	    add_filter('plugin_action_links_'.ILAB_PLUGIN_NAME, function($links) {
@@ -106,6 +120,16 @@ class ToolsManager
 
         return self::$instance;
     }
+
+    /**
+     * Registers a tool
+     *
+     * @param $identifier string The identifier of the tool
+     * @param $config array The configuration for the tool
+     */
+    public static function registerTool($identifier, $config) {
+        static::$registeredTools[$identifier] = $config;
+    }
     //endregion
 
 	//region Plugin installation
@@ -139,6 +163,18 @@ class ToolsManager
 
         return false;
     }
+    /**
+     * Determines if a tool is enabled or not via environment settings
+     *
+     * @param $toolName
+     * @return bool
+     */
+    public function toolEnvEnabled($toolName) {
+        if (isset($this->tools[$toolName]))
+            return $this->tools[$toolName]->envEnabled();
+
+        return false;
+    }
 	//endregion
 
 
@@ -148,9 +184,29 @@ class ToolsManager
      */
     public function renderSettings() {
         echo View::render_view( 'base/ilab-settings.php', [
-            'title'=>'Enabled Tools',
+            'title'=>'Enabled Features',
             'group'=>'ilab-media-tools',
-            'page'=>'media-tools-top'
+            'page'=>'media-cloud-top'
+        ]);
+    }
+
+    /**
+     * Render the options page
+     */
+    public function renderTools() {
+        $toolInfo = [];
+
+        foreach($this->tools as $tool) {
+            if ($tool->enabled()) {
+                $toolInfo = array_merge($toolInfo, $tool->batchToolInfo());
+            }
+        }
+
+        echo View::render_view( 'base/ilab-tools.php', [
+            'title'=>'Media Cloud Tools',
+            'group'=>'ilab-media-tools',
+            'page'=>'media-tools-top',
+            'tools' => $toolInfo
         ]);
     }
 

@@ -15,10 +15,8 @@ namespace ILAB\MediaCloud\Tools\Rekognition;
 
 use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Tasks\BatchManager;
+use ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess;
 use ILAB\MediaCloud\Tools\ToolBase;
-use function ILAB\MediaCloud\Utilities\json_response;
-use ILAB\MediaCloud\Utilities\View;
-use ILAB\MediaCloud\Tasks\RekognizerProcess;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB_Aws\Exception\AwsException;
 use ILAB_Aws\Rekognition\RekognitionClient;
@@ -76,7 +74,7 @@ class RekognitionTool extends ToolBase {
 	public function __construct($toolName, $toolInfo, $toolManager) {
 		parent::__construct($toolName, $toolInfo, $toolManager);
 
-		new RekognizerProcess();
+		new ImportRekognitionBatchProcess();
 
 		$this->key = $this->getOption('ilab-media-s3-access-key', 'ILAB_AWS_S3_ACCESS_KEY');
 		$this->secret = $this->getOption('ilab-media-s3-secret', 'ILAB_AWS_S3_ACCESS_SECRET');

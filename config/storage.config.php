@@ -39,7 +39,7 @@ return [
     ],
     "batchTools" => [
         "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\ImportStorageBatchTool",
-        "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\ThumbnailBatchTool"
+        "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\RegenerateThumbnailBatchTool"
     ],
 	"settings" => [
 		"title" => "Storage Settings",
@@ -293,7 +293,7 @@ return [
                     ],
                     "ilab-media-s3-batch-background-processing" => [
                         "title" => "Process In Background",
-                        "description" => "When this is selected, batch processing happens asynchronously in the background on your WordPress server.  However, some server configuration and hosting setups do not support this type of background processing.  If you set this to false/off, the import is processed in your browser via ajax.  This client-side ajax method is very slow and requires that the importer page be open during the entire import process.",
+                        "description" => "When this is selected, batch processing happens asynchronously in the background on your WordPress server.  However, some server configuration and hosting setups do not support this type of background processing.  If you set this to false/off, the import is processed in your browser via ajax.  This client-side ajax method is can be slower (though sometimes it can be faster) and requires that the importer page be open during the entire import process.",
                         "type" => "checkbox",
                         "default" => true
                     ],

@@ -1,1 +1,381 @@
-var ilabAttachmentInfo=function(t,a,e){var i=this;this.info=t(a.attachmentTemplate(e)),this.data=e,this.attachmentTitle=this.info.find('input[name="attachment-title"]'),this.attachmentCaption=this.info.find('textarea[name="attachment-caption"]'),this.attachmentAlt=this.info.find('input[name="attachment-alt"]'),this.attachmentDescription=this.info.find('textarea[name="attachment-description"]'),this.attachmentAlign=this.info.find('select[name="attachment-align"]'),this.attachmentLinkURL=this.info.find('input[name="attachment-link-url"]'),this.attachmentSize=this.info.find('select[name="attachment-size"]'),this.attachmentLinkType=this.info.find('select[name="attachment-link-type"]'),this.saveToken=null;var n=function(){var a={action:"save-attachment",id:i.data.id,nonce:i.data.nonces.update,post_id:window.parent.wp.media.model.settings.post.id,"changes[title]":i.attachmentTitle.val(),"changes[caption]":i.attachmentCaption.val(),"changes[alt]":i.attachmentAlt.val(),"changes[description]":i.attachmentDescription.val()};t.post(ajaxurl,a,function(t){})};this.save=function(){clearTimeout(i.saveToken),i.saveToken=setTimeout(n,1e3)};var s=function(t){i.save()};this.attachmentTitle.on("change",s),this.attachmentCaption.on("change",s),this.attachmentAlt.on("change",s),this.attachmentDescription.on("change",s),this.attachmentLinkType.on("change",function(){var t=i.attachmentLinkType.val();"none"==t?(i.attachmentLinkURL.css({display:"display"}),i.attachmentLinkURL.val("")):"file"==t?(i.attachmentLinkURL.prop("readonly","readonly"),i.attachmentLinkURL.css({display:""}),i.attachmentLinkURL.val(i.data.url)):"post"==t?(i.attachmentLinkURL.prop("readonly","readonly"),i.attachmentLinkURL.css({display:""}),i.attachmentLinkURL.val(i.data.link)):"custom"==t&&(i.attachmentLinkURL.prop("readonly",null),i.attachmentLinkURL.css({display:""}),i.attachmentLinkURL.val(""))}),this.insert=function(){var a={action:"send-attachment-to-editor","attachment[id]":i.data.id,nonce:window.parent.wp.media.view.settings.nonce.sendToEditor,post_id:window.parent.wp.media.model.settings.post.id,"attachment[post_content]":i.attachmentDescription.val(),"attachment[post_excerpt]":i.attachmentCaption.val(),"attachment[image_alt]":i.attachmentAlt.val(),"attachment[image-size]":i.attachmentSize.val(),"attachment[align]":i.attachmentAlign.val(),"attachment[url]":i.attachmentLinkURL.val(),html:""};t.post(ajaxurl,a,function(t){t.hasOwnProperty("data")&&window.parent.send_to_editor(t.data)})},this.attachmentLinkURL.css({display:"none"}),a.attachmentContainer.empty(),a.attachmentContainer.append(this.info)},ilabMediaUploadItem=function(t,a,e){var i=this;this.cell=t(a.uploadItemTemplate()),this.background=this.cell.find(".ilab-upload-item-background"),this.status=this.cell.find(".ilab-upload-status"),this.progress=this.cell.find(".ilab-upload-progress"),this.progressTrack=this.cell.find(".ilab-upload-progress-track"),this.status.text("Waiting ..."),this.progressTrack.css({width:"0%"}),this.cell.css({opacity:0}),this.cell.addClass("no-mouse"),this.state="waiting",this.postId=null,this.loader=this.cell.find(".ilab-loader-container"),0==e.type.indexOf("image/")&&e.size<15728640?this.background.css({opacity:.33,"background-image":"url("+URL.createObjectURL(e)+")"}):0==e.type.indexOf("image/")?this.cell.addClass("ilab-upload-cell-image"):0==e.type.indexOf("video/")?this.cell.addClass("ilab-upload-cell-video"):"application/x-photoshop"==e.type?this.cell.addClass("ilab-upload-cell-image"):this.cell.addClass("ilab-upload-cell-doc"),this.deselect=function(){this.cell.removeClass("ilab-upload-selected")},this.updateProgress=function(t){this.progressTrack.css({width:Math.floor(100*t)+"%"})},this.itemUploaded=function(t,e){if(t){if(this.progress.css({display:"none"}),this.status.css({display:"none"}),this.background.css({opacity:""}),this.state="ready",this.postId=e.data.id,e.data.thumb){this.loader.css({opacity:1});var i=new Image;i.onload=function(){this.background.css({"background-image":"url("+e.data.thumb+")"}),this.loader.css({opacity:0})}.bind(this),i.src=e.data.thumb}this.cell.removeClass("no-mouse")}else this.progress.css({display:"none"}),this.status.text("Error."),this.cell.addClass("upload-error");a.uploadFinished(this)},this.itemUploadError=function(){i.progress.css({display:"none"}),i.status.text("Error uploading."),a.uploadFinished(i)},this.updateStatusText=function(t){this.status.text("Uploading ...")},this.startUpload=function(){new this.storageUploader(t,this,e).start()},a.uploadTarget.append(this.cell),setTimeout(function(){i.cell.css({opacity:""})},1e3/30),this.cell.on("click",function(t){"ready"==i.state&&(a.settings.insertMode?(i.cell.addClass("ilab-upload-selected"),a.uploadSelected(i)):window.open("post.php?post="+i.postId+"&action=edit","_blank").focus());return t.preventDefault(),!1})},ilabMediaUploader=function(t,a){var e=this;this.insertButton=t("#ilab-insert-button"),this.settings=a,this.uploadTarget=t("#ilab-video-upload-target"),this.attachmentContainer=t("#ilab-attachment-info"),this.uploadDirections=this.uploadTarget.find(".ilab-upload-directions"),this.uploadItemTemplate=wp.template("ilab-upload-cell"),this.attachmentTemplate=wp.template("ilab-attachment-info"),this.hiddenFileInput=t('<input type="file" style="visibility:hidden" multiple="multiple">'),this.waitingQueue=[],this.uploadingQueue=[],this.watchToken=null,this.currentSelection=null,this.attachmentInfo=null,this.watchQueue=function(){if(e.uploadingQueue.length<5&&e.waitingQueue.length>0)for(var t=5-e.uploadingQueue.length,a=0;a<t;a++)if(e.waitingQueue.length>0){var i=e.waitingQueue.shift();e.uploadingQueue.push(i),i.startUpload()}e.watchToken=setTimeout(e.watchQueue,500)},this.uploadSelected=function(a){if(e.currentSelection!=a){e.insertButton.prop("disabled",!0),e.currentSelection&&e.currentSelection.deselect(),e.currentSelection=a;var i={action:"ilab_upload_attachment_info",postId:a.postId};t.post(ajaxurl,i,function(a){t("body").addClass("ilab-item-selected"),e.attachmentInfo=new ilabAttachmentInfo(t,e,a),e.insertButton.prop("disabled",!1)})}},this.uploadFinished=function(t){var a=e.uploadingQueue.indexOf(t);a>-1&&e.uploadingQueue.splice(a,1),clearTimeout(e.watchToken),e.watchQueue()},this.addFile=function(i){if(""==i.type)return!1;var n=i.type;if("application/x-photoshop"==n&&(n="image/psd"),-1==a.allowedMimes.indexOf(n))return!1;var s=n.split("/"),o=s[0],l=s[1];if("image"==o){if(!a.imgixEnabled)return!1;if(-1==["jpeg","gif","png"].indexOf(l)){if(!a.extrasEnabled)return!1;if(-1==["psd","tiff","bmp"].indexOf(l))return!1}}else if("video"==o){if(!a.videoEnabled)return!1}else if(!a.docsEnabled)return!1;e.waitingQueue.push(new ilabMediaUploadItem(t,e,i))},this.uploadTarget.on("dragenter dragover",function(t){e.uploadTarget.addClass("drag-inside"),t.stopPropagation(),t.preventDefault()}),this.uploadTarget.on("dragleave drageexit",function(t){e.uploadTarget.removeClass("drag-inside"),t.stopPropagation(),t.preventDefault()}),this.uploadTarget.on("drop",function(t){e.uploadTarget.removeClass("drag-inside"),e.uploadDirections.css({display:"none"}),t.preventDefault();var a=t.originalEvent.dataTransfer.files;_.each(a,e.addFile)}),this.uploadTarget.on("click",function(t){e.hiddenFileInput.click()}),this.hiddenFileInput.on("change",function(t){e.uploadDirections.css({display:"none"});for(var a=0;a<this.files.length;a++)e.addFile(this.files[a])}),t("#ilab-open-editor").on("click",function(t){return wp.media({frame:"select"}).open(),t.preventDefault(),!1}),this.insertButton.on("click",function(t){return e.attachmentInfo&&e.attachmentInfo.insert(),t.preventDefault(),!1}),a.insertMode&&t("body").addClass("ilab-upload-insert-mode"),this.watchToken=setTimeout(this.watchQueue,500)};
+var ilabAttachmentInfo = function($, uploader, attachmentInfo) {
+    var self = this;
+
+    this.info = $(uploader.attachmentTemplate(attachmentInfo));
+    this.data = attachmentInfo;
+
+    this.attachmentTitle = this.info.find('input[name="attachment-title"]');
+    this.attachmentCaption = this.info.find('textarea[name="attachment-caption"]');
+    this.attachmentAlt = this.info.find('input[name="attachment-alt"]');
+    this.attachmentDescription = this.info.find('textarea[name="attachment-description"]');
+    this.attachmentAlign = this.info.find('select[name="attachment-align"]');
+    this.attachmentLinkURL = this.info.find('input[name="attachment-link-url"]');
+    this.attachmentSize = this.info.find('select[name="attachment-size"]');
+    this.attachmentLinkType = this.info.find('select[name="attachment-link-type"]');
+
+    this.saveToken = null;
+
+    var doSave = function() {
+        var data = {
+            "action": "save-attachment",
+            "id": self.data.id,
+            "nonce": self.data.nonces.update,
+            post_id: window.parent.wp.media.model.settings.post.id,
+            "changes[title]": self.attachmentTitle.val(),
+            "changes[caption]": self.attachmentCaption.val(),
+            "changes[alt]": self.attachmentAlt.val(),
+            "changes[description]": self.attachmentDescription.val()
+        };
+
+        $.post(ajaxurl, data, function(response){
+        });
+    };
+
+    this.save = function() {
+        clearTimeout(self.saveToken);
+        self.saveToken=setTimeout(doSave, 1000);
+    };
+
+    var handleChange = function(e) {
+        self.save();
+    };
+
+    this.attachmentTitle.on('change', handleChange);
+    this.attachmentCaption.on('change', handleChange);
+    this.attachmentAlt.on('change', handleChange);
+    this.attachmentDescription.on('change', handleChange);
+
+    this.attachmentLinkType.on('change', function(){
+        var v = self.attachmentLinkType.val();
+        if (v == 'none') {
+            self.attachmentLinkURL.css({"display": "display"});
+            self.attachmentLinkURL.val('');
+        } else if (v == 'file') {
+            self.attachmentLinkURL.prop("readonly", "readonly");
+            self.attachmentLinkURL.css({"display": ""});
+            self.attachmentLinkURL.val(self.data.url);
+        } else if (v == 'post') {
+            self.attachmentLinkURL.prop("readonly", "readonly");
+            self.attachmentLinkURL.css({"display": ""});
+            self.attachmentLinkURL.val(self.data.link);
+        } else if (v == 'custom') {
+            self.attachmentLinkURL.prop("readonly", null);
+            self.attachmentLinkURL.css({"display": ""});
+            self.attachmentLinkURL.val("");
+        }
+    });
+
+    this.insert = function() {
+        var data = {
+            "action": "send-attachment-to-editor",
+            "attachment[id]": self.data.id,
+            "nonce": window.parent.wp.media.view.settings.nonce.sendToEditor,
+            post_id: window.parent.wp.media.model.settings.post.id,
+            "attachment[post_content]": self.attachmentDescription.val(),
+            "attachment[post_excerpt]": self.attachmentCaption.val(),
+            "attachment[image_alt]": self.attachmentAlt.val(),
+            "attachment[image-size]": self.attachmentSize.val(),
+            "attachment[align]": self.attachmentAlign.val(),
+            "attachment[url]": self.attachmentLinkURL.val(),
+            "html": ""
+        };
+
+        $.post(ajaxurl, data, function(response){
+            if (response.hasOwnProperty('data')) {
+                window.parent.send_to_editor(response.data);
+            }
+        });
+    };
+
+    this.attachmentLinkURL.css({"display": "none"});
+
+    uploader.attachmentContainer.empty();
+    uploader.attachmentContainer.append(this.info);
+};
+
+
+var ilabMediaUploadItem = function($, uploader, file) {
+    var self = this;
+
+    this.cell = $(uploader.uploadItemTemplate());
+    this.background = this.cell.find('.ilab-upload-item-background');
+    this.status = this.cell.find('.ilab-upload-status');
+    this.progress = this.cell.find('.ilab-upload-progress');
+    this.progressTrack = this.cell.find('.ilab-upload-progress-track');
+
+    this.status.text('Waiting ...');
+    this.progressTrack.css({width: '0%'});
+    this.cell.css({'opacity': 0});
+    this.cell.addClass('no-mouse');
+    
+    this.state = 'waiting';
+    this.postId = null;
+
+    this.loader = this.cell.find('.ilab-loader-container');
+
+
+    if ((file.type.indexOf('image/')==0) && (file.size < (15 * 1024 * 1024))) {
+        this.background.css({opacity: 0.33, 'background-image': 'url('+URL.createObjectURL(file)+')'});
+    } else {
+        if (file.type.indexOf('image/')==0) {
+            this.cell.addClass('ilab-upload-cell-image');
+        } else if (file.type.indexOf('video/')==0) {
+            this.cell.addClass('ilab-upload-cell-video');
+        } else {
+            if (file.type == 'application/x-photoshop') {
+                this.cell.addClass('ilab-upload-cell-image');
+            } else {
+                this.cell.addClass('ilab-upload-cell-doc');
+            }
+        }
+    }
+
+    this.deselect = function() {
+        this.cell.removeClass('ilab-upload-selected');
+    };
+
+    this.updateProgress = function(amount) {
+        this.progressTrack.css({'width': (Math.floor(amount * 100) + '%')});
+    };
+
+    this.itemUploaded = function(success, importResponse) {
+        if (success) {
+            this.progress.css({'display': 'none'});
+            this.status.css({'display': 'none'});
+            this.background.css({'opacity':''});
+
+            this.state = 'ready';
+            this.postId = importResponse.data.id;
+            if (importResponse.data.thumb) {
+                this.loader.css({"opacity": 1});
+                var image = new Image();
+                image.onload=function() {
+                    this.background.css({'background-image': 'url('+importResponse.data.thumb+')'});
+                    this.loader.css({"opacity": 0});
+                }.bind(this);
+
+                image.src = importResponse.data.thumb;
+            }
+
+            this.cell.removeClass('no-mouse');
+        } else {
+            this.progress.css({'display': 'none'});
+            this.status.text("Error.");
+            this.cell.addClass('upload-error');
+        }
+
+        uploader.uploadFinished(this);
+    };
+
+    this.itemUploadError = function() {
+        self.progress.css({'display': 'none'});
+        self.status.text('Error uploading.');
+
+        uploader.uploadFinished(self);
+    };
+
+    this.updateStatusText = function(text) {
+        this.status.text('Uploading ...');
+    };
+
+    this.startUpload = function() {
+        var uploader = new this.storageUploader($, this, file);
+        uploader.start();
+    };
+
+
+
+    uploader.uploadTarget.append(this.cell);
+    setTimeout(function(){
+        self.cell.css({'opacity': ''});
+    }, 1000/30);
+
+    this.cell.on('click',function(e){
+        if (self.state == 'ready') {
+            if (uploader.settings.insertMode) {
+                self.cell.addClass('ilab-upload-selected');
+                uploader.uploadSelected(self);
+            } else {
+                var win = window.open('post.php?post='+self.postId+'&action=edit', '_blank');
+                win.focus();
+            }
+        }
+
+        e.preventDefault();
+        return false;
+    });
+
+};
+
+var ilabMediaUploader = function($, settings) {
+    var self = this;
+
+    this.insertButton = $('#ilab-insert-button');
+    this.settings = settings;
+    this.uploadTarget = $('#ilab-video-upload-target');
+    this.attachmentContainer = $('#ilab-attachment-info');
+    this.uploadDirections = this.uploadTarget.find('.ilab-upload-directions');
+    this.uploadItemTemplate = wp.template('ilab-upload-cell');
+    this.attachmentTemplate = wp.template('ilab-attachment-info');
+    this.hiddenFileInput = $('<input type="file" style="visibility:hidden" multiple="multiple">');
+
+    this.waitingQueue = [];
+    this.uploadingQueue = [];
+
+    this.watchToken = null;
+
+    this.currentSelection = null;
+    this.attachmentInfo = null;
+
+    this.watchQueue = function() {
+        if ((self.uploadingQueue.length < 5) && (self.waitingQueue.length>0)) {
+            var currentQ = 5 - self.uploadingQueue.length;
+            for(var i=0; i<currentQ; i++) {
+                if (self.waitingQueue.length > 0) {
+                    var up = self.waitingQueue.shift();
+
+                    self.uploadingQueue.push(up);
+                    up.startUpload();
+                }
+            }
+        }
+
+        self.watchToken = setTimeout(self.watchQueue, 500);
+    };
+
+    this.uploadSelected = function(upload) {
+        if (self.currentSelection == upload) {
+            return;
+        }
+
+        self.insertButton.prop('disabled', true);
+        if (self.currentSelection) {
+            self.currentSelection.deselect();
+        }
+
+        self.currentSelection = upload;
+
+        var data = {
+            "action": "ilab_upload_attachment_info",
+            "postId": upload.postId
+        };
+
+        $.post(ajaxurl, data, function(response){
+            $('body').addClass('ilab-item-selected');
+            self.attachmentInfo = new ilabAttachmentInfo($, self, response);
+            self.insertButton.prop('disabled', false);
+        });
+    };
+
+    this.uploadFinished = function(upload) {
+        var idx = self.uploadingQueue.indexOf(upload);
+        if (idx > -1) {
+            self.uploadingQueue.splice(idx, 1);
+        }
+
+        clearTimeout(self.watchToken);
+        self.watchQueue();
+    };
+
+    this.addFile = function(file) {
+        if (file.type=='') {
+            return false;
+        }
+
+        var mimeType = file.type;
+
+
+        if (mimeType == 'application/x-photoshop') {
+            mimeType = 'image/psd';
+        }
+
+        if (settings.allowedMimes.indexOf(mimeType) == -1) {
+            return false;
+        }
+
+        var mimeTypeParts = mimeType.split('/');
+        var type = mimeTypeParts[0];
+        var subType = mimeTypeParts[1];
+
+        if (type == 'image') {
+            if (!settings.imgixEnabled) {
+                return false;
+            }
+
+            if (['jpeg','gif','png'].indexOf(subType) == -1) {
+                if (!settings.extrasEnabled) {
+                    return false;
+                }
+
+                if (['psd','tiff','bmp'].indexOf(subType) == -1) {
+                    return false;
+                }
+            }
+        } else if (type == 'video') {
+            if (!settings.videoEnabled) {
+                return false;
+            }
+        } else {
+            if (!settings.docsEnabled) {
+                return false;
+            }
+        }
+
+        self.waitingQueue.push(new ilabMediaUploadItem($, self, file));
+    };
+
+    this.uploadTarget.on('dragenter dragover', function(e){
+        self.uploadTarget.addClass('drag-inside');
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    this.uploadTarget.on('dragleave drageexit', function(e){
+        self.uploadTarget.removeClass('drag-inside');
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    this.uploadTarget.on('drop', function(e){
+        self.uploadTarget.removeClass('drag-inside');
+        self.uploadDirections.css({display: 'none'});
+        e.preventDefault();
+        var files = e.originalEvent.dataTransfer.files;
+        _.each(files, self.addFile);
+    });
+
+    this.uploadTarget.on('click', function(e){
+        self.hiddenFileInput.click();
+    });
+
+    this.hiddenFileInput.on('change', function(e){
+        self.uploadDirections.css({display: 'none'});
+        for(var i=0; i<this.files.length; i++) {
+            self.addFile(this.files[i]);
+        }
+    });
+
+    $('#ilab-open-editor').on('click',function(e){
+        wp.media({frame:'select'}).open();
+
+        e.preventDefault();
+        return false;
+    });
+
+    this.insertButton.on('click', function(e){
+        if (self.attachmentInfo) {
+            self.attachmentInfo.insert();
+        }
+
+        e.preventDefault();
+        return false;
+    });
+
+    if (settings.insertMode) {
+        $('body').addClass('ilab-upload-insert-mode');
+        // $('body').addClass('ilab-item-selected');
+    }
+
+    this.watchToken = setTimeout(this.watchQueue, 500);
+};
+//# sourceMappingURL=ilab-media-upload.js.map

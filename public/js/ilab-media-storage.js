@@ -1,1 +1,243 @@
-function clientRectContainsPoint(e,t,n){return t>=e.left&&t<=e.right&&n>=e.top&&n<=e.bottom}!function(e){var t=function(){e(".info-panel-tabs").each(function(){var t=e(this),n=null,i=null;t.find("li").each(function(){var t=e(this),a=e("#"+t.data("tab-target"));t.hasClass("active")&&(n=t,i=a),t.on("click",function(e){n!=t&&(n.removeClass("active"),i.css({display:"none"}),t.addClass("active"),a.css({display:""}),n=t,i=a)})})});var t=null;e(".info-file-info-size").each(function(){t||(t=e(this))}),e("#ilab-other-sizes").on("change",function(n){var i=e("#info-size-"+e(this).val());i!=t&&(t.css({display:"none"}),i.css({display:""}),t=i)}),e(".ilab-info-regenerate-thumbnails").on("click",function(t){var n=e(this);return!(n.data("imgix-enabled")&&!confirm("You are currently using Imgix, which makes this function rather unnecessary.  Are you sure you want to continue?"))&&(e(document).trigger("ilab-regeneration-started"),t.preventDefault(),n.css({display:"none"}),e("#ilab-info-regenerate-status").css({display:""}),e.post(ajaxurl,{action:"ilab_regenerate_thumbnails_manual",post_id:n.data("post-id")},function(t){n.css({display:""}),e("#ilab-info-regenerate-status").css({display:"none"}),"ok"!=t.status&&alert("There was a problem trying to regenerate the thumbnails.  Please try again."),e(document).trigger("ilab-regeneration-ended")}),!1)})};t();var n=!0,i=!0,a=e('<div class="ilab-loader-container"><div class="ilab-loader ilab-loader-dark"></div></div>'),o=e('<div id="ilab-media-grid-info-popup" class="hidden" style="left:0px; top:0px;"></div>'),s=e('<div class="ilab-media-grid-info-popup-content"></div>'),d=e('<div class="ilab-media-popup-arrow-left"><div></div></div>'),l=e('<div class="ilab-media-popup-arrow-right"><div></div></div>'),c=null,r=!1;o.append(d),o.append(s),o.append(l),e("body").append(o),e(document).on("mouseenter","img.ilab-s3-logo",function(i){if(n){var u=e(this),p=u.data("post-id");"image"!=u.data("mime-type")?o.addClass("ilab-popup-document"):o.removeClass("ilab-popup-document"),r=!1,e("li.attachment").each(function(){var t=e(this);t.data("id")==p?(t.removeClass("info-unfocused"),t.addClass("info-focused")):(t.removeClass("info-focused"),t.addClass("info-unfocused"))}),s.text(""),s.append(a);var m=this.getBoundingClientRect(),f=document.body.scrollTop+(m.top+m.height/2-o.height()/2);f-=28;var h=Math.max(document.documentElement.clientHeight,window.innerHeight||0),g=Math.max(document.documentElement.clientWidth,window.innerWidth||0),v=document.body.scrollTop+h-40,b=0;f+o.height()>v?(b=f+o.height()-v,f=v-o.height()):f<document.body.scrollTop?(b=f-document.body.scrollTop,f=document.body.scrollTop):f<0&&(b=f,f=0),m.left+o.width()<g-10?(c=d,d.css({transform:"translateY("+b+"px)"}),o.removeClass("popup-right"),o.addClass("popup-left"),o.css({left:m.left+"px",top:f+"px"})):(c=l,o.removeClass("popup-left"),o.addClass("popup-right"),l.css({transform:"translateY("+b+"px)"}),o.css({left:m.right-o.width()+"px",top:f+"px"})),o.removeClass("hidden"),setTimeout(function(){var n={action:"ilab_s3_get_media_info",id:p};e.post(ajaxurl,n,function(n,i){if(0!=n.length){var a=e(n);s.text(""),s.append(a),t(),setTimeout(function(){r=!0},500)}},"html")},300)}}),e(document).on("mousemove",function(t){if(r&&i){var a=c.get(0).getBoundingClientRect();a.top-=5,a.bottom+=5;var d=s.get(0).getBoundingClientRect(),l=t.pageX,u=t.pageY-document.body.scrollTop;clientRectContainsPoint(a,l,u)||clientRectContainsPoint(d,l,u)||(n=!1,r=!1,o.addClass("hidden"),e("li.attachment").each(function(){var t=e(this);t.removeClass("info-focused"),t.removeClass("info-unfocused")}),setTimeout(function(){n=!0},300))}}),e(document).on("ilab-regeneration-started",function(){i=!1}),e(document).on("ilab-regeneration-ended",function(){i=!0})}(jQuery);
+function clientRectContainsPoint(cr, x, y) {
+  return ((x >= cr.left) && (x <= cr.right) && (y>=cr.top) && (y<=cr.bottom));
+}
+
+(function($){
+    var infoPanelSetup = function() {
+        $('.info-panel-tabs').each(function(){
+            var tabs = $(this);
+            var activeTab = null;
+            var activeTarget = null;
+
+            tabs.find('li').each(function(){
+                var tab = $(this);
+                var target = $('#'+tab.data('tab-target'));
+
+                if (tab.hasClass('active')) {
+                    activeTab = tab;
+                    activeTarget = target;
+                }
+
+                tab.on('click', function(e){
+                    if (activeTab == tab) {
+                        return;
+                    }
+
+                    activeTab.removeClass('active');
+                    activeTarget.css({display: 'none'});
+
+                    tab.addClass('active');
+                    target.css({display: ''});
+
+                    activeTab = tab;
+                    activeTarget = target;
+                });
+            });
+        });
+
+        var lastPanel = null;
+        $('.info-file-info-size').each(function(){
+            if (!lastPanel) {
+                lastPanel = $(this);
+            }
+        });
+
+        $('#ilab-other-sizes').on('change', function(e){
+            var panel = $('#info-size-'+$(this).val());
+            if (panel != lastPanel) {
+                lastPanel.css({display:'none'});
+                panel.css({display:''});
+                lastPanel = panel;
+            }
+        });
+
+        $('.ilab-info-regenerate-thumbnails').on('click', function(e){
+            var button = $(this);
+
+            if (button.data('imgix-enabled')) {
+                if (!confirm('You are currently using Imgix, which makes this function rather unnecessary.  Are you sure you want to continue?')) {
+                    return false;
+                }
+            }
+
+            $(document).trigger('ilab-regeneration-started');
+
+            e.preventDefault();
+
+            button.css({display: 'none'});
+            $('#ilab-info-regenerate-status').css({display: ''});
+
+            $.post(ajaxurl, {
+                "action": "ilab_regenerate_thumbnails_manual",
+                "post_id": button.data('post-id')
+            }, function(response){
+                button.css({display: ''});
+                $('#ilab-info-regenerate-status').css({display: 'none'});
+                if (response.status != 'ok') {
+                    alert("There was a problem trying to regenerate the thumbnails.  Please try again.");
+                }
+                $(document).trigger('ilab-regeneration-ended');
+            });
+
+            return false;
+        });
+    };
+
+    infoPanelSetup();
+
+    var canPopup = true;
+    var canClose = true;
+
+    var loader = $('<div class="ilab-loader-container"><div class="ilab-loader ilab-loader-dark"></div></div>');
+    var popup = $('<div id="ilab-media-grid-info-popup" class="hidden" style="left:0px; top:0px;"></div>');
+    var popupContent = $('<div class="ilab-media-grid-info-popup-content"></div>');
+    var arrowLeft = $('<div class="ilab-media-popup-arrow-left"><div></div></div>');
+    var arrowRight = $('<div class="ilab-media-popup-arrow-right"><div></div></div>');
+
+    var activeArrow = null;
+    var popupActive = false;
+
+    popup.append(arrowLeft);
+    popup.append(popupContent);
+    popup.append(arrowRight);
+
+    $('body').append(popup);
+
+    $(document).on('mouseenter', 'img.ilab-s3-logo', function(e){
+        if (!canPopup) {
+            return;
+        }
+
+        var img = $(this);
+        var imgEle = this;
+        var postId = img.data('post-id');
+        var type = img.data('mime-type');
+
+        if (type != 'image') {
+            popup.addClass('ilab-popup-document');
+        } else {
+            popup.removeClass('ilab-popup-document');
+        }
+
+        popupActive = false;
+
+        $('li.attachment').each(function(){
+            var li = $(this);
+            if (li.data('id') == postId) {
+                li.removeClass('info-unfocused');
+                li.addClass('info-focused');
+            } else {
+                li.removeClass('info-focused');
+                li.addClass('info-unfocused');
+            }
+        });
+
+        popupContent.text('');
+        popupContent.append(loader);
+
+        var bounds = imgEle.getBoundingClientRect();
+        var y = document.body.scrollTop + ((bounds.top + (bounds.height / 2)) - (popup.height()  / 2));
+        y -= 28;
+
+        var vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        var vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        var dh = (document.body.scrollTop + vh) - 40;//$(document).height() - 40;
+
+        var arrowDelta = 0;
+        if (y + popup.height() > dh) {
+            arrowDelta = ((y + popup.height()) - dh);
+            y = dh - popup.height();
+        } else if (y < document.body.scrollTop) {
+            arrowDelta = y - document.body.scrollTop;
+            y = document.body.scrollTop;
+        }
+        else if (y  < 0) {
+            arrowDelta = y;
+            y = 0;
+        }
+
+        var left = bounds.left;
+        if (left + popup.width() < (vw - 10)) {
+            activeArrow = arrowLeft;
+            arrowLeft.css({transform: "translateY("+arrowDelta+"px)"});
+
+            popup.removeClass('popup-right');
+            popup.addClass('popup-left');
+            popup.css({
+                left: bounds.left+'px',
+                top: y+'px'
+            });
+        } else {
+            activeArrow = arrowRight;
+            popup.removeClass('popup-left');
+            popup.addClass('popup-right');
+            arrowRight.css({transform: "translateY("+arrowDelta+"px)"});
+            popup.css({
+                left: (bounds.right - popup.width())+'px',
+                top: y+'px'
+            });
+        }
+
+        popup.removeClass('hidden');
+
+        setTimeout(function(){
+            var data = {
+                "action": "ilab_s3_get_media_info",
+                "id": postId
+            };
+
+            $.post(ajaxurl, data, function(response, text){
+                if (response.length == 0) {
+                    return;
+                }
+
+                var contents = $(response);
+                popupContent.text('');
+                popupContent.append(contents);
+                infoPanelSetup();
+
+                setTimeout(function(){
+                    popupActive = true;
+                }, 500);
+            }, 'html');
+        }, 300);
+    });
+
+    $(document).on('mousemove', function(e){
+        if (popupActive && canClose) {
+            var ar = activeArrow.get(0).getBoundingClientRect();
+            ar.top -= 5;
+            ar.bottom += 5;
+            var pr = popupContent.get(0).getBoundingClientRect();
+            var px = e.pageX;
+            var py = e.pageY - document.body.scrollTop;
+            if (!clientRectContainsPoint(ar, px, py) && !clientRectContainsPoint(pr, px, py)) {
+                canPopup = false;
+                popupActive = false;
+
+                popup.addClass('hidden');
+
+                $('li.attachment').each(function(){
+                    var li = $(this);
+                    li.removeClass('info-focused');
+                    li.removeClass('info-unfocused');
+                });
+
+                setTimeout(function(){
+                    canPopup = true;
+                }, 300);
+            }
+        }
+    });
+
+    $(document).on('ilab-regeneration-started', function() {
+       canClose = false;
+    });
+
+    $(document).on('ilab-regeneration-ended', function() {
+        canClose = true;
+    });
+})(jQuery);
+
+
+//# sourceMappingURL=ilab-media-storage.js.map

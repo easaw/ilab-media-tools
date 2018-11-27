@@ -7,7 +7,7 @@
         this.preview=container.find('.imgix-media-preview img');
         this.mediaInput=container.find('.imgix-param');
         this.selectButton=container.find('.imgix-media-button');
-        this.resetButton=container.find('.imgix-param-reset');
+        this.resetButton=container.find('.imgix-param-reset > a');
 
         this.defaultValue=container.data('default-value');
         this.param=container.data('param');
@@ -22,8 +22,10 @@
 
         var mediaRef=this;
 
-        this.resetButton.on('click',function(){
+        this.resetButton.on('click',function(e){
+            e.preventDefault();
             mediaRef.reset();
+            return false;
         });
 
         this.uploader.on('select', function() {

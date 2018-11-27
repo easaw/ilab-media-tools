@@ -246,22 +246,35 @@ abstract class ToolBase {
 
     }
 
+    public function envEnabled() {
+        if ($this->badPluginsInstalled) {
+            return false;
+        }
+
+        $env = ($this->env_variable) ? getenv($this->env_variable) : false;
+        return get_option("ilab-media-tool-enabled-$this->toolName", $env);
+    }
+
     /**
      * Determines if this tool is enabled or not
      */
     public function enabled()
     {
-        if ($this->badPluginsInstalled) {
+        if (!$this->envEnabled()) {
             return false;
         }
 
-    	$env = ($this->env_variable) ? getenv($this->env_variable) : false;
-        $enabled=get_option("ilab-media-tool-enabled-$this->toolName", $env);
+        if (isset($this->toolInfo['dependencies']))  {
+            foreach($this->toolInfo['dependencies'] as $dep)  {
+                if (!is_array($dep) && (strpos($dep, '!') === 0)) {
+                    $dep = trim($dep, '!');
+                    if ($this->toolManager->toolEnvEnabled($dep)) {
+                        return false;
+                    }
+                }
+            }
 
-        if ($enabled && isset($this->toolInfo['dependencies']))
-        {
-            foreach($this->toolInfo['dependencies'] as $dep)
-            {
+            foreach($this->toolInfo['dependencies'] as $dep)  {
             	if (is_array($dep)) {
             		$enabledCount = 0;
 					foreach($dep as $toolDep) {
@@ -275,13 +288,32 @@ abstract class ToolBase {
 						return false;
 					}
 	            } else {
-		            if (!$this->toolManager->toolEnabled($dep))
-			            return false;
+            	    if (strpos($dep, '!') === 0) {
+            	        continue;
+                    } else {
+                        if (!$this->toolManager->toolEnabled($dep)) {
+                            return false;
+                        }
+                    }
 	            }
             }
         }
 
-        return $enabled;
+        return true;
+    }
+
+    public function hasBatchTools() {
+        return (count($this->batchTools) > 0);
+    }
+
+    public function batchToolInfo() {
+        $results = [];
+
+        foreach($this->batchTools as $batchTool) {
+            $results[] = $batchTool->toolInfo();
+        }
+
+        return $results;
     }
 
     /**
@@ -362,16 +394,31 @@ abstract class ToolBase {
         if (!isset($this->toolInfo['settings']))
             return;
 
-	    if ($this->only_when_enabled && (!$this->enabled())) {
-		    return;
-	    }
+        if ($this->only_when_enabled && (!$this->enabled())) {
+            return;
+        }
 
         $settings=$this->toolInfo['settings'];
         add_submenu_page( $top_menu_slug, $settings['title'], $settings['menu'], 'manage_options', $this->options_page, [$this,'renderSettings']);
+    }
+
+    /**
+     * Register tool menu pages
+     *
+     * @param $top_menu_slug
+     */
+    public function registerToolMenu($tool_menu_slug)
+    {
+        if (!isset($this->toolInfo['settings']))
+            return;
+
+        if ($this->only_when_enabled && (!$this->enabled())) {
+            return;
+        }
 
         foreach($this->batchTools as $batchTool) {
             if ($batchTool->enabled()) {
-                add_submenu_page($top_menu_slug, $batchTool->pageTitle(), $batchTool->menuTitle(), $batchTool->capabilityRequirement(), $batchTool->menuSlug(), [
+                add_submenu_page($tool_menu_slug, $batchTool->pageTitle(), $batchTool->menuTitle(), $batchTool->capabilityRequirement(), $batchTool->menuSlug(), [
                     $batchTool,
                     'renderBatchTool'
                 ]);

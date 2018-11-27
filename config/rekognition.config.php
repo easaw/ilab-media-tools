@@ -21,7 +21,7 @@ return [
 	"dependencies" => ["storage"],
 	"env" => "ILAB_MEDIA_REKOGNITION_ENABLED",
     "batchTools" => [
-        "\\ILAB\\MediaCloud\\Tools\\Rekognition\\Batch\\ImportRekognitionTool"
+        "\\ILAB\\MediaCloud\\Tools\\Rekognition\\Batch\\ImportRekognitionBatchTool"
     ],
 	"settings" => [
 		"title" => "Rekognition Settings",

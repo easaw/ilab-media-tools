@@ -1,8 +1,9 @@
 (function($){
-
     $.fn.ilabTabs=function(options){
         var settings= $.extend({},options);
-        var sizeCanvas=null;
+
+        var lastTabWidth = null;
+        var tabsVisible = true;
 
         return this.each(function(){
             var container=$(this);
@@ -21,39 +22,17 @@
                 }
             }
 
-            var label=container.find('.ilabm-tabs-select-label');
-            var select=container.find('.ilabm-tabs-select');
-            var tabs=container.find('.ilabm-editor-tab');
+            var sidebar = parentContainer.find('.ilabm-sidebar');
 
-            var minWidth=0;
-            var tabFont=null,tabMarginLeft=0,tabMarginRight=0,tabPaddingLeft=0,tabPaddingRight=0;
+            var selectContainer = container.find('.ilabm-tabs-select-ui');
 
-            var getTextWidth=function(text, font) {
-                // re-use canvas object for better performance
+            var tabsContainer = container.find('.ilabm-tabs-ui');
+            var tabs=tabsContainer.find('.ilabm-editor-tab');
 
-                var canvas = sizeCanvas || (sizeCanvas = document.createElement("canvas"));
-                var context = canvas.getContext("2d");
-                context.font = font;
-                var metrics = context.measureText(text);
-                return metrics.width;
-            };
-
-            tabs.each(function(){
-                var tab=$(this);
-                if (tabFont===null) {
-                    tabFont = tab.css('font');
-                    tabMarginLeft=parseInt(tab.css('margin-left'));
-                    tabMarginRight=parseInt(tab.css('margin-right'));
-                    tabPaddingLeft=parseInt(tab.css('padding-left'));
-                    tabPaddingRight=parseInt(tab.css('padding-right'));
-                }
-
-                tabWidth=getTextWidth(tab.text(),tabFont)+tabMarginLeft+tabMarginRight+tabPaddingLeft+tabPaddingRight+15;
-                minWidth+=tabWidth;
-            });
-
-            if (label && settings.hasOwnProperty('label'))
+            var label=selectContainer.find('.ilabm-tabs-select-label');
+            if (label && settings.hasOwnProperty('label')) {
                 label.text(settings.label);
+            }
 
             tabs.removeClass('active-tab');
             tabs.on('click',function(e){
@@ -74,8 +53,8 @@
                 return false;
             });
 
-            if (select)
-            {
+            var select=selectContainer.find('.ilabm-tabs-select');
+            if (select)  {
                 select.on('change',function(){
                     tabs.removeClass('active-tab');
                     tabs.each(function(){
@@ -91,8 +70,9 @@
 
             if (settings.hasOwnProperty('currentValue'))
             {
-                if (select)
+                if (select) {
                     select.val(settings.currentValue);
+                }
 
                 tabs.each(function(){
                    var tab=$(this);
@@ -102,19 +82,28 @@
             }
 
             var checkOverflow=function(){
-                if (minWidth > (windowContainer.width() - 350)) {
-                    label.show();
-                    select.show();
-                    tabs.hide();
+                if (lastTabWidth == null) {
+                    lastTabWidth = tabsContainer.width();
                 }
-                else {
-                    label.hide();
-                    select.hide();
-                    tabs.show();
+
+                if (sidebar.width() + lastTabWidth > windowContainer.width()) {
+                    if (tabsVisible) {
+                        tabsVisible = false;
+                        selectContainer.show();
+                        tabsContainer.hide();
+                    }
+                } else {
+                    if (!tabsVisible) {
+                        tabsVisible = true;
+                        selectContainer.hide();
+                        tabsContainer.show();
+                    }
                 }
             };
 
             $(window).on('resize',checkOverflow);
+
+            selectContainer.hide();
             checkOverflow();
         });
     };

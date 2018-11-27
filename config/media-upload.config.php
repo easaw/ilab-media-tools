@@ -17,6 +17,6 @@ return [
 	"title" => "Direct Uploads",
 	"description" => "Provides an easy to use tool for uploading media directly to Amazon S3, Minio or Google Cloud Storage.",
 	"class" => "ILAB\\MediaCloud\\Tools\\MediaUpload\\UploadTool",
-	"dependencies" => ["storage", "imgix"],
+	"dependencies" => ["storage", ["imgix", "glide"]],
 	"env" => "ILAB_MEDIA_UPLOAD_ENABLED"
 ];

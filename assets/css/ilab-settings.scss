@@ -1,14 +1,32 @@
-@font-face {
-  font-family: 'millarregular_4';
-  src: url('../fonts/millar-regular4-webfont.woff2') format('woff2'),
-  url('../fonts/millar-regular4-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
+$font-stack-system: (
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Avenir Next",
+        "Avenir",
+        "Segoe UI",
+        "Lucida Grande",
+        "Helvetica Neue",
+        "Helvetica",
+        "Fira Sans",
+        "Roboto",
+        "Noto",
+        "Droid Sans",
+        "Cantarell",
+        "Oxygen",
+        "Ubuntu",
+        "Franklin Gothic Medium",
+        "Century Gothic",
+        "Liberation Sans",
+        sans-serif,
+);
 
-}
+$font-stack-header: $font-stack-system;
 
 .settings-container {
   margin: 0px 0px 0px -20px;
+  font-family: $font-stack-system;
+
   header {
     position: relative;
     background-image: url(../img/settings-bg.svg);
@@ -29,7 +47,7 @@
     }
 
     h1 {
-      font-family: 'millarregular_4';
+      font-family: $font-stack-header;
       text-transform: uppercase;
     }
   }
@@ -38,14 +56,16 @@
     margin: 20px 20px;
 
     & > form  > h2:first-of-type {
-      display: none;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      border-top: 0px none;
     }
 
     & > form  > h2 {
-      font-family: 'millarregular_4';
+      font-family: $font-stack-header;
       text-transform: uppercase;
       //background-color: rgba(0,0,0,0.0625);
-      padding: 20px 20px 15px 20px;
+      padding: 20px 20px 0px 20px;
       margin-left: -20px;
       border-top: 1px solid rgba(0,0,0,0.125);
     }
@@ -317,4 +337,25 @@
   1px 0 1px #b97800,
   0 1px 1px #b97800,
   -1px 0 1px #b97800 !important;;
+}
+
+.media-cloud-tool-description {
+  padding: 24px;
+  background: #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+
+
+  h2 {
+    font-family: $font-stack-header;
+    text-transform: uppercase;
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+
+  p {
+    margin-top: 0px;
+    font-size: 1.2em;
+  }
 }

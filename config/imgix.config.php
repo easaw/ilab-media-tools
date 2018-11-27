@@ -15,12 +15,13 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
 return [
     "name" => "Imgix",
 	"title" => "Imgix Support",
-	"description" => "Serves images through imgix.com",
+	"description" => "Serves dynaminc on-demand images through <a target='_blank' href='https://imgix.com'>imgix.com</a>.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Imgix\\ImgixTool",
 	"env" => "ILAB_MEDIA_IMGIX_ENABLED",
 	"dependencies" => [
 		"crop",
-		"storage"
+		"storage",
+        "!glide"
 	],
 	"helpers" => [
 		"ilab-imgix-helpers.php"
@@ -132,33 +133,34 @@ return [
 		],
 		"params" => [
 			"adjust" => [
-				"--Auto" => [
-					"auto" => [
-						"type" => "pillbox",
-						"options" => [
-							"enhance" => [
-								"title" => "Auto Enhance",
-								"default" => 0
-							],
-							"redeye" => [
-								"title" => "Remove Red Eye",
-								"default" => 0
-							]
-						],
-						"selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
-							if (isset($settings['auto'])) {
-								$parts=explode(',',$settings['auto']);
-								foreach($parts as $part) {
-									if ($part==$currentValue) {
-										return $selectedOutput;
-									}
-								}
-							}
+                "Orientation" => [
+                    "or" => [
+                        "type" => "pillbox",
+                        "radio" => true,
+                        "no-icon" => true,
+                        "options" => [
+                            "90" => [
+                                "title" => "90°",
+                                "default" => 0
+                            ],
+                            "180" => [
+                                "title" => "180°",
+                                "default" => 0
+                            ],
+                            "270" => [
+                                "title" => "270°",
+                                "default" => 0
+                            ],
+                        ],
+                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
+                            if (isset($settings['or']) && ($settings['or'] == $currentValue)) {
+                                return $selectedOutput;
+                            }
 
-							return $unselectedOutput;
-						}
-					]
-				],
+                            return $unselectedOutput;
+                        }
+                    ]
+                ],
                 "Flip" => [
                     "flip" => [
                         "type" => "pillbox",
@@ -175,6 +177,42 @@ return [
                         "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
                             if (isset($settings['flip'])) {
                                 $parts=explode(',',$settings['flip']);
+                                foreach($parts as $part) {
+                                    if ($part==$currentValue) {
+                                        return $selectedOutput;
+                                    }
+                                }
+                            }
+
+                            return $unselectedOutput;
+                        }
+                    ]
+                ],
+                "Transform" => [
+                    "rot" => [
+                        "title" => "Rotation",
+                        "type" => "slider",
+                        "min" => -359,
+                        "max" => 359,
+                        "default" => 0
+                    ]
+                ],
+                "Enhance" => [
+                    "auto" => [
+                        "type" => "pillbox",
+                        "options" => [
+                            "enhance" => [
+                                "title" => "Auto Enhance",
+                                "default" => 0
+                            ],
+                            "redeye" => [
+                                "title" => "Remove Red Eye",
+                                "default" => 0
+                            ]
+                        ],
+                        "selected" => function($settings, $currentValue, $selectedOutput, $unselectedOutput){
+                            if (isset($settings['auto'])) {
+                                $parts=explode(',',$settings['auto']);
                                 foreach($parts as $part) {
                                     if ($part==$currentValue) {
                                         return $selectedOutput;
@@ -261,6 +299,20 @@ return [
 						"max" => 100,
 						"default" => 0
 					],
+                    "usm" => [
+                        "title" => "Unsharp Mask",
+                        "type" => "slider",
+                        "min" => -100,
+                        "max" => 100,
+                        "default" => 0
+                    ],
+                    "usmrad" => [
+                        "title" => "Unsharp Mask Radius",
+                        "type" => "slider",
+                        "min" => 0,
+                        "max" => 500,
+                        "default" => 0
+                    ],
 					"nr" => [
 						"title" => "Noise Reduction",
 						"type" => "slider",
@@ -283,15 +335,6 @@ return [
 						"default" => 0
 					]
 				],
-				"Transform" => [
-					"rot" => [
-						"title" => "Rotation",
-						"type" => "slider",
-						"min" => -359,
-						"max" => 359,
-						"default" => 0
-					]
-				]
 			],
 			"stylize" => [
 				"Stylize" => [
@@ -353,7 +396,7 @@ return [
 						"title" => "Border Width",
 						"type" => "slider",
 						"min" => 0,
-						"max" => 100,
+						"max" => 500,
 						"default" => 0
 					]
 				],
@@ -366,7 +409,7 @@ return [
 						"title" => "Padding Width",
 						"type" => "slider",
 						"min" => 0,
-						"max" => 100,
+						"max" => 500,
 						"default" => 0
 					]
 				]
@@ -414,7 +457,7 @@ return [
 				]
 			],
 			"focus-crop" => [
-				"--Focus" => [
+				"Focus" => [
 					"focalpoint" => [
 						"type" => "pillbox",
 						"exclusive" => true,

@@ -51,13 +51,6 @@ class CropTool extends ToolBase
             add_action('admin_enqueue_scripts', [$this,'enqueueTheGoods']);
             add_action('wp_ajax_ilab_crop_image_page',[$this,'displayCropUI']);
             add_action('wp_ajax_ilab_perform_crop',[$this,'performCrop']);
-
-            add_filter('ilab_s3_process_crop', function($size, $path, $sizeMeta){
-                return $sizeMeta;
-            }, 3, 3);
-            add_filter('ilab_s3_process_file_name', function($filename) {
-                return $filename;
-            }, 3, 1);
         }
     }
 
@@ -323,10 +316,10 @@ class CropTool extends ToolBase
 
 
         $size = esc_html($_POST['size']);
-        $crop_width = esc_html($_POST['width']);
-        $crop_height = esc_html($_POST['height']);
-        $crop_x = esc_html($_POST['x']);
-        $crop_y = esc_html($_POST['y']);
+        $crop_width = (int)floor(esc_html($_POST['width']));
+        $crop_height = (int)floor(esc_html($_POST['height']));
+        $crop_x = (int)floor(esc_html($_POST['x']));
+        $crop_y = (int)floor(esc_html($_POST['y']));
 
         $img_path = _load_image_to_edit_path( $req_post );
         $meta = wp_get_attachment_metadata( $req_post );
@@ -393,7 +386,7 @@ class CropTool extends ToolBase
         $img_editor->save($save_path . '/' . $filename);
 
         // Let S3 upload the new crop
-        $processedSize = apply_filters('ilab_s3_process_crop', $size, $save_path, $filename, $meta['sizes'][$size]);
+        $processedSize = apply_filters('ilab_s3_process_crop', $meta['sizes'][$size], $size, $save_path, $filename);
         if ($processedSize)
             $meta['sizes'][$size] = $processedSize;
 
