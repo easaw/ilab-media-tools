@@ -1,11 +1,6 @@
-@font-face {
-  font-family: 'millarregular_4';
-  src: url("../fonts/millar-regular4-webfont.woff2") format("woff2"), url("../fonts/millar-regular4-webfont.woff") format("woff");
-  font-weight: normal;
-  font-style: normal; }
-
 .settings-container {
-  margin: 0px 0px 0px -20px; }
+  margin: 0px 0px 0px -20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif; }
   .settings-container header {
     position: relative;
     background-image: url(../img/settings-bg.svg);
@@ -26,7 +21,7 @@
       max-width: 126px;
       max-height: 96px; }
     .settings-container header h1 {
-      font-family: 'millarregular_4';
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
       text-transform: uppercase; }
   .settings-container .settings-body {
     margin: 20px 20px; }
@@ -35,7 +30,7 @@
       padding-top: 0px;
       border-top: 0px none; }
     .settings-container .settings-body > form > h2 {
-      font-family: 'millarregular_4';
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
       text-transform: uppercase;
       padding: 20px 20px 0px 20px;
       margin-left: -20px;
@@ -312,7 +307,7 @@
   border-radius: 8px;
   margin-bottom: 20px; }
   .media-cloud-tool-description h2 {
-    font-family: 'millarregular_4';
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
     text-transform: uppercase;
     margin: 0;
     margin-bottom: 5px;

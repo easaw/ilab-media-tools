@@ -1028,7 +1028,7 @@ class StorageTool extends ToolBase {
 	 *
 	 * @return array
 	 */
-	public function processCrop($size, $upload_path, $file, $sizeMeta) {
+	public function processCrop($sizeMeta, $size, $upload_path, $file) {
 		$upload_info = wp_upload_dir();
 		$subdir = trim(str_replace($upload_info['basedir'], '', $upload_path), '/');
 		$upload_path = rtrim(str_replace($subdir, '', $upload_path), '/');
