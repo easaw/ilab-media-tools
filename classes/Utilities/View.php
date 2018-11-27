@@ -12,9 +12,7 @@
 
 namespace ILAB\MediaCloud\Utilities;
 
-use duncan3dc\Laravel\Blade;
 use duncan3dc\Laravel\BladeInstance;
-use ILAB\MediaCloud\Utilities\Logging\Logger;
 
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
@@ -63,7 +61,6 @@ final class View {
         if (static::$bladeInstance == null) {
             $cacheDir = static::getTempDir();
 
-            Logger::info("Cache Dir: $cacheDir");
             static::$bladeInstance = new BladeInstance(ILAB_VIEW_DIR, $cacheDir.'media-cloud-views');
         }
 

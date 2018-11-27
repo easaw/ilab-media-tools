@@ -17,14 +17,14 @@ use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\BatchTool;
 use function ILAB\MediaCloud\Utilities\json_response;
 
-class ImportStorageBatchTool extends BatchTool {
+class RegenerateThumbnailBatchTool extends BatchTool {
     //region Properties
     /**
      * Name/ID of the batch
      * @return string
      */
     public function batchIdentifier() {
-        return 'storage';
+        return 'thumbnails';
     }
 
     /**
@@ -32,7 +32,11 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function title() {
-        return "Storage Importer";
+        return "Regenerate Thumbnails";
+    }
+
+    public function menuTitle() {
+        return "Rebuild Thumbnails";
     }
 
     /**
@@ -40,7 +44,7 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function batchPrefix() {
-        return 'ilab_storage_importer';
+        return 'ilab_regenerate_thumbnails';
     }
 
     /**
@@ -48,7 +52,7 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function batchProcessClassName() {
-        return "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\ImportStorageBatchProcess";
+        return "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\RegenerateThumbnailBatchProcess";
     }
 
     /**
@@ -56,7 +60,7 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function instructionView() {
-        return 'importer/storage-importer-instructions.php';
+        return 'importer/regeneration-instructions.php';
     }
 
     /**
@@ -64,7 +68,15 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     function menuSlug() {
-        return 'media-tools-s3-importer';
+        return 'media-tools-cloud-regeneration';
+    }
+
+    public function enabled() {
+        if (parent::enabled()) {
+            return !apply_filters('ilab_imgix_enabled', false);
+        }
+
+        return false;
     }
     //endregion
 
@@ -75,7 +87,7 @@ class ImportStorageBatchTool extends BatchTool {
      * @return array
      */
     public function registerBulkActions($actions) {
-        $actions['ilab_s3_import'] = 'Import to Cloud Storage';
+        $actions['ilab_regenerate_thumbnails'] = 'Regenerate Thumbnails';
         return $actions;
     }
 
@@ -88,21 +100,9 @@ class ImportStorageBatchTool extends BatchTool {
      * @return string
      */
     public function handleBulkActions($redirect_to, $action_name, $post_ids) {
-        if('ilab_s3_import' === $action_name) {
-            $posts_to_import = [];
+        if('ilab_regenerate_thumbnails' === $action_name) {
             if(count($post_ids) > 0) {
-                foreach($post_ids as $post_id) {
-                    $meta = wp_get_attachment_metadata($post_id);
-                    if(!empty($meta) && isset($meta['s3'])) {
-                        continue;
-                    }
-
-                    $posts_to_import[] = $post_id;
-                }
-            }
-
-            if(count($posts_to_import) > 0) {
-                set_site_transient($this->batchPrefix().'_post_selection', $posts_to_import, 10);
+                set_site_transient($this->batchPrefix().'_post_selection', $post_ids, 10);
                 return 'admin.php?page='.$this->menuSlug();
             }
         }
@@ -112,6 +112,11 @@ class ImportStorageBatchTool extends BatchTool {
     //endregion
 
     //region Actions
+    protected function filterPostArgs($args) {
+        $args['post_mime_type'] ='image';
+        return $args;
+    }
+
     /**
      * Allows subclasses to filter the data used to render the tool
      * @param $data
@@ -119,9 +124,9 @@ class ImportStorageBatchTool extends BatchTool {
      */
     protected function filterRenderData($data) {
         $data['disabledText'] = 'enable Storage';
-        $data['commandLine'] = 'wp mediacloud import';
-        $data['commandTitle'] = 'Import Uploads';
-        $data['cancelCommandTitle'] = 'Cancel Import';
+        $data['commandLine'] = 'wp mediacloud regenerate';
+        $data['commandTitle'] = 'Regenerate Thumbnails';
+        $data['cancelCommandTitle'] = 'Cancel Regeneration';
 
         return $data;
     }
@@ -136,7 +141,7 @@ class ImportStorageBatchTool extends BatchTool {
         }
 
         $pid = $_POST['post_id'];
-        $this->owner->processImport(0, $pid, null);
+        $this->owner->regenerateFile($pid);
 
         json_response(["status" => 'ok']);
     }
@@ -145,9 +150,9 @@ class ImportStorageBatchTool extends BatchTool {
     //region BatchToolInterface
     public function toolInfo() {
         return [
-          'title' => 'Storage Importer',
-          'link' => admin_url('admin.php?page=media-tools-s3-importer'),
-          'description' => 'Uploads your existing media library to Amazon S3, Google Cloud Storage or any other storage provider that you have configured.'
+            'title' => 'Rebuild Thumbnails',
+            'link' => admin_url('admin.php?page=media-tools-cloud-regeneration'),
+            'description' => 'Rebuilds the thumbnails and various theme specified image sizes for the media in your media library.'
         ];
     }
     //endregion

@@ -14,13 +14,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\CLI\Storage;
+namespace ILAB\MediaCloud\Tools\Storage\CLI;
 
 use ILAB\MediaCloud\CLI\Command;
 use ILAB\MediaCloud\Cloud\Storage\StorageSettings;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Storage\DefaultProgressDelegate;
-use ILAB\MediaCloud\Tools\Storage\ImportProgressDelegate;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use ILAB\MediaCloud\Utilities\Logging\Logger;

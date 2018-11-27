@@ -109,9 +109,10 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Utilities\NoticeManager::instance();
 
 //Register Batch Processes
-\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('storage', \ILAB\MediaCloud\Tasks\StorageImportProcess::class);
-\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('rekognizer', \ILAB\MediaCloud\Tasks\RekognizerProcess::class);
-\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('thumbnails', \ILAB\MediaCloud\Tasks\RegenerateThumbnailsProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('storage', \ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('rekognizer', \ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('thumbnails', \ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('glide-cache', \ILAB\MediaCloud\Tools\Glide\Batch\ClearCacheBatchProcess::class);
 
 //Insure batches are run if needed
 \ILAB\MediaCloud\Tasks\BatchManager::boot();
@@ -120,6 +121,7 @@ register_activation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instanc
 register_deactivation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instance(), 'uninstall']);
 
 if ( defined( 'WP_CLI' ) && \WP_CLI ) {
-	\ILAB\MediaCloud\CLI\Storage\StorageCommands::Register();
-	\ILAB\MediaCloud\CLI\Rekognition\RekognitionCommands::Register();
+    \ILAB\MediaCloud\Tools\Storage\CLI\StorageCommands::Register();
+	\ILAB\MediaCloud\Tools\Rekognition\CLI\RekognitionCLICommands::Register();
+	\ILAB\MediaCloud\Tools\Glide\CLI\GlideCommands::Register();
 }

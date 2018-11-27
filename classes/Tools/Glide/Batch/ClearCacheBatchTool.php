@@ -11,20 +11,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\Tools\Rekognition\Batch;
+namespace ILAB\MediaCloud\Tools\Glide\Batch;
 
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\BatchTool;
 use function ILAB\MediaCloud\Utilities\json_response;
 
-class ImportRekognitionTool extends BatchTool {
+class ClearCacheBatchTool extends BatchTool {
     //region Properties
     /**
      * Name/ID of the batch
      * @return string
      */
     public function batchIdentifier() {
-        return 'rekognizer';
+        return 'glide-cache';
     }
 
     /**
@@ -32,7 +32,11 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     public function title() {
-        return "Rekognizer Importer";
+        return "Clear Glide Cache";
+    }
+
+    public function menuTitle() {
+        return "Clear Cache";
     }
 
     /**
@@ -40,7 +44,7 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     public function batchPrefix() {
-        return 'ilab_rekognizer_importer';
+        return 'ilab_clear_glide_cache';
     }
 
     /**
@@ -48,7 +52,7 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     public function batchProcessClassName() {
-        return "\\ILAB\\MediaCloud\\Tasks\\RekognizerProcess";
+        return "\\ILAB\\MediaCloud\\Tasks\\ClearCacheBatchProcess";
     }
 
     /**
@@ -56,7 +60,7 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     public function instructionView() {
-        return 'importer/rekognition-instructions.php';
+        return 'importer/clear-cache-instructions.php';
     }
 
     /**
@@ -64,7 +68,7 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     function menuSlug() {
-        return 'media-tools-rekognizer-importer';
+        return 'media-tools-cloud-clear-cache';
     }
     //endregion
 
@@ -75,7 +79,7 @@ class ImportRekognitionTool extends BatchTool {
      * @return array
      */
     public function registerBulkActions($actions) {
-        $actions['ilab_rekognizer_process'] = 'Process with Rekognizer';
+        $actions['ilab_clear_glide_cache'] = 'Clear Dynamic Image Cache';
         return $actions;
     }
 
@@ -88,26 +92,9 @@ class ImportRekognitionTool extends BatchTool {
      * @return string
      */
     public function handleBulkActions($redirect_to, $action_name, $post_ids) {
-        if('ilab_rekognizer_process' === $action_name) {
-            $posts_to_import = [];
-            if (count($post_ids) > 0) {
-                foreach($post_ids as $post_id) {
-                    $meta = wp_get_attachment_metadata($post_id);
-                    if (!empty($meta) && !isset($meta['s3'])) {
-                        continue;
-                    }
-
-                    $mime = get_post_mime_type($post_id);
-                    if (!in_array($mime, ['image/jpeg', 'image/jpg', 'image/png'])) {
-                        continue;
-                    }
-
-                    $posts_to_import[] = $post_id;
-                }
-            }
-
-            if(count($posts_to_import) > 0) {
-                set_site_transient($this->batchPrefix().'_post_selection', $posts_to_import, 10);
+        if('ilab_clear_glide_cache' === $action_name) {
+            if(count($post_ids) > 0) {
+                set_site_transient($this->batchPrefix().'_post_selection', $post_ids, 10);
                 return 'admin.php?page='.$this->menuSlug();
             }
         }
@@ -117,16 +104,21 @@ class ImportRekognitionTool extends BatchTool {
     //endregion
 
     //region Actions
+    protected function filterPostArgs($args) {
+        $args['post_mime_type'] ='image';
+        return $args;
+    }
+
     /**
      * Allows subclasses to filter the data used to render the tool
      * @param $data
      * @return array
      */
     protected function filterRenderData($data) {
-        $data['disabledText'] = 'enable Rekognizer';
-        $data['commandLine'] = 'wp rekognition process';
-        $data['commandTitle'] = 'Process Images';
-        $data['cancelCommandTitle'] = 'Cancel Processing';
+        $data['disabledText'] = 'enable Glide';
+        $data['commandLine'] = 'wp dynamicImages clearCache';
+        $data['commandTitle'] = 'Clear Dynamic Image Cache';
+        $data['cancelCommandTitle'] = 'Cancel';
 
         return $data;
     }
@@ -136,16 +128,19 @@ class ImportRekognitionTool extends BatchTool {
      */
     public function manualAction() {
         if (!isset($_POST['post_id'])) {
-            BatchManager::instance()->setErrorMessage('storage', 'Missing required post data.');
+            BatchManager::instance()->setErrorMessage($this->batchIdentifier(), 'Missing required post data.');
             json_response(['status' => 'error']);
         }
 
         $pid = $_POST['post_id'];
+        $fileName = get_attached_file($pid);
 
-        $data = wp_get_attachment_metadata($pid);
-        if (!empty($data) && isset($data['s3'])) {
-            $data = $this->owner->processImageMeta($data, $pid);
-            wp_update_attachment_metadata($pid, $data);
+        if (!empty($fileName)) {
+            $localUploadPath = WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
+            if (strpos($fileName, $localUploadPath) === 0) {
+                $fileName = str_replace($localUploadPath, '', $fileName);
+            }
+            $this->owner->clearCache($fileName);
         }
 
         json_response(["status" => 'ok']);
@@ -155,9 +150,9 @@ class ImportRekognitionTool extends BatchTool {
     //region BatchToolInterface
     public function toolInfo() {
         return [
-            'title' => 'Rekognizer Importer',
-            'link' => admin_url('admin.php?page=media-tools-rekognizer-importer'),
-            'description' => 'Processes all of the media in your library through Amazon Rekognition to automatically tag and classify your media.  Images must be uploaded to S3 prior to running this tool.'
+            'title' => 'Clear Dynamic Image Cache',
+            'link' => admin_url('admin.php?page='.$this->menuSlug()),
+            'description' => 'Clears dynamically generated images from the file system cache.'
         ];
     }
     //endregion

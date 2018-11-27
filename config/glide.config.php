@@ -37,6 +37,9 @@ return [
             "description" => "Uploading profile or cover images results in broken images."
         ]
     ],
+    "batchTools" => [
+        "\\ILAB\\MediaCloud\\Tools\\Glide\\Batch\\ClearCacheBatchTool"
+    ],
     "settings" => [
         "title" => "Glide Settings",
         "menu" => "Glide Settings",

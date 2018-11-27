@@ -20,7 +20,8 @@ use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Cloud\Storage\StorageSettings;
 use ILAB\MediaCloud\Cloud\Storage\UploadInfo;
 use ILAB\MediaCloud\Tasks\BatchManager;
-use ILAB\MediaCloud\Tasks\RegenerateThumbnailsProcess;
+use ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess;
+use ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess;
 use ILAB\MediaCloud\Tools\ToolBase;
 use function ILAB\MediaCloud\Utilities\arrayPath;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
@@ -28,7 +29,6 @@ use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use ILAB\MediaCloud\Utilities\Prefixer;
 use ILAB\MediaCloud\Utilities\View;
-use ILAB\MediaCloud\Tasks\StorageImportProcess;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use Smalot\PdfParser\Parser;
 
@@ -72,14 +72,17 @@ class StorageTool extends ToolBase {
     /** @var string The name of the image optimizer */
     private $imageOptimizer = null;
 
+    /** @var bool Controls if file paths should be preserved when updated metadata */
+    private $preserveFilePaths = false;
+
 	//endregion
 
 	//region Constructor
 	public function __construct($toolName, $toolInfo, $toolManager) {
 		parent::__construct($toolName, $toolInfo, $toolManager);
 
-		new StorageImportProcess();
-		new RegenerateThumbnailsProcess();
+		new ImportStorageBatchProcess();
+		new RegenerateThumbnailBatchProcess();
 
 		$this->displayBadges = EnvironmentOptions::Option('ilab-media-s3-display-s3-badge', null, true);
 		$this->mediaListIntegration = EnvironmentOptions::Option('ilab-cloud-storage-display-media-list', null, true);
@@ -153,7 +156,7 @@ class StorageTool extends ToolBase {
                     return $data;
                 }
 
-                return $this->updateAttachmentMetadata($data, $id);
+                return $this->updateAttachmentMetadata($data, $id, $this->preserveFilePaths);
             }, 1000, 2);
 
             add_filter('wp_handle_upload_prefilter', function($file){
@@ -1575,11 +1578,16 @@ class StorageTool extends ToolBase {
 		    }
 	    }
 
+	    $shouldPreserve = $this->preserveFilePaths;
+
+	    $this->preserveFilePaths = true;
 	    Logger::startTiming('Regenerating metadata ...', ['id' => $postId]);
 	    $metadata = wp_generate_attachment_metadata( $postId, $fullsizepath );
 	    Logger::endTiming('Regenerating metadata ...', ['id' => $postId]);
 
 	    wp_update_attachment_metadata($postId, $metadata);
+
+	    $this->preserveFilePaths = $shouldPreserve;
 
 	    return true;
     }

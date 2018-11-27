@@ -15,9 +15,11 @@ namespace ILAB\MediaCloud\Tools\Glide;
 
 use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
 use ILAB\MediaCloud\Tools\DynamicImages\WordPressUploadsAdapter;
+use ILAB\MediaCloud\Tools\Glide\Batch\ClearCacheBatchProcess;
 use ILAB\MediaCloud\Tools\Glide\Server\GlideServerFactory;
 use ILAB\MediaCloud\Tools\Glide\Server\WordpressResponseFactory;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
+use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -48,6 +50,8 @@ class GlideTool extends DynamicImagesToolBase {
 
     public function __construct($toolName, $toolInfo, $toolManager) {
         parent::__construct($toolName, $toolInfo, $toolManager);
+
+        new ClearCacheBatchProcess();
 
         $this->signingKey = EnvironmentOptions::Option('ilab-media-glide-signing-key', null, false);
         if (empty($this->signingKey)) {
@@ -94,15 +98,12 @@ class GlideTool extends DynamicImagesToolBase {
 
     //region Render Image
 
-    protected function renderImage($file) {
+    /**
+     * Creates the Glide Server instance
+     * @return \League\Glide\Server
+     */
+    protected function server() {
         $imagickInstalled = class_exists("Imagick");
-
-        try {
-            SignatureFactory::create($this->signingKey)->validateRequest(trim($this->basePath.$file,'/'), $_GET);
-        } catch (SignatureException $e) {
-            return false;
-        }
-
 
         if ($this->toolManager->toolEnabled('storage')) {
             if (!$this->cacheMasterImages) {
@@ -124,7 +125,17 @@ class GlideTool extends DynamicImagesToolBase {
             'response' => new WordpressResponseFactory()
         ]);
 
-        $server->getImageResponse($file, $_GET);
+        return $server;
+    }
+
+    protected function renderImage($file) {
+        try {
+            SignatureFactory::create($this->signingKey)->validateRequest(trim($this->basePath.$file,'/'), $_GET);
+        } catch (SignatureException $e) {
+            return false;
+        }
+
+        $this->server()->getImageResponse($file, $_GET);
     }
 
     //endregion
@@ -526,6 +537,13 @@ class GlideTool extends DynamicImagesToolBase {
         ];
 
         return $result;
+    }
+    //endregion
+
+    //region Cache
+    public function clearCache($filename) {
+        Logger::info("Deleting cache $filename");
+        $this->server()->deleteCache($filename);
     }
     //endregion
 }

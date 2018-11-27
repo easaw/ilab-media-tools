@@ -11,34 +11,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\Tasks;
+namespace ILAB\MediaCloud\Tools\Storage\Batch;
 
-use ILAB\MediaCloud\Tools\Storage\ImportProgressDelegate;
+use ILAB\MediaCloud\Tasks\BackgroundProcess;
+use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
-use Smalot\PdfParser\Parser;
 
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
 /**
- * Class ILABS3ImportProcess
+ * Class RegenerateThumbnailsProcess
  *
- * Background processing job for importing existing media to S3
+ * Background processing job for regenerating thumbnails
  */
-class StorageImportProcess extends BackgroundProcess implements ImportProgressDelegate {
-	#region Variables
-	protected $action = 'ilab_s3_import_process';
-	#endregion
+class RegenerateThumbnailBatchProcess extends BackgroundProcess {
+	protected $action = 'ilab_cloud_regenerate_process';
 
-	#region Task Related
 	protected function shouldHandle() {
-	    return !BatchManager::instance()->shouldCancel('storage');
+	    return !BatchManager::instance()->shouldCancel('thumbnails');
 	}
 
 	public function task($item) {
-	    $startTime = microtime(true);
-
+        $startTime = microtime(true);
 
 		Logger::info( 'Start Task', $item);
 		if (!$this->shouldHandle()) {
@@ -49,15 +45,26 @@ class StorageImportProcess extends BackgroundProcess implements ImportProgressDe
 		$index = $item['index'];
 		$post_id = $item['post'];
 
-		BatchManager::instance()->setCurrentID('storage', $post_id);
+        BatchManager::instance()->setCurrentID('thumbnails', $post_id);
 
-		/** @var StorageTool $s3tool */
-		$s3tool = ToolsManager::instance()->tools['storage'];
-		$s3tool->processImport($index, $post_id, $this);
+		$fileName = get_attached_file( $post_id);
+
+		if ($fileName) {
+			$fileparts = explode('/', $fileName);
+			$fileName = array_pop($fileparts);
+
+			BatchManager::instance()->setCurrentFile('thumbnails', $fileName);
+		}
+
+
+		BatchManager::instance()->setCurrent('thumbnails', $index + 1);
+
+		/** @var StorageTool $storageTool */
+		$storageTool = ToolsManager::instance()->tools['storage'];
+		$storageTool->regenerateFile($post_id);
 
         $endTime = microtime(true) - $startTime;
-
-        BatchManager::instance()->incrementTotalTime('storage', $endTime);
+        BatchManager::instance()->incrementTotalTime('thumbnails', $endTime);
 
 		return false;
 	}
@@ -69,7 +76,7 @@ class StorageImportProcess extends BackgroundProcess implements ImportProgressDe
 
 	protected function complete() {
 		Logger::info( 'Task complete');
-		BatchManager::instance()->reset('storage');
+		BatchManager::instance()->reset('thumbnails');
 		parent::complete();
 	}
 
@@ -78,36 +85,25 @@ class StorageImportProcess extends BackgroundProcess implements ImportProgressDe
 
 		parent::cancel_process();
 
-        BatchManager::instance()->reset('storage');
+        BatchManager::instance()->reset('thumbnails');
 	}
 
 	public static function cancelAll() {
 		Logger::info( 'Cancel all processes');
 
-		wp_clear_scheduled_hook('wp_ilab_s3_import_process_cron');
+		wp_clear_scheduled_hook('wp_ilab_cloud_regenerate_process_cron');
 
 		global $wpdb;
 
-		$res = $wpdb->get_results("select * from {$wpdb->options} where option_name like 'wp_ilab_s3_import_process_batch_%'");
+		$res = $wpdb->get_results("select * from {$wpdb->options} where option_name like 'wp_ilab_cloud_regenerate_process_batch_%'");
 		foreach($res as $batch) {
 			Logger::info( "Deleting batch {$batch->option_name}");
 			delete_option($batch->option_name);
 		}
 
-        BatchManager::instance()->reset('storage');
+        BatchManager::instance()->reset('thumbnails');
 
 		Logger::info( "Current cron", get_option( 'cron', []));
 		Logger::info( 'End cancel all processes');
 	}
-	#endregion
-
-	#region ImportProgressDelegate
-	public function updateCurrentIndex($newIndex) {
-        BatchManager::instance()->setCurrent('storage', $newIndex);
-	}
-
-	public function updateCurrentFileName($newFile) {
-        BatchManager::instance()->setCurrentFile('storage', $newFile);
-	}
-	#endregion
 }

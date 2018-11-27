@@ -674,7 +674,7 @@ class S3Storage implements StorageInterface {
     //region Filesystem
     public function adapter() {
 	    if (!empty($this->adapter)) {
-	        return $this->adapter();
+	        return $this->adapter;
         }
 
 	    $this->adapter = new AwsS3Adapter($this->client, $this->bucket);

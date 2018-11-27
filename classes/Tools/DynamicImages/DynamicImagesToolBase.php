@@ -46,6 +46,8 @@ abstract class DynamicImagesToolBase extends ToolBase {
 
     //region ToolBase Overrides
     public function setup() {
+        parent::setup();
+
         if (!$this->enabled()) {
             return;
         }
@@ -687,5 +689,4 @@ abstract class DynamicImagesToolBase extends ToolBase {
         return $this->displayEditUI(1);
     }
     //endregion
-
 }

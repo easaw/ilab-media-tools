@@ -11,20 +11,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\Tools\Storage\Batch;
+namespace ILAB\MediaCloud\Tools\Rekognition\Batch;
 
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\BatchTool;
 use function ILAB\MediaCloud\Utilities\json_response;
 
-class ThumbnailBatchTool extends BatchTool {
+class ImportRekognitionBatchTool extends BatchTool {
     //region Properties
     /**
      * Name/ID of the batch
      * @return string
      */
     public function batchIdentifier() {
-        return 'thumbnails';
+        return 'rekognizer';
     }
 
     /**
@@ -32,11 +32,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     public function title() {
-        return "Regenerate Thumbnails";
-    }
-
-    public function menuTitle() {
-        return "Rebuild Thumbnails";
+        return "Rekognizer Importer";
     }
 
     /**
@@ -44,7 +40,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     public function batchPrefix() {
-        return 'ilab_regenerate_thumbnails';
+        return 'ilab_rekognizer_importer';
     }
 
     /**
@@ -52,7 +48,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     public function batchProcessClassName() {
-        return "\\ILAB\\MediaCloud\\Tasks\\RegenerateThumbnailsProcess";
+        return "\\ILAB\\MediaCloud\\Tools\\Rekognition\\Batch\\ImportRekognitionBatchProcess";
     }
 
     /**
@@ -60,7 +56,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     public function instructionView() {
-        return 'importer/regeneration-instructions.php';
+        return 'importer/rekognition-instructions.php';
     }
 
     /**
@@ -68,15 +64,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     function menuSlug() {
-        return 'media-tools-cloud-regeneration';
-    }
-
-    public function enabled() {
-        if (parent::enabled()) {
-            return !apply_filters('ilab_imgix_enabled', false);
-        }
-
-        return false;
+        return 'media-tools-rekognizer-importer';
     }
     //endregion
 
@@ -87,7 +75,7 @@ class ThumbnailBatchTool extends BatchTool {
      * @return array
      */
     public function registerBulkActions($actions) {
-        $actions['ilab_regenerate_thumbnails'] = 'Regenerate Thumbnails';
+        $actions['ilab_rekognizer_process'] = 'Process with Rekognizer';
         return $actions;
     }
 
@@ -100,9 +88,26 @@ class ThumbnailBatchTool extends BatchTool {
      * @return string
      */
     public function handleBulkActions($redirect_to, $action_name, $post_ids) {
-        if('ilab_regenerate_thumbnails' === $action_name) {
-            if(count($post_ids) > 0) {
-                set_site_transient($this->batchPrefix().'_post_selection', $post_ids, 10);
+        if('ilab_rekognizer_process' === $action_name) {
+            $posts_to_import = [];
+            if (count($post_ids) > 0) {
+                foreach($post_ids as $post_id) {
+                    $meta = wp_get_attachment_metadata($post_id);
+                    if (!empty($meta) && !isset($meta['s3'])) {
+                        continue;
+                    }
+
+                    $mime = get_post_mime_type($post_id);
+                    if (!in_array($mime, ['image/jpeg', 'image/jpg', 'image/png'])) {
+                        continue;
+                    }
+
+                    $posts_to_import[] = $post_id;
+                }
+            }
+
+            if(count($posts_to_import) > 0) {
+                set_site_transient($this->batchPrefix().'_post_selection', $posts_to_import, 10);
                 return 'admin.php?page='.$this->menuSlug();
             }
         }
@@ -112,21 +117,16 @@ class ThumbnailBatchTool extends BatchTool {
     //endregion
 
     //region Actions
-    protected function filterPostArgs($args) {
-        $args['post_mime_type'] ='image';
-        return $args;
-    }
-
     /**
      * Allows subclasses to filter the data used to render the tool
      * @param $data
      * @return array
      */
     protected function filterRenderData($data) {
-        $data['disabledText'] = 'enable Storage';
-        $data['commandLine'] = 'wp mediacloud regenerate';
-        $data['commandTitle'] = 'Regenerate Thumbnails';
-        $data['cancelCommandTitle'] = 'Cancel Regeneration';
+        $data['disabledText'] = 'enable Rekognizer';
+        $data['commandLine'] = 'wp rekognition process';
+        $data['commandTitle'] = 'Process Images';
+        $data['cancelCommandTitle'] = 'Cancel Processing';
 
         return $data;
     }
@@ -141,7 +141,12 @@ class ThumbnailBatchTool extends BatchTool {
         }
 
         $pid = $_POST['post_id'];
-        $this->owner->regenerateFile($pid);
+
+        $data = wp_get_attachment_metadata($pid);
+        if (!empty($data) && isset($data['s3'])) {
+            $data = $this->owner->processImageMeta($data, $pid);
+            wp_update_attachment_metadata($pid, $data);
+        }
 
         json_response(["status" => 'ok']);
     }
@@ -150,9 +155,9 @@ class ThumbnailBatchTool extends BatchTool {
     //region BatchToolInterface
     public function toolInfo() {
         return [
-            'title' => 'Rebuild Thumbnails',
-            'link' => admin_url('admin.php?page=media-tools-cloud-regeneration'),
-            'description' => 'Rebuilds the thumbnails and various theme specified image sizes for the media in your media library.'
+            'title' => 'Rekognizer Importer',
+            'link' => admin_url('admin.php?page=media-tools-rekognizer-importer'),
+            'description' => 'Processes all of the media in your library through Amazon Rekognition to automatically tag and classify your media.  Images must be uploaded to S3 prior to running this tool.'
         ];
     }
     //endregion

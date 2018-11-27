@@ -12,8 +12,10 @@
 // **********************************************************************
 
 
-namespace ILAB\MediaCloud\Tasks;
+namespace ILAB\MediaCloud\Tools\Rekognition\Batch;
 
+use ILAB\MediaCloud\Tasks\BackgroundProcess;
+use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 
@@ -24,7 +26,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
  *
  * Background processing job for processing existing media with AWS Rekognizer
  */
-class RekognizerProcess extends BackgroundProcess {
+class ImportRekognitionBatchProcess extends BackgroundProcess {
 	protected $action = 'ilab_rekognizer_import_process';
 
 	protected function shouldHandle() {

@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\CLI\Rekognition;
+namespace ILAB\MediaCloud\Tools\Rekognition\CLI;
 
 use ILAB\MediaCloud\CLI\Command;
 use ILAB\MediaCloud\Tasks\BatchManager;
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
  * Functions related to Amazon Rekognition
  * @package ILAB\MediaCloud\CLI\Rekognition
  */
-class RekognitionCommands extends Command {
+class RekognitionCLICommands extends Command {
 	/**
 	 * Processes the media library with Rekognition
 	 *
