@@ -35,7 +35,7 @@
                 "videoEnabled": {{($videoEnabled) ? 'true' : 'false'}},
                 "docsEnabled": {{($docUploads) ? 'true' : 'false'}},
                 "extrasEnabled": {{($altFormats) ? 'true' : 'false'}},
-                "allowedMimes": {{json_encode($allowedMimes, JSON_PRETTY_PRINT)}}
+                "allowedMimes": {!! json_encode($allowedMimes, JSON_PRETTY_PRINT) !!}
             });
         });
     })(jQuery);

@@ -11,7 +11,7 @@
             <p><strong>IMPORTANT:</strong> You are running the import process in the web browser.  <strong>Do not navigate away from this page or the import may not finish.</strong></p>
         </div>
         <div id="s3-importer-instructions" {{($status=="running") ? 'style="display:none"':''}}>
-            {{$instructions}}
+            {!! $instructions !!}
             <div class="wp-cli-callout">
                 <h3>Using WP-CLI</h3>
                 <p>You can run this importer process from the command line using <a href="https://wp-cli.org" target="_blank">WP-CLI</a>:</p>
@@ -20,14 +20,14 @@
                 </code>
             </div>
             <div style="margin-top: 2em;">
-                <?php if($enabled): ?>
+                @if($enabled)
                     <a id="s3-importer-start-import" href="#" class="ilab-ajax button button-primary">{{$commandTitle}}</a>
-                <?php else: ?>
+                @else
                     <strong class="tool-disabled">Please <a href="admin.php?page=media-tools-top">{{$disabledText}}</a> before using this tool.</strong>
-                <?php endif ?>
+                @endif
             </div>
         </div>
-        <div id="s3-importer-progress" {{($status!="running") ? 'style="display:none"':''}}>
+        <div id="s3-importer-progress" {!! ($status!="running") ? 'style="display:none"':'' !!}>
             <div id="s3-importer-progress-text">
                 <p id="s3-importer-cancelling-text" style="display:{{($shouldCancel) ? 'block':'none'}}">Cancelling ... This may take a minute ...</p>
             </div>
@@ -62,7 +62,7 @@
             var displayedThumbs = [];
 
             const backgroundImport = {{ ($background) ? 'true' : 'false' }};
-            var postsToImport = {{ json_encode($posts, JSON_PRETTY_PRINT) }};
+            var postsToImport = {!! json_encode($posts, JSON_PRETTY_PRINT) !!};
 
             const displayNextThumbnail = function(thumbUrl, icon) {
                 if (thumbUrl == null) {

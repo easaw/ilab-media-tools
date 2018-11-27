@@ -1,6 +1,6 @@
-{% if ($readOnly) %}
+@if ($readOnly)
 <h2>Storage Info</h2>
-{% endif %}
+@endif
 <div class="info-panel-contents">
 	<div id="info-panel-tab-original">
 		<div class="info-file-info">
@@ -14,22 +14,22 @@
 			</div>
 			<div class="info-line">
 				<h3>Bucket</h3>
-				{% if ($bucketLink) %}
+				@if ($bucketLink)
 				    <a href="{{$bucketLink}}" target="_blank">{{$bucket}}</a>
-				{% else %}
+				@else
 				    {{$bucket}}
-				{% endif %}
+				@endif
 			</div>
 			<div class="info-line">
 				<h3>Path</h3>
-				{% if ($pathLink) %}
+				@if ($pathLink)
 				    <a href="{{$pathLink}}" target="_blank">{{$key}}</a>
-				{% else %}
+				@else
 				    {{$key}}
-				{% endif %}
+				@endif
 			</div>
 
-			{% if ($readOnly) %}
+			@if ($readOnly)
                 <div class="info-line">
                     <label for="s3-access-acl">Access</label>
                     {{$privacy}}
@@ -42,7 +42,7 @@
                     <label for="s3-expires">Expires</label>
                     {{(empty($expires)) ? 'None' : $expires}}
                 </div>
-			{% else %}
+			@else
                 <div class="info-line">
                     <label for="s3-access-acl">Access</label>
                     <select id="s3-access-acl" name="s3-access-acl">
@@ -62,12 +62,12 @@
                     <label for="s3-expires">Expires</label>
                     <input type="text" class="widefat" name="s3-expires" id="s3-expires" value="{{$expires}}">
                 </div>
-			{% endif %}
+			@endif
 			<div class="links-row">
 				<a href="{{$url}}" target="_blank"><span class="dashicons dashicons-external"></span>Storage URL</a>
-				{% if (!empty($publicUrl) && ($publicUrl != $url)) %}
+				@if (!empty($publicUrl) && ($publicUrl != $url))
 				    <a href="{{$publicUrl}}" target="_blank"><span class="dashicons dashicons-external"></span>Public URL</a>
-                {% endif %}
+                @endif
 			</div>
 		</div>
 	</div>

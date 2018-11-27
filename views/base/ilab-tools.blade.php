@@ -4,12 +4,12 @@
         <h1>{{$title}}</h1>
     </header>
     <div class="settings-body">
-        {% foreach($tools as $tool) %}
+        @foreach($tools as $tool)
         <div class="media-cloud-tool-description">
             <h2>{{$tool['title']}}</h2>
             <p>{{$tool['description']}}</p>
             <a href="{{$tool['link']}}" class="button button-primary">Run {{$tool['title']}}</a>
         </div>
-        {% endforeach %}
+        @endforeach
     </div>
 </div>

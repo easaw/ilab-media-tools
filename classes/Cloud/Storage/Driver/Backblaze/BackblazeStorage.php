@@ -100,7 +100,7 @@ class BackblazeStorage implements StorageInterface {
 		return null;
 	}
 
-	public static function pathLink($bucket, $key) {
+	public function pathLink($bucket, $key) {
 		return null;
 	}
 	//endregion

@@ -1422,7 +1422,7 @@ class StorageTool extends ToolBase {
 			'publicUrl' => $publicUrl,
 			'driverName' => $uploadDriver::name(),
 			'bucketLink' => $uploadDriver::bucketLink($bucket),
-			'pathLink' => $uploadDriver::pathLink($bucket, $key)
+			'pathLink' => $this->client->pathLink($bucket, $key)
 		];
 
 		echo View::render_view('storage/document-info-panel.php', $data);
@@ -1469,7 +1469,7 @@ class StorageTool extends ToolBase {
                 $sizeData['driverName'] = $uploadDriver::name();
                 $sizeData['bucketLink'] = $uploadDriver::bucketLink($sizeData['bucket']);
                 $sizeData['isSize'] = 1;
-                $sizeData['pathLink'] = $uploadDriver::pathLink($sizeData['bucket'], $sizeData['key']);
+                $sizeData['pathLink'] = $this->client->pathLink($sizeData['bucket'], $sizeData['key']);
                 $sizeData['imgixEnabled'] = $imgixEnabled;
 
                 $result = wp_get_attachment_image_src($postId, $sizeKey);
@@ -1508,7 +1508,7 @@ class StorageTool extends ToolBase {
             'height' => $meta['height'],
             'driverName' => $uploadDriver::name(),
             'bucketLink' => $uploadDriver::bucketLink($bucket),
-            'pathLink' => $uploadDriver::pathLink($bucket, $key),
+            'pathLink' => $this->client->pathLink($bucket, $key),
             'imgixEnabled' => $imgixEnabled,
             'sizes' => $sizes,
             'missingSizes' => $missingSizes

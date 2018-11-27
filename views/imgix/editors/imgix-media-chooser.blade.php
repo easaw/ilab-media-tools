@@ -11,18 +11,18 @@
     <div class="imgix-media-preview">
         <div class="imgix-media-preview-inner">
             <div class="imgix-media-preview">
-                {% if (imgixCurrentMediaSrcValue($param,$settings)) %}
+                @if (imgixCurrentMediaSrcValue($param,$settings))
                 <img src="{{imgixCurrentMediaSrcValue($param,$settings)}}">
-                {% else %}
+                @else
                 <img>
-                {% endif %}
+                @endif
             </div>
         </div>
     </div>
     <div class="imgix-param-reset"><a href="#">{{__('Remove')}}</a></div>
-    {% if (!empty($paramInfo['hidden'])) %}
+    @if (!empty($paramInfo['hidden']))
     <div class="imgix-param-imagick-warning">
         <div>This parameter requires the <a target="_blank" href="http://php.net/manual/en/book.imagick.php">PHP ImageMagick extension</a> to be installed.</div>
     </div>
-    {% endif %}
+    @endif
 </div>

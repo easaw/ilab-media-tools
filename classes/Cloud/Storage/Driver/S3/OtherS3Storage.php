@@ -47,7 +47,7 @@ class OtherS3Storage extends S3Storage {
 		return $instance->endpoint;
 	}
 
-	public static function pathLink($bucket, $key) {
+	public function pathLink($bucket, $key) {
 		$instance = new self();
 		return $instance->endpoint;
 	}

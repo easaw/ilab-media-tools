@@ -44,7 +44,7 @@
 </style>
 <div class="wrap">
     <h2>Media Cloud Debug Log</h2>
-    <?php $table->display(); ?>
+    {!! $table->display()  !!}
 </div>
 <script>
     (function($){

@@ -1,15 +1,15 @@
-{% if ($imgixEnabled && !isset($topLevel)) %}
+@if ($imgixEnabled && !isset($topLevel))
 <div class="info-line info-notice">
     You are using Imgix which handles generating all of the additional sizes of images.
 </div>
 <div class="links-row">
     <a href="{{$publicUrl}}" target="_blank"><span class="dashicons dashicons-external"></span>Public URL</a>
 </div>
-{% else if (!$uploaded) %}
+@elseif (!$uploaded)
 <div class="info-line">
 Not uploaded.
 </div>
-{% else %}
+@else
 <div class="info-line">
 	<h3>Dimensions</h3>
 	{{$width}} x {{$height}}
@@ -20,21 +20,21 @@ Not uploaded.
 </div>
 <div class="info-line">
 	<h3>Bucket</h3>
-    {% if ($bucketLink) %}
+    @if ($bucketLink)
 	<a href="{{$bucketLink}}" target="_blank">{{$bucket}}</a>
-    {% else %}
+    @else
     {{$bucket}}
-    {% endif %}
+    @endif
 </div>
 <div class="info-line">
 	<h3>Path</h3>
-    {% if ($pathLink) %}
+    @if ($pathLink)
     <a href="{{$pathLink}}" target="_blank">{{$key}}</a>
-    {% else %}
+    @else
     {{$key}}
-    {% endif %}
+    @endif
 </div>
-{% if (!$isSize) %}
+@if (!$isSize)
 <div class="info-line">
     <label for="s3-access-acl">Access</label>
     {{$privacy}}
@@ -47,8 +47,8 @@ Not uploaded.
     <label for="s3-expires">Expires</label>
     {{(empty($expires)) ? 'None' : $expires}}
 </div>
-{% if ($readOnly) %}
-{% else %}
+@if ($readOnly)
+@else
 <div class="info-line">
 	<label for="s3-access-acl">Access</label>
 	<select id="s3-access-acl" name="s3-access-acl">
@@ -68,12 +68,12 @@ Not uploaded.
 	<label for="s3-expires">Expires</label>
 	<input type="text" class="widefat" name="s3-expires" id="s3-expires" value="{{$expires}}">
 </div>
-{% endif %}
-{% endif %}
+@endif
+@endif
 <div class="links-row">
 	<a href="{{$url}}" target="_blank"><span class="dashicons dashicons-external"></span>Storage URL</a>
-	{% if (!empty($publicUrl) && ($publicUrl != $url)) %}
+	@if (!empty($publicUrl) && ($publicUrl != $url))
 	<a href="{{$publicUrl}}" target="_blank"><span class="dashicons dashicons-external"></span>Public URL</a>
-	{% endif %}
+	@endif
 </div>
-{% endif %}
+@endif

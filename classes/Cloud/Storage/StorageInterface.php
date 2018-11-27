@@ -78,7 +78,7 @@ interface StorageInterface {
 	 *
 	 * @return string|null
 	 */
-	public static function pathLink($bucket, $key);
+	public function pathLink($bucket, $key);
 
     /**
      * Returns true/false if this storage is using signed URLs.

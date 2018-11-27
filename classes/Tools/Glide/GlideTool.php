@@ -317,8 +317,7 @@ class GlideTool extends DynamicImagesToolBase {
             return false;
         }
 
-        $builder = new UrlBuilder($this->basePath, $this->signingKey);
-
+        $builder = new UrlBuilder($this->basePath, SignatureFactory::create($this->signingKey));
 
         $is_crop = ((count($size) >= 3) && ($size[2] == 'crop'));
         if (!$is_crop && $this->shouldCrop) {

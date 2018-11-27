@@ -13,8 +13,8 @@
         </div>
     </label>
     <div>
-        <p>{{$tool->toolInfo['description']}}</p>
-        {% if (count($tool->toolInfo['dependencies'])>0) %}
+        <p>{!! $tool->toolInfo['description'] !!}</p>
+        @if (count($tool->toolInfo['dependencies'])>0)
         <p style="font-size:12px; margin-top:5px;">
             <strong>Requires:</strong>
 		    <?php
@@ -43,9 +43,9 @@
                 $required .= '&nbsp; &nbsp; <strong>Not compatible:</strong> '.$notRequired;
             }
 		    ?>
-            {{$required}}
+            {!! $required !!}
         </p>
-        {% endif %}
+        @endif
     </div>
 
 </div>

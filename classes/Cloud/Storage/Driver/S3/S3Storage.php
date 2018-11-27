@@ -173,8 +173,8 @@ class S3Storage implements StorageInterface {
 		return "https://console.aws.amazon.com/s3/buckets/$bucket";
 	}
 
-	public static function pathLink($bucket, $key) {
-		return "https://console.aws.amazon.com/s3/buckets/{$bucket}/{$key}/details";
+	public function pathLink($bucket, $key) {
+		return "https://console.aws.amazon.com/s3/object/{$bucket}/{$key}?region={$this->region}&tab=overview";
 	}
 	//endregion
 	
