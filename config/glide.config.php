@@ -13,8 +13,8 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Glide",
-    "title" => "Glide Image Server",
+    "name" => "Dynamic Image Server",
+    "title" => "Dynamic Image Server",
     "description" => "Serves on-demand dynamic images through the <a href='http://glide.thephpleague.com'>Glide library</a>, similar to Imgix but local.",
     "class" => "ILAB\\MediaCloud\\Tools\\Glide\\GlideTool",
     "env" => "ILAB_MEDIA_GLIDE_ENABLED",
@@ -41,8 +41,8 @@ return [
         "\\ILAB\\MediaCloud\\Tools\\Glide\\Batch\\ClearCacheBatchTool"
     ],
     "settings" => [
-        "title" => "Glide Settings",
-        "menu" => "Glide Settings",
+        "title" => "Dynamic Image Server Settings",
+        "menu" => "Dynamic Image Server Settings",
         "options-page" => "media-tools-glide",
         "options-group" => "ilab-media-glide",
         "groups" => [
@@ -57,7 +57,7 @@ return [
                         "default" => "/__images/"
                     ],
                     "ilab-media-glide-signing-key" => [
-                        "title" => "Glide Signing Key",
+                        "title" => "Signing Key",
                         "description" => "The signing key used to create secure URLs.  This is generated for you, though you can override the auto-generated one here.",
                         "type" => "text-field"
                     ],
