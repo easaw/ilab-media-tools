@@ -177,7 +177,8 @@ class GoogleStorage implements StorageInterface {
 
 	public function enabled() {
 		if(empty($this->credentials) || (!is_array($this->credentials)) || empty($this->bucket)) {
-			NoticeManager::instance()->displayAdminNotice('error', "To start using Cloud Storage, you will need to <a href='admin.php?page=media-tools-s3'>supply your Google credentials.</a>.");
+		    $adminUrl = admin_url('admin.php?page=media-cloud-settings&tab=storage');
+			NoticeManager::instance()->displayAdminNotice('error', "To start using Cloud Storage, you will need to <a href='$adminUrl'>supply your Google credentials.</a>.", true, 'ilab-cloud-storage-setup-warning', 'forever');
 			return false;
 		}
 

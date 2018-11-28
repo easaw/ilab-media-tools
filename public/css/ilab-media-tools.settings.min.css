@@ -23,29 +23,83 @@
     .settings-container header h1 {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
       text-transform: uppercase; }
+  .settings-container header.all-settings {
+    position: relative;
+    height: 124px;
+    background-image: url(../img/settings-bg-large.svg);
+    overflow: hidden; }
+    .settings-container header.all-settings > img {
+      margin: 0;
+      position: absolute;
+      left: 23px;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+           -o-transform: translateY(-50%);
+              transform: translateY(-50%);
+      width: 128px;
+      max-width: 128px; }
+    .settings-container header.all-settings hr {
+      position: absolute;
+      border: 1px solid #bbb;
+      left: 0px;
+      bottom: -0.5px;
+      right: 0px;
+      padding: 0;
+      margin: 0; }
+    .settings-container header.all-settings nav {
+      position: absolute;
+      right: 0px;
+      bottom: 0px; }
+      .settings-container header.all-settings nav ul {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        margin: 0;
+        padding: 0;
+        margin-right: 5px; }
+        .settings-container header.all-settings nav ul li {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-align: center;
+              -ms-flex-align: center;
+                  align-items: center;
+          -webkit-box-pack: center;
+              -ms-flex-pack: center;
+                  justify-content: center;
+          margin: 0;
+          padding: 0;
+          margin-right: 5px;
+          padding: 8px 15px;
+          background-color: #CCCCCC;
+          border-bottom: 1px solid #bbb; }
+          .settings-container header.all-settings nav ul li a {
+            color: #777777;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px; }
+          .settings-container header.all-settings nav ul li span.tool-indicator {
+            background: #ccc;
+            border: 1px solid #979797;
+            display: block;
+            width: 9px;
+            height: 9px;
+            border-radius: 9px;
+            margin-right: 6px; }
+            .settings-container header.all-settings nav ul li span.tool-indicator.tool-active {
+              background: #6DD51B; }
+            .settings-container header.all-settings nav ul li span.tool-indicator.tool-env-active {
+              background: #FDAC00; }
+          .settings-container header.all-settings nav ul li.active {
+            color: black;
+            background-color: #F1F1F1;
+            border: 1px solid #bbb;
+            border-bottom: 0px solid rgba(0, 0, 0, 0); }
+            .settings-container header.all-settings nav ul li.active a {
+              color: black; }
   .settings-container .settings-body {
     margin: 20px 20px; }
-    .settings-container .settings-body > form > h2:first-of-type {
-      padding-bottom: 0px;
-      padding-top: 0px;
-      border-top: 0px none; }
-    .settings-container .settings-body > form > h2 {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
-      text-transform: uppercase;
-      padding: 20px 20px 0px 20px;
-      margin-left: -20px;
-      border-top: 1px solid rgba(0, 0, 0, 0.125); }
-    .settings-container .settings-body .checkbox-w-description {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center; }
-      .settings-container .settings-body .checkbox-w-description label {
-        margin-right: 20px; }
-      .settings-container .settings-body .checkbox-w-description > div > p {
-        margin: 0; }
 
 .ic-Super-toggle__label {
   -webkit-box-sizing: border-box;
@@ -315,5 +369,49 @@
   .media-cloud-tool-description p {
     margin-top: 0px;
     font-size: 1.2em; }
+
+.ilab-notification-container .notice {
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-bottom: 10px; }
+  .ilab-notification-container .notice:last-of-type {
+    margin-bottom: 20px; }
+
+.ilab-settings-section {
+  background-color: #fafafa;
+  padding: 25px 25px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden; }
+  .ilab-settings-section h2 {
+    padding: 10px 25px;
+    background-color: #ddd;
+    margin: -25px -25px 0px -25px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5) !important;
+    text-transform: uppercase; }
+  .ilab-settings-section .checkbox-w-description {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .ilab-settings-section .checkbox-w-description label {
+      margin-right: 20px; }
+    .ilab-settings-section .checkbox-w-description > div > p {
+      margin: 0; }
+
+.ilab-settings-toggle {
+  padding: 0px 25px 5px 25px; }
+  .ilab-settings-toggle table.form-table tr {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
 
 /*# sourceMappingURL=ilab-media-tools.settings.min.css.map */

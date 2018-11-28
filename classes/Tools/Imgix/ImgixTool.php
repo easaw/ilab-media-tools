@@ -69,8 +69,7 @@ class ImgixTool extends DynamicImagesToolBase {
 		$enabled = parent::enabled();
 
 		if(!$this->getOption('ilab-media-imgix-domains')) {
-			NoticeManager::instance()->displayAdminNotice('error', "To start using Imgix, you will need to <a href='admin.php?page=media-tools-imgix'>set it up</a>.", true, 'disable-ilab-imgix-warning');
-
+//			NoticeManager::instance()->displayAdminNotice('error', "To start using Imgix, you will need to <a href='admin.php?page=media-tools-imgix'>set it up</a>.", true, 'disable-ilab-imgix-warning');
 			return false;
 		}
 
