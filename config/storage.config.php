@@ -13,12 +13,13 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Storage",
-	"title" => "Storage",
+    "id" => "storage",
+    "name" => "Cloud Storage",
 	"description" => "Automatically uploads media to Amazon S3, Google Cloud Storage, Backblaze, DigitalOcean Spaces and others.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Storage\\StorageTool",
 	"env" => "ILAB_MEDIA_S3_ENABLED",
 	"dependencies" => [],
+    "related" => ["media-upload"],
     "compatibleImageOptimizers" => [
         "shortpixel" => "shortpixel-image-optimiser/wp-shortpixel.php",
         "smush" => "wp-smushit/wp-smush.php",
@@ -42,8 +43,6 @@ return [
         "\\ILAB\\MediaCloud\\Tools\\Storage\\Batch\\RegenerateThumbnailBatchTool"
     ],
 	"settings" => [
-		"title" => "Storage Settings",
-		"menu" => "Storage Settings",
 		"options-page" => "media-tools-s3",
 		"options-group" => "ilab-media-s3",
 		"groups" => [

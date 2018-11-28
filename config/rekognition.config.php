@@ -14,8 +14,8 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 
 return [
+    "id" => "rekognition",
     "name" => "Rekognition",
-	"title" => "Rekognition",
 	"description" => "Uses Amazon's Rekognition AI service to automatically tag your uploaded images.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Rekognition\\RekognitionTool",
 	"dependencies" => ["storage"],
@@ -24,9 +24,6 @@ return [
         "\\ILAB\\MediaCloud\\Tools\\Rekognition\\Batch\\ImportRekognitionBatchTool"
     ],
 	"settings" => [
-		"title" => "Rekognition Settings",
-		"menu" => "Rekognition Settings",
-		"only_when_enabled" => false,
 		"options-page" => "media-tools-rekognition",
 		"options-group" => "ilab-media-rekognition",
 		"groups" => [

@@ -13,8 +13,8 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
+    "id" => "imgix",
     "name" => "Imgix",
-	"title" => "Imgix Support",
 	"description" => "Serves dynaminc on-demand images through <a target='_blank' href='https://imgix.com'>imgix.com</a>.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Imgix\\ImgixTool",
 	"env" => "ILAB_MEDIA_IMGIX_ENABLED",
@@ -23,6 +23,7 @@ return [
 		"storage",
         "!glide"
 	],
+    "related" => ["media-upload"],
 	"helpers" => [
 		"ilab-imgix-helpers.php"
 	],
@@ -39,8 +40,6 @@ return [
         ]
     ],
 	"settings" => [
-		"title" => "Imgix Settings",
-		"menu" => "Imgix Settings",
 		"options-page" => "media-tools-imgix",
 		"options-group" => "ilab-media-imgix",
 		"groups" => [

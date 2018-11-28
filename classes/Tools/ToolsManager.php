@@ -50,12 +50,8 @@ class ToolsManager
         }
 
         add_action('admin_menu', function() {
-            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-cloud-top', [$this,'renderSettings'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTk4NCAxMTUycTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNWgtMTA4OHEtMTg1IDAtMzE2LjUtMTMxLjV0LTEzMS41LTMxNi41cTAtMTMyIDcxLTI0MS41dDE4Ny0xNjMuNXEtMi0yOC0yLTQzIDAtMjEyIDE1MC0zNjJ0MzYyLTE1MHExNTggMCAyODYuNSA4OHQxODcuNSAyMzBxNzAtNjIgMTY2LTYyIDEwNiAwIDE4MSA3NXQ3NSAxODFxMCA3NS00MSAxMzggMTI5IDMwIDIxMyAxMzQuNXQ4NCAyMzkuNXoiLz48L3N2Zz4=');
-            add_submenu_page( 'media-cloud-top', 'Media Cloud Features', 'Enable/Disable Features', 'manage_options', 'media-cloud-top', [$this,'renderSettings']);
-
-
-
-            add_settings_section('ilab-media-tools','Enabled Features',[$this,'renderSettingsSection'],'media-cloud-top');
+            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-cloud-settings', [$this,'renderAllSettings'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTk4NCAxMTUycTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNWgtMTA4OHEtMTg1IDAtMzE2LjUtMTMxLjV0LTEzMS41LTMxNi41cTAtMTMyIDcxLTI0MS41dDE4Ny0xNjMuNXEtMi0yOC0yLTQzIDAtMjEyIDE1MC0zNjJ0MzYyLTE1MHExNTggMCAyODYuNSA4OHQxODcuNSAyMzBxNzAtNjIgMTY2LTYyIDEwNiAwIDE4MSA3NXQ3NSAxODFxMCA3NS00MSAxMzggMTI5IDMwIDIxMyAxMzQuNXQ4NCAyMzkuNXoiLz48L3N2Zz4=');
+            add_submenu_page( 'media-cloud-settings', 'Media Cloud Settings', 'Settings', 'manage_options', 'media-cloud-settings', [$this,'renderAllSettings']);
 
             $hasTools = false;
             foreach($this->tools as $key => $tool)
@@ -63,30 +59,38 @@ class ToolsManager
                 register_setting('ilab-media-tools',"ilab-media-tool-enabled-$key");
 
                 if ($key != 'troubleshooting') {
-                    add_settings_field("ilab-media-tool-enabled-$key",$tool->toolInfo['title'],[$this,'renderToolSettings'],'media-cloud-top','ilab-media-tools',['key'=>$key]);
+                    add_settings_field("ilab-media-tool-enabled-$key",$tool->toolInfo['name'],[$this,'renderToolSettings'],'media-cloud-settings','ilab-media-tools',['key'=>$key]);
                 }
 
-                $tool->registerMenu('media-cloud-top');
+                register_setting($tool->optionsGroup(),"ilab-media-tool-enabled-$key");
+                $tool->registerMenu('media-cloud-settings');
                 $tool->registerSettings();
+
+                if (!empty($tool->toolInfo['related'])) {
+                    foreach($tool->toolInfo['related'] as $relatedKey) {
+                        register_setting($tool->optionsGroup(),"ilab-media-tool-enabled-$relatedKey");
+                    }
+                }
 
                 if (!$hasTools && $tool->hasBatchTools()) {
                     $hasTools = true;
                 }
             }
 
-	        add_submenu_page( 'media-cloud-top', 'Plugin Support', 'Help / Support', 'manage_options', 'media-tools-support', [$this,'renderSupport']);
-
             if ($hasTools) {
-                add_menu_page('Tools', 'Media Tools', 'manage_options', 'media-tools-top', [$this,'renderTools'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTM0NCA4NjRxMC0xNC05LTIzbC0zNTItMzUycS05LTktMjMtOXQtMjMgOWwtMzUxIDM1MXEtMTAgMTItMTAgMjQgMCAxNCA5IDIzdDIzIDloMjI0djM1MnEwIDEzIDkuNSAyMi41dDIyLjUgOS41aDE5MnExMyAwIDIyLjUtOS41dDkuNS0yMi41di0zNTJoMjI0cTEzIDAgMjIuNS05LjV0OS41LTIyLjV6bTY0MCAyODhxMCAxNTktMTEyLjUgMjcxLjV0LTI3MS41IDExMi41aC0xMDg4cS0xODUgMC0zMTYuNS0xMzEuNXQtMTMxLjUtMzE2LjVxMC0xMzAgNzAtMjQwdDE4OC0xNjVxLTItMzAtMi00MyAwLTIxMiAxNTAtMzYydDM2Mi0xNTBxMTU2IDAgMjg1LjUgODd0MTg4LjUgMjMxcTcxLTYyIDE2Ni02MiAxMDYgMCAxODEgNzV0NzUgMTgxcTAgNzYtNDEgMTM4IDEzMCAzMSAyMTMuNSAxMzUuNXQ4My41IDIzOC41eiIvPjwvc3ZnPg==');
                 foreach($this->tools as $key => $tool) {
-                    $tool->registerToolMenu('media-tools-top');
+                    $tool->registerToolMenu('media-cloud-settings');
                 }
             }
+
+	        add_submenu_page( 'media-cloud-settings', 'Plugin Support', 'Help / Support', 'manage_options', 'media-tools-support', [$this,'renderSupport']);
+
+
         });
 
 	    add_filter('plugin_action_links_'.ILAB_PLUGIN_NAME, function($links) {
 		    $links[] = "<a href='http://www2.jdrf.org/site/TR?fr_id=6912&pg=personal&px=11429802' target='_blank'><b>Donate</b></a>";
-		    $links[] = "<a href='admin.php?page=media-tools-top'>Settings</a>";
+		    $links[] = "<a href='admin.php?page=media-cloud-settings'>Settings</a>";
 		    $links[] = "<a href='https://wordpress.org/support/plugin/ilab-media-tools' target='_blank'>Support</a>";
 
 		    return $links;
@@ -103,6 +107,10 @@ class ToolsManager
 	    } else if ((microtime(true) - floatval($runTime)) > 1209600) {
 		    NoticeManager::instance()->displayAdminNotice('info',"Thanks for using Media Cloud!  If you like it, please <a href='https://wordpress.org/support/plugin/ilab-media-tools/reviews/#new-post' target=_blank>leave a review</a>.  If you really like it, please consider donating to <a href='http://www2.jdrf.org/site/TR?fr_id=6912&pg=personal&px=11429802' target='_blank'>juvenile type 1 diabetes research</a>.  Thank you!", true,'ilab-media-tools-nag-notice');
         }
+
+        add_action('admin_enqueue_scripts', function(){
+            wp_enqueue_script('ilab-settings-js', ILAB_PUB_JS_URL . '/ilab-settings.js', ['jquery'], null, true );
+        });
     }
     //endregion
 
@@ -182,11 +190,41 @@ class ToolsManager
     /**
      * Render the options page
      */
-    public function renderSettings() {
-        echo View::render_view( 'base/ilab-settings.php', [
-            'title'=>'Enabled Features',
-            'group'=>'ilab-media-tools',
-            'page'=>'media-cloud-top'
+    public function renderAllSettings() {
+        global $wp_settings_sections, $wp_settings_fields;
+
+        if (!empty($_GET['tab']) && in_array($_GET['tab'], array_keys($this->tools))) {
+            $tab = $_GET['tab'];
+        } else {
+            $tab = array_keys($this->tools)[0];
+        }
+
+        $selectedTool = $this->tools[$tab];
+        $page = $selectedTool->optionsPage();
+        $group = $selectedTool->optionsGroup();
+
+        $sections = [];
+
+        foreach((array)$wp_settings_sections[$page] as $section) {
+            if (!isset($wp_settings_fields) || !isset($wp_settings_fields[$page]) || !isset($wp_settings_fields[$page][$section['id']])) {
+                continue;
+            }
+
+            $sections[] = [
+                'title' => $section['title'],
+                'id' => $section['id']
+            ];
+        }
+
+        echo View::render_view( 'base/ilab-all-settings.php', [
+            'title' => 'All Settings',
+            'tab' => $tab,
+            'tools' => $this->tools,
+            'tool' => $selectedTool,
+            'group' => $group,
+            'page' => $page,
+            'manager' => $this,
+            'sections' => $sections
         ]);
     }
 
@@ -210,12 +248,7 @@ class ToolsManager
         ]);
     }
 
-    /**
-     * Render the settings section
-     */
-    public function renderSettingsSection() {
-        echo 'Enabled/disable tools.';
-    }
+
 
     public function renderSupport() {
         echo View::render_view( 'base/ilab-support.php', []);

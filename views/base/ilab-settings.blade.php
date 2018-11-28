@@ -4,6 +4,7 @@
         <h1>{{$title}}</h1>
     </header>
     <div class="settings-body">
+        <div class="ilab-notification-container"></div>
         <form action='options.php' method='post' autocomplete="off">
             <?php
             settings_fields( $group );

@@ -13,15 +13,13 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Image Crop",
-	"title" => "Image Crop",
+    "id" => "crop",
+    "name" => "Crop Tool",
 	"description" => "Provides an easy to use tool for manually cropping images for all image sizes.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Crop\\CropTool",
 	"dependencies" => [],
 	"env" => "ILAB_MEDIA_CROP_ENABLED",
 	"settings" => [
-		"title" => "Crop Settings",
-		"menu" => "Crop Settings",
 		"options-page" => "media-tools-crop",
 		"options-group" => "ilab-media-crop",
 		"groups" => [

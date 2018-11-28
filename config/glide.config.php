@@ -13,8 +13,8 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Dynamic Image Server",
-    "title" => "Dynamic Image Server",
+    "id" => "glide",
+    "name" => "Dynamic Images",
     "description" => "Serves on-demand dynamic images through the <a href='http://glide.thephpleague.com'>Glide library</a>, similar to Imgix but local.",
     "class" => "ILAB\\MediaCloud\\Tools\\Glide\\GlideTool",
     "env" => "ILAB_MEDIA_GLIDE_ENABLED",
@@ -22,6 +22,7 @@ return [
         "crop",
         "!imgix"
     ],
+    "related" => ["media-upload"],
     "helpers" => [
         "ilab-imgix-helpers.php"
     ],
@@ -41,8 +42,6 @@ return [
         "\\ILAB\\MediaCloud\\Tools\\Glide\\Batch\\ClearCacheBatchTool"
     ],
     "settings" => [
-        "title" => "Dynamic Image Server Settings",
-        "menu" => "Dynamic Image Server Settings",
         "options-page" => "media-tools-glide",
         "options-group" => "ilab-media-glide",
         "groups" => [

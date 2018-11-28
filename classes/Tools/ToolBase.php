@@ -138,6 +138,14 @@ abstract class ToolBase {
 	    });
     }
 
+    public function optionsPage() {
+        return $this->options_page;
+    }
+
+    public function optionsGroup() {
+        return $this->options_group;
+    }
+
     private function generateDeactivateLink($pluginName, $plugin) {
         $plugin = str_replace( '\/', '%2F', $plugin );
 
@@ -389,17 +397,7 @@ abstract class ToolBase {
      *
      * @param $top_menu_slug
      */
-    public function registerMenu($top_menu_slug)
-    {
-        if (!isset($this->toolInfo['settings']))
-            return;
-
-        if ($this->only_when_enabled && (!$this->enabled())) {
-            return;
-        }
-
-        $settings=$this->toolInfo['settings'];
-        add_submenu_page( $top_menu_slug, $settings['title'], $settings['menu'], 'manage_options', $this->options_page, [$this,'renderSettings']);
+    public function registerMenu($top_menu_slug) {
     }
 
     /**
@@ -407,8 +405,7 @@ abstract class ToolBase {
      *
      * @param $top_menu_slug
      */
-    public function registerToolMenu($tool_menu_slug)
-    {
+    public function registerToolMenu($tool_menu_slug) {
         if (!isset($this->toolInfo['settings']))
             return;
 

@@ -24,16 +24,16 @@
 			    if (is_array($dep)) {
 				    $depTitles = [];
 				    foreach($dep as $toolDep){
-					    $depTitles[] = $manager->tools[$toolDep]->toolInfo['title'];
+					    $depTitles[] = $manager->tools[$toolDep]->toolInfo['name'];
 				    }
 
 				    $required[] = implode(' and/or ', $depTitles);
 			    } else {
 			        if (strpos($dep, '!') === 0) {
 			            $notRequiredDep = trim($dep, '!');
-			            $notRequired[] = $manager->tools[$notRequiredDep]->toolInfo['title'];
+			            $notRequired[] = $manager->tools[$notRequiredDep]->toolInfo['name'];
                     } else {
-                        $required[]=$manager->tools[$dep]->toolInfo['title'];
+                        $required[]=$manager->tools[$dep]->toolInfo['name'];
                     }
 			    }
 		    }

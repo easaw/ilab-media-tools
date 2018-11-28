@@ -13,8 +13,8 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Media Cloud Troubleshooting",
-	"title" => "Media Cloud Troubleshooting",
+    "id" => "troubleshooting",
+    "name" => "Troubleshooting",
 	"description" => "Enables troubleshooter to double check that your settings work.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Debugging\\TroubleshootingTool",
 	"dependencies" => [],

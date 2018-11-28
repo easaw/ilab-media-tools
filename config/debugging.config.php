@@ -13,16 +13,13 @@
 if (!defined('ABSPATH')) { header('Location: /'); die; }
 
 return [
-    "name" => "Media Cloud Debugging",
-	"title" => "Media Cloud Debugging",
+    "id" => "debugging",
+    "name" => "Debugging",
 	"description" => "Enables logging for the plugin to track down issues.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Debugging\\DebuggingTool",
 	"dependencies" => [],
 	"env" => "ILAB_MEDIA_DEBUGGING_ENABLED",
 	"settings" => [
-		"title" => "Debug Settings",
-		"menu" => "Debug Settings",
-		"only_when_enabled" => true,
 		"options-page" => "media-tools-debugging",
 		"options-group" => "ilab-media-debugging",
 		"groups" => [
