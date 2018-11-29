@@ -58,9 +58,16 @@
                 </table>
             </div>
             @endforeach
-            <?php
-            submit_button();
-            ?>
+            <div class="ilab-settings-button">
+                @if($tool->hasEnabledBatchTools())
+                    <div class="ilab-settings-batch-tools">
+                    @foreach($tool->enabledBatchToolInfo() as $batchTool)
+                    <a class="button" href="{{$batchTool['link']}}">{{$batchTool['title']}}</a>
+                    @endforeach
+                    </div>
+                @endif
+                <?php submit_button(); ?>
+            </div>
         </form>
     </div>
 </div>

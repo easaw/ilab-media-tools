@@ -151,7 +151,7 @@ class RegenerateThumbnailBatchTool extends BatchTool {
     public function toolInfo() {
         return [
             'title' => 'Rebuild Thumbnails',
-            'link' => admin_url('admin.php?page=media-tools-cloud-regeneration'),
+            'link' => admin_url('admin.php?page='.$this->menuSlug()),
             'description' => 'Rebuilds the thumbnails and various theme specified image sizes for the media in your media library.'
         ];
     }

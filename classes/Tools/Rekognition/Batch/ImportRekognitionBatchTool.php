@@ -156,7 +156,7 @@ class ImportRekognitionBatchTool extends BatchTool {
     public function toolInfo() {
         return [
             'title' => 'Rekognizer Importer',
-            'link' => admin_url('admin.php?page=media-tools-rekognizer-importer'),
+            'link' => admin_url('admin.php?page='.$this->menuSlug()),
             'description' => 'Processes all of the media in your library through Amazon Rekognition to automatically tag and classify your media.  Images must be uploaded to S3 prior to running this tool.'
         ];
     }

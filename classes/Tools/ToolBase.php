@@ -314,11 +314,34 @@ abstract class ToolBase {
         return (count($this->batchTools) > 0);
     }
 
+    public function hasEnabledBatchTools() {
+        /** @var BatchTool $batchTool */
+        foreach($this->batchTools as $batchTool) {
+            if ($batchTool->enabled()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function batchToolInfo() {
         $results = [];
 
         foreach($this->batchTools as $batchTool) {
             $results[] = $batchTool->toolInfo();
+        }
+
+        return $results;
+    }
+
+    public function enabledBatchToolInfo() {
+        $results = [];
+
+        foreach($this->batchTools as $batchTool) {
+            if ($batchTool->enabled()) {
+                $results[] = $batchTool->toolInfo();
+            }
         }
 
         return $results;

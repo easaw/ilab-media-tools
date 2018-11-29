@@ -146,7 +146,7 @@ class ImportStorageBatchTool extends BatchTool {
     public function toolInfo() {
         return [
           'title' => 'Storage Importer',
-          'link' => admin_url('admin.php?page=media-tools-s3-importer'),
+          'link' => admin_url('admin.php?page='.$this->menuSlug()),
           'description' => 'Uploads your existing media library to Amazon S3, Google Cloud Storage or any other storage provider that you have configured.'
         ];
     }
