@@ -1063,8 +1063,71 @@ class StorageTool extends Tool {
 		$bucket = $info[0]['bucket'];
 		$file = $info[0]['key'];
 
-		return "http://s3-$region.amazonaws.com/$bucket/$file";
+		return "https://s3-$region.amazonaws.com/$bucket/$file";
 	}
+
+    /**
+     * Filter the content to replace CDN
+     * @param $content
+     *
+     * @return mixed
+     * @throws StorageException
+     */
+    public function filterContent($content) {
+        if (apply_filters('ilab_imgix_enabled', false)) {
+            return $content;
+        }
+
+        if (!preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
+            return $content;
+        }
+
+        $replacements = [];
+
+        foreach($matches[0] as $image) {
+            if (preg_match('/class\s*=\s*(?:[\"\']{1})([^\"\']+)(?:[\"\']{1})/m', $image, $matches)) {
+                $classes = explode(' ', $matches[1]);
+
+                $size = null;
+                $id = null;
+
+                foreach($classes as $class) {
+                    if (strpos($class, 'wp-image-') === 0) {
+                        $parts = explode('-', $class);
+                        $id = array_pop($parts);
+                    } else if (strpos($class, 'size-') === 0) {
+                        $size = str_replace('size-', '', $class);
+                    }
+                }
+
+                if (!empty($id) && is_numeric($id)) {
+                    if (preg_match("#src=['\"]+([^'\"]+)['\"]+#",$image, $srcMatches)) {
+                        $replacements[$id] = [
+                            'src' => $srcMatches[1],
+                            'size' => $size
+                        ];
+                    }
+                }
+            }
+        }
+
+        foreach($replacements as $id => $data) {
+            if (empty($data['size'])) {
+                $meta = wp_get_attachment_metadata($id);
+                $url = $this->getAttachmentURLFromMeta($meta);
+            } else {
+                $url = $this->forcedImageDownsize(false, $id, $data['size']);
+            }
+
+            if (empty($url) || ($url[0] == $data['src'])) {
+                continue;
+            }
+
+            $content = str_replace($data['src'], $url[0], $content);
+        }
+
+        return $content;
+    }
 
 	//endregion
 
@@ -1333,68 +1396,7 @@ class StorageTool extends Tool {
 		});
 	}
 
-	/**
-     * Filter the content to replace CDN
-	 * @param $content
-	 *
-	 * @return mixed
-     * @throws StorageException
-	 */
-	public function filterContent($content) {
-	    if (apply_filters('ilab_imgix_enabled', false)) {
-	        return $content;
-        }
 
-		if (!preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
-			return $content;
-		}
-
-		$replacements = [];
-
-        foreach($matches[0] as $image) {
-            if (preg_match('/class\s*=\s*(?:[\"\']{1})([^\"\']+)(?:[\"\']{1})/m', $image, $matches)) {
-                $classes = explode(' ', $matches[1]);
-
-                $size = null;
-                $id = null;
-
-                foreach($classes as $class) {
-                    if (strpos($class, 'wp-image-') === 0) {
-                        $parts = explode('-', $class);
-                        $id = array_pop($parts);
-                    } else if (strpos($class, 'size-') === 0) {
-                        $size = str_replace('size-', '', $class);
-                    }
-                }
-
-                if (!empty($id) && is_numeric($id)) {
-                    if (preg_match("#src=['\"]+([^'\"]+)['\"]+#",$image, $srcMatches)) {
-                        $replacements[$id] = [
-                            'src' => $srcMatches[1],
-                            'size' => $size
-                        ];
-                    }
-                }
-            }
-        }
-
-        foreach($replacements as $id => $data) {
-            if (empty($data['size'])) {
-                $meta = wp_get_attachment_metadata($id);
-                $url = $this->getAttachmentURLFromMeta($meta);
-            } else {
-                $url = $this->forcedImageDownsize(false, $id, $data['size']);
-            }
-
-            if (empty($url) || ($url[0] == $data['src'])) {
-                continue;
-            }
-
-            $content = str_replace($data['src'], $url[0], $content);
-        }
-
-        return $content;
-    }
 
     public function getMediaInfo() {
 	    if (!is_admin()) {
