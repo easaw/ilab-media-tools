@@ -16,7 +16,7 @@ namespace ILAB\MediaCloud\Tools\Rekognition;
 use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB_Aws\Exception\AwsException;
 use ILAB_Aws\Rekognition\RekognitionClient;
@@ -28,7 +28,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
  *
  * Debugging tool.
  */
-class RekognitionTool extends ToolBase {
+class RekognitionTool extends Tool {
 	//region Class Variables
 	/** @var string|null */
 	protected $key = null;
@@ -145,7 +145,7 @@ class RekognitionTool extends ToolBase {
 	}
 	//endregion
 
-	//region ToolBase Overrides
+	//region Tool Overrides
 	public function enabled() {
 		if (!parent::enabled()) {
 			return false;

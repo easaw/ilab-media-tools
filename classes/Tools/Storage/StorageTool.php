@@ -22,7 +22,7 @@ use ILAB\MediaCloud\Cloud\Storage\UploadInfo;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess;
 use ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use function ILAB\MediaCloud\Utilities\arrayPath;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use function ILAB\MediaCloud\Utilities\json_response;
@@ -42,7 +42,7 @@ if(!defined('ABSPATH')) {
  *
  * Storage Tool.
  */
-class StorageTool extends ToolBase {
+class StorageTool extends Tool {
 	//region Properties/Class Variables
 
 	/** @var array */
@@ -106,7 +106,7 @@ class StorageTool extends ToolBase {
     }
 	//endregion
 
-	//region ToolBase Overrides
+	//region Tool Overrides
 	public function enabled() {
 		$enabled = parent::enabled();
 

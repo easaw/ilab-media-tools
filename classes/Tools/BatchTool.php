@@ -28,7 +28,7 @@ use ILAB\MediaCloud\Utilities\View;
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
 abstract class BatchTool implements BatchToolInterface {
-    /** @var null|ToolBase */
+    /** @var null|Tool */
     protected $owner = null;
 
     /** @var bool  */
@@ -38,7 +38,7 @@ abstract class BatchTool implements BatchToolInterface {
 
     /**
      * BatchTool constructor.
-     * @param $ownerTool ToolBase The tool that owns this batch tool
+     * @param $ownerTool Tool The tool that owns this batch tool
      */
     public function __construct($ownerTool) {
         $this->owner = $ownerTool;

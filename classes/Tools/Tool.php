@@ -27,7 +27,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 /**
  * Base class for media tools
  */
-abstract class ToolBase {
+abstract class Tool {
 
     private $adminNotices;
     protected $settingSections;

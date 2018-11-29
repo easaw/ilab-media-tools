@@ -13,9 +13,9 @@
 
 namespace ILAB\MediaCloud\Tools\Imgix;
 
-use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
+use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesTool;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use function ILAB\MediaCloud\Utilities\arrayPath;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
@@ -38,7 +38,7 @@ if(!defined('ABSPATH')) {
  *
  * Imgix tool.
  */
-class ImgixTool extends DynamicImagesToolBase {
+class ImgixTool extends DynamicImagesTool {
 	protected $imgixDomains;
 	protected $autoFormat;
 	protected $autoCompress;
@@ -64,7 +64,7 @@ class ImgixTool extends DynamicImagesToolBase {
     }
     //endregion
 
-	//region ToolBase Overrides
+	//region Tool Overrides
 	public function enabled() {
 		$enabled = parent::enabled();
 

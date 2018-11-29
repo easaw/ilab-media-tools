@@ -18,7 +18,7 @@ use ILAB\MediaCloud\Cloud\Storage\StorageSettings;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Imgix\ImgixTool;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\Logging\DatabaseLogger;
@@ -35,7 +35,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
  *
  * Debugging tool.
  */
-class DebuggingTool extends ToolBase {
+class DebuggingTool extends Tool {
 	public function __construct( $toolName, $toolInfo, $toolManager ) {
 		parent::__construct( $toolName, $toolInfo, $toolManager );
 

@@ -47,7 +47,7 @@ return [
 		"options-group" => "ilab-media-s3",
 		"groups" => [
 			"ilab-media-s3-aws-settings" => [
-				"title" => "Storage Settings",
+				"title" => "Provider Settings",
 				"description" => "To get cloud storage working, you'll have to supply your credentials, specify the bucket and so on.  However, the better way of doing it, would be to place that information in a .env file, instead of storing it in the database.",
 				"options" => [
 					"ilab-media-storage-provider" => [

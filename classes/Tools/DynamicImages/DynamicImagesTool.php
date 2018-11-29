@@ -13,13 +13,13 @@
 
 namespace ILAB\MediaCloud\Tools\DynamicImages;
 
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use function ILAB\MediaCloud\Utilities\gen_uuid;
 use function ILAB\MediaCloud\Utilities\json_response;
 use function ILAB\MediaCloud\Utilities\parse_req;
 use ILAB\MediaCloud\Utilities\View;
 
-abstract class DynamicImagesToolBase extends ToolBase {
+abstract class DynamicImagesTool extends Tool {
     protected $signingKey = null;
     protected $paramPropsByType;
     protected $paramProps;
@@ -44,7 +44,7 @@ abstract class DynamicImagesToolBase extends ToolBase {
     }
     //endregion
 
-    //region ToolBase Overrides
+    //region Tool Overrides
     public function setup() {
         parent::setup();
 

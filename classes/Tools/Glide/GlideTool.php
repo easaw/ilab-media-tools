@@ -13,7 +13,7 @@
 
 namespace ILAB\MediaCloud\Tools\Glide;
 
-use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
+use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesTool;
 use ILAB\MediaCloud\Tools\DynamicImages\WordPressUploadsAdapter;
 use ILAB\MediaCloud\Tools\Glide\Batch\ClearCacheBatchProcess;
 use ILAB\MediaCloud\Tools\Glide\Server\GlideServerFactory;
@@ -40,7 +40,7 @@ if(!defined('ABSPATH')) {
  *
  * Glide tool.
  */
-class GlideTool extends DynamicImagesToolBase {
+class GlideTool extends DynamicImagesTool {
     protected $basePath = null;
     protected $cdnHost = null;
     protected $convertPNG = false;
@@ -140,7 +140,7 @@ class GlideTool extends DynamicImagesToolBase {
 
     //endregion
 
-    //region ToolBase Override
+    //region Tool Override
     public function enabled() {
         $enabled = parent::enabled();
 

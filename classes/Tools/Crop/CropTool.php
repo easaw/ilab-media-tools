@@ -13,7 +13,7 @@
 
 namespace ILAB\MediaCloud\Tools\Crop;
 
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use function ILAB\MediaCloud\Utilities\gen_uuid;
 use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\View;
@@ -25,7 +25,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
  *
  * Crop tool
  */
-class CropTool extends ToolBase
+class CropTool extends Tool
 {
     protected $cropQuality = 100;
 
