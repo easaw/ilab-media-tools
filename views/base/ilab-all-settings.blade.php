@@ -32,7 +32,7 @@
                     <tr>
                         <th scope="row">Enable {{$tool->toolInfo['name']}}</th>
                         <td>
-                            @include('base/ilab-tool-settings', ['name' => $tab, 'manager' => $manager, 'tool' => $tool])
+                            @include('base/fields/enable-toggle', ['name' => $tab, 'manager' => $manager, 'tool' => $tool])
                         </td>
                     </tr>
                     @if(!empty($tool->toolInfo['related']))
@@ -41,7 +41,7 @@
                         <tr>
                             <th scope="row">Enable {{$relatedTool->toolInfo['name']}}</th>
                             <td>
-                                @include('base/ilab-tool-settings', ['name' => $relatedTool->toolInfo['id'], 'manager' => $manager, 'tool' => $relatedTool])
+                                @include('base/fields/enable-toggle', ['name' => $relatedTool->toolInfo['id'], 'manager' => $manager, 'tool' => $relatedTool])
                             </td>
                         </tr>
                     @endforeach

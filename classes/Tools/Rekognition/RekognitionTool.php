@@ -17,6 +17,7 @@ use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess;
 use ILAB\MediaCloud\Tools\Tool;
+use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB_Aws\Exception\AwsException;
 use ILAB_Aws\Rekognition\RekognitionClient;
@@ -76,19 +77,19 @@ class RekognitionTool extends Tool {
 
 		new ImportRekognitionBatchProcess();
 
-		$this->key = $this->getOption('ilab-media-s3-access-key', 'ILAB_AWS_S3_ACCESS_KEY');
-		$this->secret = $this->getOption('ilab-media-s3-secret', 'ILAB_AWS_S3_ACCESS_SECRET');
-		$this->region = $this->getOption('ilab-media-s3-rekognition-region', 'ILAB_AWS_REKOGNITION_REGION', false);
+		$this->key = EnvironmentOptions::Option('ilab-media-s3-access-key', 'ILAB_AWS_S3_ACCESS_KEY');
+		$this->secret = EnvironmentOptions::Option('ilab-media-s3-secret', 'ILAB_AWS_S3_ACCESS_SECRET');
+		$this->region = EnvironmentOptions::Option('ilab-media-s3-rekognition-region', 'ILAB_AWS_REKOGNITION_REGION', false);
 
-		$this->detectLabels = $this->getOption('ilab-media-s3-rekognition-detect-labels', 'ILAB_AWS_REKOGNITION_DETECT_LABELS', false);
-		$this->detectLabelsTax = $this->getOption('ilab-media-s3-rekognition-detect-labels-tax', 'ILAB_AWS_REKOGNITION_DETECT_LABELS_TAX', 'post_tag');
-		$this->detectLabelsConfidence = (int)$this->getOption('ilab-media-s3-rekognition-detect-labels-confidence', 'ILAB_AWS_REKOGNITION_DETECT_LABELS_CONFIDENCE', 50);
-		$this->detectExplicit = $this->getOption('ilab-media-s3-rekognition-detect-moderation-labels', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS', false);
-		$this->detectExplicitTax = $this->getOption('ilab-media-s3-rekognition-detect-moderation-labels-tax', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS_TAX', 'post_tag');
-		$this->detectExplicitConfidence = (int)$this->getOption('ilab-media-s3-rekognition-detect-moderation-labels-confidence', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS_CONFIDENCE', 50);
-		$this->detectCelebrities = $this->getOption('ilab-media-s3-rekognition-detect-celebrity', 'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY', false);
-		$this->detectCelebritiesTax = $this->getOption('ilab-media-s3-rekognition-detect-celebrity-tax', 'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY_TAX', 'post_tag');
-		$this->detectFaces = $this->getOption('ilab-media-s3-rekognition-detect-faces', 'ILAB_AWS_REKOGNITION_DETECT_FACES', false);
+		$this->detectLabels = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-labels', 'ILAB_AWS_REKOGNITION_DETECT_LABELS', false);
+		$this->detectLabelsTax = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-labels-tax', 'ILAB_AWS_REKOGNITION_DETECT_LABELS_TAX', 'post_tag');
+		$this->detectLabelsConfidence = (int)EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-labels-confidence', 'ILAB_AWS_REKOGNITION_DETECT_LABELS_CONFIDENCE', 50);
+		$this->detectExplicit = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-moderation-labels', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS', false);
+		$this->detectExplicitTax = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-moderation-labels-tax', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS_TAX', 'post_tag');
+		$this->detectExplicitConfidence = (int)EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-moderation-labels-confidence', 'ILAB_AWS_REKOGNITION_MODERATION_LABELS_CONFIDENCE', 50);
+		$this->detectCelebrities = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-celebrity', 'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY', false);
+		$this->detectCelebritiesTax = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-celebrity-tax', 'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY_TAX', 'post_tag');
+		$this->detectFaces = EnvironmentOptions::Option('ilab-media-s3-rekognition-detect-faces', 'ILAB_AWS_REKOGNITION_DETECT_FACES', false);
 
 		$this->detectLabelsConfidence = min(100, max(0, $this->detectLabelsConfidence));
 		$this->detectExplicitConfidence = min(100, max(0, $this->detectExplicitConfidence));

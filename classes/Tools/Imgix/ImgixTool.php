@@ -68,7 +68,7 @@ class ImgixTool extends DynamicImagesTool {
 	public function enabled() {
 		$enabled = parent::enabled();
 
-		if(!$this->getOption('ilab-media-imgix-domains')) {
+		if(!EnvironmentOptions::Option('ilab-media-imgix-domains')) {
 //			NoticeManager::instance()->displayAdminNotice('error', "To start using Imgix, you will need to <a href='admin.php?page=media-tools-imgix'>set it up</a>.", true, 'disable-ilab-imgix-warning');
 			return false;
 		}
@@ -84,7 +84,7 @@ class ImgixTool extends DynamicImagesTool {
 		parent::setup();
 
 		$this->noGifSizes = [];
-		$noGifSizes = $this->getOption('ilab-media-imgix-no-gif-sizes', null, '');
+		$noGifSizes = EnvironmentOptions::Option('ilab-media-imgix-no-gif-sizes', null, '');
 		$noGifSizesArray = explode("\n", $noGifSizes);
 		if(count($noGifSizesArray) <= 1) {
 			$noGifSizesArray = explode(',', $noGifSizes);
@@ -96,7 +96,7 @@ class ImgixTool extends DynamicImagesTool {
 		}
 
 		$this->imgixDomains = [];
-		$domains = $this->getOption('ilab-media-imgix-domains', null, '');
+		$domains = EnvironmentOptions::Option('ilab-media-imgix-domains', null, '');
 		$domain_lines = explode("\n", $domains);
 		if(count($domain_lines) <= 1) {
 			$domain_lines = explode(',', $domains);

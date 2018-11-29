@@ -14,6 +14,7 @@
 namespace ILAB\MediaCloud\Tools\Crop;
 
 use ILAB\MediaCloud\Tools\Tool;
+use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use function ILAB\MediaCloud\Utilities\gen_uuid;
 use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\View;
@@ -33,7 +34,7 @@ class CropTool extends Tool
     {
         parent::__construct($toolName, $toolInfo, $toolManager);
 
-        $this->cropQuality = $this->getOption('ilab-media-crop-quality', null, 100);
+        $this->cropQuality = EnvironmentOptions::Option('ilab-media-crop-quality', null, 100);
 
         $this->testForBadPlugins();
         $this->testForUselessPlugins();
