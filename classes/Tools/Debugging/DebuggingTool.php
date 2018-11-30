@@ -24,6 +24,7 @@ use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\Logging\DatabaseLogger;
 use ILAB\MediaCloud\Utilities\Logging\DatabaseLogTable;
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
+use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use ILAB\MediaCloud\Utilities\View;
 use Probe\ProviderFactory;
@@ -61,6 +62,8 @@ class DebuggingTool extends Tool {
         parent::registerMenu($top_menu_slug);
 
         if($this->enabled()) {
+            Logger::instance();
+
             add_submenu_page($top_menu_slug, 'Debug Log', 'Debug Log', 'manage_options', 'media-tools-debug-log', [
                 $this,
                 'renderDebugLog'
