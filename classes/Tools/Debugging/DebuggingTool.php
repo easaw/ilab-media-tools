@@ -41,6 +41,8 @@ class DebuggingTool extends Tool {
 		parent::__construct( $toolName, $toolInfo, $toolManager );
 
 		if ($this->enabled()) {
+            Logger::instance();
+
             if (isset($_REQUEST['page']) && ($_REQUEST['page'] == 'media-tools-debug-log') && isset($_POST['action'])) {
                 if ($_POST['action'] == 'csv') {
                     $this->generateCSV();
@@ -62,8 +64,6 @@ class DebuggingTool extends Tool {
         parent::registerMenu($top_menu_slug);
 
         if($this->enabled()) {
-            Logger::instance();
-
             add_submenu_page($top_menu_slug, 'Debug Log', 'Debug Log', 'manage_options', 'media-tools-debug-log', [
                 $this,
                 'renderDebugLog'

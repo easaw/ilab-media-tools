@@ -169,11 +169,11 @@ class StorageTool extends Tool {
                 }
 
                 if ($addFilter) {
-                    add_filter('upload_dir', [$this, 'getUploadDir']);
+                    add_filter('upload_dir', [$this, 'getUploadDir'], 1000);
                 }
 
                 return $file;
-            });
+            }, 1000);
 
 			add_action('delete_attachment', [$this, 'deleteAttachment'], 1000);
 			add_filter('wp_handle_upload', function ($upload, $context = 'upload') {
@@ -1182,7 +1182,17 @@ class StorageTool extends Tool {
 			$this->deleteFile($key);
 		}
 
-        $prefix = ($preserveFilePath && isset($data['prefix'])) ? $data['prefix'].DIRECTORY_SEPARATOR : StorageSettings::prefix($id);
+        $shouldUseCustomPrefix = (!empty(StorageSettings::prefixFormat()) && apply_filters('ilab_storage_should_use_custom_prefix', true));
+
+        if (!$preserveFilePath && !isset($data['prefix']) && !$shouldUseCustomPrefix) {
+            $prefix = trailingslashit(pathinfo($data['file'], PATHINFO_DIRNAME));
+            if ($prefix == './') {
+                $prefix = trailingslashit(pathinfo($filename, PATHINFO_DIRNAME));
+            }
+        } else {
+            $prefix = ($preserveFilePath && isset($data['prefix'])) ? $data['prefix'].DIRECTORY_SEPARATOR : StorageSettings::prefix($id);
+        }
+
         $parts = explode('/', $filename);
         $bucketFilename = array_pop($parts);
 

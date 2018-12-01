@@ -120,7 +120,7 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 register_activation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instance(), 'install']);
 register_deactivation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instance(), 'uninstall']);
 
-if ( defined( 'WP_CLI' ) && \WP_CLI ) {
+if (defined( 'WP_CLI' ) && class_exists('\WP_CLI')) {
     \ILAB\MediaCloud\Tools\Storage\CLI\StorageCommands::Register();
 	\ILAB\MediaCloud\Tools\Rekognition\CLI\RekognitionCLICommands::Register();
 	\ILAB\MediaCloud\Tools\Glide\CLI\GlideCommands::Register();
