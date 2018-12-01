@@ -30,7 +30,8 @@ use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB\MediaCloud\Utilities\NoticeManager;
-use function PHPSTORM_META\type;
+use League\Flysystem\AdapterInterface;
+use Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter;
 
 if(!defined('ABSPATH')) {
 	header('Location: /');
@@ -55,6 +56,9 @@ class GoogleStorage implements StorageInterface {
 
 	/*** @var StorageClient */
 	private $client = null;
+
+    /** @var null|AdapterInterface */
+    protected $adapter = null;
 	//endregion
 
 	//region Constructor
@@ -399,12 +403,12 @@ class GoogleStorage implements StorageInterface {
 
     //region Filesystem
     public function adapter() {
-//        if (!empty($this->adapter)) {
-//            return $this->adapter;
-//        }
-//
-//        $this->adapter = new AwsS3Adapter($this->client, $this->bucket);
-//        return $this->adapter;
+        if (!empty($this->adapter)) {
+            return $this->adapter;
+        }
+
+        $this->adapter = new GoogleStorageAdapter($this->client, $this->client->bucket($this->bucket));
+        return $this->adapter;
     }
     //endregion
 }
