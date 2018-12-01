@@ -395,4 +395,16 @@ class GoogleStorage implements StorageInterface {
 		});
 	}
 	//endregion
+
+
+    //region Filesystem
+    public function adapter() {
+//        if (!empty($this->adapter)) {
+//            return $this->adapter;
+//        }
+//
+//        $this->adapter = new AwsS3Adapter($this->client, $this->bucket);
+//        return $this->adapter;
+    }
+    //endregion
 }
