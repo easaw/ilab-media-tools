@@ -105,6 +105,10 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('google', \ILAB\MediaCloud\Cloud\Storage\Driver\Google\GoogleStorage::class);
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('backblaze', \ILAB\MediaCloud\Cloud\Storage\Driver\Backblaze\BackblazeStorage::class);
 
+// Register Vision drivers
+\ILAB\MediaCloud\Cloud\Vision\VisionManager::registerDriver('rekognition', \ILAB\MediaCloud\Cloud\Vision\Driver\Rekognition\RekognitionDriver::class);
+\ILAB\MediaCloud\Cloud\Vision\VisionManager::registerDriver('google', \ILAB\MediaCloud\Cloud\Vision\Driver\GoogleCloudVision\GoogleCloudVisionDriver::class);
+
 // Make sure the NoticeManager is initialized
 \ILAB\MediaCloud\Utilities\NoticeManager::instance();
 

@@ -1,0 +1,183 @@
+<?php
+// Copyright (c) 2016 Interfacelab LLC. All rights reserved.
+//
+// Released under the GPLv3 license
+// http://www.gnu.org/licenses/gpl-3.0.html
+//
+// Uses code from:
+// Persist Admin Notices Dismissal
+// by Agbonghama Collins and Andy Fragen
+//
+// **********************************************************************
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// **********************************************************************
+
+namespace ILAB\MediaCloud\Cloud\Vision;
+
+use ILAB\MediaCloud\Utilities\EnvironmentOptions;
+use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
+use League\Flysystem\AdapterInterface;
+
+if (!defined('ABSPATH')) { header('Location: /'); die; }
+
+class VisionConfig {
+    protected $valid = false;
+
+    /** @var bool */
+    protected $detectLabels = false;
+
+    /** @var string|null */
+    protected $detectLabelsTax = 'post_tag';
+
+    /** @var int */
+    protected $detectLabelsConfidence = 50;
+
+    /** @var bool */
+    protected $detectExplicit = false;
+
+    /** @var bool */
+    protected $detectExplicitTax = 'post_tag';
+
+    /** @var int */
+    protected $detectExplicitConfidence = 50;
+
+    /** @var bool */
+    protected $detectCelebrities = false;
+
+    /** @var string|null */
+    protected $detectCelebritiesTax = 'post_tag';
+
+    /** @var bool */
+    protected $detectFaces = false;
+
+    /** @var array */
+    protected $ignoredTags = [];
+
+    //region Constructor
+    public function __construct() {
+        $this->valid = !$this->migrateSettings();
+
+        $this->detectLabels = EnvironmentOptions::Option('ilab-vision-detect-labels', null, false);
+        $this->detectLabelsTax = EnvironmentOptions::Option('ilab-vision-detect-labels-tax', null, 'post_tag');
+        $this->detectLabelsConfidence = (int)EnvironmentOptions::Option('ilab-vision-detect-labels-confidence', null, 50);
+        $this->detectExplicit = EnvironmentOptions::Option('ilab-vision-detect-moderation-labels', null, false);
+        $this->detectExplicitTax = EnvironmentOptions::Option('ilab-vision-detect-moderation-labels-tax', null, 'post_tag');
+        $this->detectExplicitConfidence = (int)EnvironmentOptions::Option('ilab-vision-detect-moderation-labels-confidence', null, 50);
+        $this->detectCelebrities = EnvironmentOptions::Option('ilab-vision-detect-celebrity', null, false);
+        $this->detectCelebritiesTax = EnvironmentOptions::Option('ilab-vision-detect-celebrity-tax', null, 'post_tag');
+        $this->detectFaces = EnvironmentOptions::Option('ilab-vision-detect-faces', null, false);
+
+        $this->detectLabelsConfidence = min(100, max(0, $this->detectLabelsConfidence));
+        $this->detectExplicitConfidence = min(100, max(0, $this->detectExplicitConfidence));
+
+        $toIgnoreString = get_option('ilab-media-vision-ignored-tags', '');
+        if (!empty($toIgnoreString)) {
+            $toIgnore = explode(',', $toIgnoreString);
+            foreach($toIgnore as $ignoredTag) {
+                $this->ignoredTags[] = strtolower(trim($ignoredTag));
+            }
+        }
+
+        if ($this->detectLabels || $this->detectFaces || $this->detectExplicit || $this->detectCelebrities) {
+            $taxes = [];
+
+            if ($this->detectLabels && !in_array($this->detectLabelsTax, $taxes)) {
+                $taxes[] = $this->detectLabelsTax;
+            }
+
+            if ($this->detectExplicit && !in_array($this->detectExplicitTax, $taxes)) {
+                $taxes[] = $this->detectExplicitTax;
+            }
+
+            if ($this->detectCelebrities && !in_array($this->detectCelebritiesTax, $taxes)) {
+                $taxes[] = $this->detectCelebritiesTax;
+            }
+
+            add_action( 'init' , function() use ($taxes) {
+                foreach($taxes as $tax) {
+                    if (in_array($tax, ['post_tag', 'category'])) {
+                        register_taxonomy_for_object_type($tax, 'attachment');
+                    }
+                }
+            });
+        }
+    }
+
+    private function migrateSettings() {
+        EnvironmentOptions::TransitionOptions('vision', '3.0.0', [
+            'ilab-media-s3-rekognition-detect-labels' => 'ilab-vision-detect-labels',
+            'ilab-media-s3-rekognition-detect-labels-tax' => 'ilab-vision-detect-labels-tax',
+            'ilab-media-s3-rekognition-detect-labels-confidence' => 'ilab-vision-detect-labels-confidence',
+            'ilab-media-s3-rekognition-detect-moderation-labels' => 'ilab-vision-detect-moderation-labels',
+            'ilab-media-s3-rekognition-detect-moderation-labels-tax' => 'ilab-vision-detect-moderation-labels-tax',
+            'ilab-media-s3-rekognition-detect-moderation-labels-confidence' => 'ilab-vision-detect-moderation-labels-confidence',
+            'ilab-media-s3-rekognition-detect-celebrity' => 'ilab-vision-detect-celebrity',
+            'ilab-media-s3-rekognition-detect-celebrity-tax' => 'ilab-vision-detect-celebrity-tax',
+            'ilab-media-s3-rekognition-detect-faces' => 'ilab-vision-detect-faces',
+            'ilab-media-s3-rekognition-ignored-tags' => 'ilab-vision-ignored-tags'
+        ]);
+
+        return EnvironmentOptions::DeprecatedEnvironmentVariables('Vision', [
+            'ILAB_AWS_REKOGNITION_DETECT_LABELS' => 'ILAB_VISION_DETECT_LABELS',
+            'ILAB_AWS_REKOGNITION_DETECT_LABELS_TAX' => 'ILAB_VISION_DETECT_LABELS_TAX',
+            'ILAB_AWS_REKOGNITION_DETECT_LABELS_CONFIDENCE' => 'ILAB_VISION_DETECT_LABELS_CONFIDENCE',
+            'ILAB_AWS_REKOGNITION_MODERATION_LABELS' => 'ILAB_VISION_MODERATION_LABELS',
+            'ILAB_AWS_REKOGNITION_MODERATION_LABELS_TAX' => 'ILAB_VISION_MODERATION_LABELS_TAX',
+            'ILAB_AWS_REKOGNITION_MODERATION_LABELS_CONFIDENCE' => 'ILAB_VISION_MODERATION_LABELS_CONFIDENCE',
+            'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY' => 'ILAB_VISION_DETECT_CELEBRITY',
+            'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY_TAX' => 'ILAB_VISION_DETECT_CELEBRITY_TAX',
+            'ILAB_AWS_REKOGNITION_DETECT_FACES' => 'ILAB_VISION_DETECT_FACES'
+        ]);
+    }
+    //endregion
+
+    //region Properties
+
+    public function valid() {
+        return $this->valid;
+    }
+
+    public function detectLabels() {
+        return $this->detectLabels;
+    }
+
+    public function detectLabelsTax(){
+        return $this->detectLabelsTax;
+    }
+
+    public function detectLabelsConfidence() {
+        return $this->detectLabelsConfidence;
+    }
+
+    public function detectExplicit() {
+        return $this->detectExplicit;
+    }
+
+    public function detectExplicitTax() {
+        return $this->detectLabels;
+    }
+
+    public function detectExplicitConfidence() {
+        return $this->detectExplicitConfidence;
+    }
+
+    public function detectCelebrities() {
+        return $this->detectCelebrities;
+    }
+
+    public function detectCelebritiesTax() {
+        return $this->detectCelebritiesTax;
+    }
+
+    public function detectFaces() {
+        return $this->detectFaces;
+    }
+
+    public function ignoredTags() {
+        return $this->ignoredTags;
+    }
+
+    //endregion
+}

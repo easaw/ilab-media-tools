@@ -58,4 +58,58 @@ final class EnvironmentOptions {
 
 		return get_option($optionName, $default);
 	}
+
+    /**
+     * Transitions options from older versions of the plugin to the new option name
+     *
+     * @param $optionGroup
+     * @param $version
+     * @param $options
+     */
+	public static function TransitionOptions($optionGroup, $version, $options) {
+	    $currentVersion = get_option("ilab_migration_$optionGroup", null);
+	    if ($currentVersion == $version) {
+	        return;
+        }
+
+        foreach($options as $fromOptionName => $toOptionName) {
+            $val = get_option($fromOptionName, null);
+            if ($val !== null) {
+                update_option($toOptionName, $val);
+                delete_option($fromOptionName);
+            }
+        }
+
+        update_option("ilab_migration_$optionGroup", $version);
+    }
+
+    /**
+     * Determines if any the following environment variables exist
+     * @param $optionGroup
+     * @param $version
+     * @param $envVars
+     * @return bool
+     */
+    public static function DeprecatedEnvironmentVariables($toolName, $envVars) {
+        $exist = [];
+
+        foreach($envVars as $oldEndVar => $newEnvVar) {
+            $val = getenv($oldEndVar);
+            if ($val !== false) {
+                $exist[] = "<code>$oldEndVar</code> is now <code>$newEnvVar</code>";
+            }
+        }
+
+        if (empty($exist)) {
+            return false;
+        }
+
+        $message = "You have have outdated environmental variables defined.  $toolName will not work until you change them.  ";
+        $message .= implode(', ', $exist);
+        $message .= '.';
+
+        NoticeManager::instance()->displayAdminNotice('error', $message, false);
+
+        return true;
+    }
 }

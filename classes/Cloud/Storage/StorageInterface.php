@@ -101,6 +101,12 @@ interface StorageInterface {
 	 */
 	public function validateSettings($errorCollector = null);
 
+    /**
+     * Returns the underlying client being used by the driver, eg S3Client or StorageClient
+     * @return mixed
+     */
+	public function client();
+
 	/**
 	 * Returns the name of the bucket this storage is using.
 	 *
