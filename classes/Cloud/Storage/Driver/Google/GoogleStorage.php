@@ -225,7 +225,8 @@ class GoogleStorage implements StorageInterface {
 		if (!empty($this->credentials) && is_array($this->credentials)) {
 			$client = new StorageClient([
 				                                  'projectId' => $this->credentials['project_id'],
-				                                  'keyFile' => $this->credentials
+				                                  'keyFile' => $this->credentials,
+                                                  'scopes' => StorageClient::READ_WRITE_SCOPE
 			                                  ]);
 		}
 

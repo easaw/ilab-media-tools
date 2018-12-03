@@ -395,12 +395,14 @@
     .settings-container header.all-settings nav.dropdown {
       display: none;
       position: absolute;
-      right: 0px;
-      bottom: 0px;
+      right: 15px;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+           -o-transform: translateY(-50%);
+              transform: translateY(-50%);
       -webkit-box-align: center;
           -ms-flex-align: center;
-              align-items: center;
-      padding: 10px 15px; }
+              align-items: center; }
       .settings-container header.all-settings nav.dropdown > div {
         margin-right: 10px;
         color: #777777;
@@ -413,8 +415,21 @@
           display: -webkit-box;
           display: -ms-flexbox;
           display: flex; } }
+    @media (max-width: 70.24em) {
+      .settings-container header.all-settings {
+        height: 84px; }
+        .settings-container header.all-settings > img {
+          width: 88px;
+          max-width: 88px; }
+        .settings-container header.all-settings hr {
+          display: none; } }
   .settings-container .settings-body {
     margin: 20px 20px; }
+    .settings-container .settings-body .settings-description {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      text-align: center; }
 
 .button-warning {
   background: #dd9000 !important;
@@ -462,6 +477,10 @@
     font-size: 13px;
     color: rgba(0, 0, 0, 0.5) !important;
     text-transform: uppercase; }
+  .ilab-settings-section .section-description {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-style: italic; }
   .ilab-settings-section .checkbox-w-description {
     display: -webkit-box;
     display: -ms-flexbox;

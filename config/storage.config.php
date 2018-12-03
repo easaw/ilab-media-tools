@@ -49,11 +49,10 @@ return [
 		"groups" => [
 			"ilab-media-s3-aws-settings" => [
 				"title" => "Provider Settings",
-				"description" => "To get cloud storage working, you'll have to supply your credentials, specify the bucket and so on.  However, the better way of doing it, would be to place that information in a .env file, instead of storing it in the database.",
+				"description" => "To get Cloud Storage working, select a provider and supply the requested credentials.  For Amazon S3, this <a target='_blank' href='https://gist.github.com/jawngee/9cc2031f5ad154558b14e1fb395414cf'>IAM Policy</a> is the minimum policy you will need (remember to replace YOURBUCKET in the example with the actual name of your bucket).",
 				"options" => [
 					"ilab-media-storage-provider" => [
 						"title" => "Storage Provider",
-						"description" => "Specify the service you are using for cloud storage.  If you are supplying this value through a .env file, the key is: <strong>ILAB_CLOUD_STORAGE_PROVIDER</strong>.",
 						"type" => "select",
 						"options" => [
 							"s3" => "Amazon S3",
@@ -67,7 +66,6 @@ return [
 					],
 					"ilab-media-s3-access-key" => [
 						"title" => "Access Key",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_ACCESS_KEY</strong>",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["!google", "!backblaze"]
@@ -75,7 +73,6 @@ return [
 					],
 					"ilab-media-s3-secret" => [
 						"title" => "Secret",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_ACCESS_SECRET</strong>",
 						"type" => "password",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["!google", "!backblaze"]
@@ -83,7 +80,6 @@ return [
 					],
 					"ilab-media-backblaze-account-id" => [
 						"title" => "Account Id",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_BACKBLAZE_ACCOUNT_ID</strong>",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["backblaze"]
@@ -91,7 +87,6 @@ return [
 					],
 					"ilab-media-backblaze-key" => [
 						"title" => "Key",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_BACKBLAZE_KEY</strong>",
 						"type" => "password",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["backblaze"]
@@ -99,7 +94,7 @@ return [
 					],
 					"ilab-media-backblaze-bucket-url" => [
 						"title" => "Bucket URL",
-						"description" => "Before you can use Backblaze B2, you'll need to specify the URL for your bucket.  You only need to specify the host part of the url, eg. <code>https://f001.backblazeb2.com/</code>.  You can read about how to determine that <a href='https://help.backblaze.com/hc/en-us/articles/217666928-Creating-a-Vanity-URL-with-B2?_ga=2.229535388.1860693768.1506013044-1312126929.1505517805' target='_blank'>here</a>.  If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_BACKBLAZE_BUCKET_URL</strong>",
+						"description" => "Before you can use Backblaze B2, you'll need to specify the URL for your bucket.  You only need to specify the host part of the url, eg. <code>https://f001.backblazeb2.com/</code>.  You can read about how to determine that <a href='https://help.backblaze.com/hc/en-us/articles/217666928-Creating-a-Vanity-URL-with-B2?_ga=2.229535388.1860693768.1506013044-1312126929.1505517805' target='_blank'>here</a>.",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["backblaze"]
@@ -107,7 +102,7 @@ return [
 					],
 					"ilab-media-google-credentials" => [
 						"title" => "Credentials",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_CLOUD_GOOGLE_CREDENTIALS</strong>",
+						"description" => "To create the appropriate credentials, <a target='_blank' href='https://cloud.google.com/video-intelligence/docs/common/auth#set_up_a_service_account'>follow this tutorial</a>.  Once you've created the credentials and downloaded the resulting JSON, copy and paste the <strong>contents</strong> of the JSON file into this text field.",
 						"type" => "text-area",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["google"]
@@ -206,7 +201,7 @@ return [
 				"options" => [
 					"ilab-media-s3-prefix" => [
 						"title" => "Upload File Prefix",
-						"description" => "This will prepend a prefix to any file uploaded to cloud storage.  For dynamically created prefixes, you can use the following variables: <code>@{date:format}</code>, <code>@{site-name}</code>, <code>@{site-host}</code>, <code>@{site-id}</code>, <code>@{versioning}</code>, <code>@{user-name}</code>, <code>@{unique-id}</code>, <code>@{unique-path}</code>.  For the date token, format is any format string that you can use with php's <a href='http://php.net/manual/en/function.date.php' target='_blank'>date()</a> function.  Note that specifying a prefix here will remove WordPress's default date prefix.  WordPress's default prefix would look like: <code>@{date:Y/m}</code>. If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_MEDIA_S3_PREFIX</strong>.",
+						"description" => "This will prepend a prefix to any file uploaded to cloud storage.  For dynamically created prefixes, you can use the following variables: <code>@{date:format}</code>, <code>@{site-name}</code>, <code>@{site-host}</code>, <code>@{site-id}</code>, <code>@{versioning}</code>, <code>@{user-name}</code>, <code>@{unique-id}</code>, <code>@{unique-path}</code>.  For the date token, format is any format string that you can use with php's <a href='http://php.net/manual/en/function.date.php' target='_blank'>date()</a> function.  Note that specifying a prefix here will remove WordPress's default date prefix.  WordPress's default prefix would look like: <code>@{date:Y/m}</code>.",
 						"type" => "text-field"
 					],
 					"ilab-media-s3-privacy" => [
@@ -223,7 +218,7 @@ return [
 					],
 					"ilab-media-s3-cache-control" => [
 						"title" => "Cache Control",
-						"description" => "Sets the Cache-Control metadata for uploads, e.g. <code>public,max-age=2592000</code> - If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_CACHE_CONTROL</strong>.",
+						"description" => "Sets the Cache-Control metadata for uploads, e.g. <code>public,max-age=2592000</code>.",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["!backblaze"]
@@ -231,7 +226,7 @@ return [
 					],
 					"ilab-media-s3-expires" => [
 						"title" => "Content Expiration",
-						"description" => "Sets the Expire metadata for uploads.  This is the number of minutes from the date of upload. If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_EXPIRES</strong>.",
+						"description" => "Sets the Expire metadata for uploads.  This is the number of minutes from the date of upload.",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["!backblaze"]

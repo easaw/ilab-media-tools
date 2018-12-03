@@ -157,10 +157,10 @@ $font-stack-header: $font-stack-system;
     nav.dropdown {
       display: none;
       position: absolute;
-      right: 0px;
-      bottom: 0px;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
       align-items: center;
-      padding: 10px 15px;
 
       & > div {
         margin-right: 10px;
@@ -176,10 +176,30 @@ $font-stack-header: $font-stack-system;
       }
     }
 
+
+    @include mq($until: design) {
+      height: 84px;
+
+      & > img {
+
+        width: 88px;
+        max-width: 88px;
+      }
+      hr {
+        display: none;
+      }
+    }
   }
 
   .settings-body {
     margin: 20px 20px;
+
+    .settings-description {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      text-align: center;
+    }
   }
 }
 
@@ -247,6 +267,12 @@ $font-stack-header: $font-stack-system;
     font-size: 13px;
     color: rgba(0,0,0,0.5) !important;
     text-transform: uppercase;
+  }
+
+  .section-description {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-style: italic;
   }
 
   .checkbox-w-description {

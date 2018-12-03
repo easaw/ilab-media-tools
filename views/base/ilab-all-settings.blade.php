@@ -25,13 +25,21 @@
             <select id="ilab-media-settings-nav">
                 @foreach($tools as $key => $atool)
                     @if(!empty($atool->toolInfo['settings']))
-                    <option value="{{admin_url('admin.php?page=media-cloud-settings&tab='.$key)}}" {{($tab == $key) ? 'selected' : ''}}>{{$atool->toolInfo['name']}}</option>
+                    <option value="{{admin_url('admin.php?page=media-cloud-settings&tab='.$key)}}" {{($tab == $key) ? 'selected' : ''}}>
+                        {{$atool->toolInfo['name']}}
+                        @if($atool->envEnabled() && !$atool->enabled())
+                            (Disabled)
+                        @endif
+                    </option>
                     @endif
                 @endforeach
             </select>
         </nav>
     </header>
     <div class="settings-body">
+        <div class="settings-description">
+            {!! $tool->toolInfo['description'] !!}
+        </div>
         <div class="ilab-notification-container"></div>
         <form action='options.php' method='post' autocomplete="off">
             <?php
@@ -62,6 +70,9 @@
             <div class="ilab-settings-section">
                 @if(!empty($section['title']))
                 <h2>{{$section['title']}}</h2>
+                @endif
+                @if(!empty($section['description']))
+                <div class="section-description">{!! $section['description'] !!}</div>
                 @endif
                 <table class="form-table">
                     <?php do_settings_fields( $page, $section['id'] ) ?>

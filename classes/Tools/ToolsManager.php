@@ -15,6 +15,7 @@ namespace ILAB\MediaCloud\Tools;
 use ILAB\MediaCloud\Tools\Debugging\TroubleshootingTool;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use ILAB\MediaCloud\Utilities\View;
+use function \ILAB\MediaCloud\Utilities\arrayPath;
 
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
@@ -221,7 +222,8 @@ class ToolsManager
 
             $sections[] = [
                 'title' => $section['title'],
-                'id' => $section['id']
+                'id' => $section['id'],
+                'description' => arrayPath($selectedTool->toolInfo, "settings/groups/{$section['id']}/description", null)
             ];
         }
 
