@@ -39,6 +39,14 @@ abstract class VisionDriver {
     abstract public function enabledError();
 
     /**
+     * Configuration for the driver
+     * @return VisionConfig|null
+     */
+    public function config() {
+        return $this->config;
+    }
+
+    /**
      * Processes the image through the driver's vision API
      * @param $postID
      * @param $meta
@@ -81,7 +89,9 @@ abstract class VisionDriver {
                 }
 
                 $tagInfo = wp_insert_term($tag['tag'], $tax, $tagInfo);
-                $term = get_term_by('id', $tagInfo['term_id'], $tax);
+                if (!is_wp_error($tagInfo)) {
+                    $term = get_term_by('id', $tagInfo['term_id'], $tax);
+                }
             }
 
             if ($term) {
@@ -90,7 +100,7 @@ abstract class VisionDriver {
         }
 
         if (!empty($tagsToAdd)) {
-            wp_set_object_terms($postID, $tagsToAdd, $tax, true);
+            wp_set_post_terms($postID, $tagsToAdd, $tax, true);
         }
     }
 }

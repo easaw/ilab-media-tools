@@ -1,106 +1,3 @@
-.settings-container {
-  margin: 0px 0px 0px -20px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif; }
-  .settings-container header {
-    position: relative;
-    background-image: url(../img/settings-bg.svg);
-    background-position: left center;
-    background-size: cover;
-    height: 100px;
-    width: 100%;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center; }
-    .settings-container header > img {
-      margin: 0px 20px;
-      width: 126px;
-      height: 96px;
-      max-width: 126px;
-      max-height: 96px; }
-    .settings-container header h1 {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
-      text-transform: uppercase; }
-  .settings-container header.all-settings {
-    position: relative;
-    height: 124px;
-    background-image: url(../img/settings-bg-large.svg);
-    overflow: hidden; }
-    .settings-container header.all-settings > img {
-      margin: 0;
-      position: absolute;
-      left: 23px;
-      top: 50%;
-      -webkit-transform: translateY(-50%);
-           -o-transform: translateY(-50%);
-              transform: translateY(-50%);
-      width: 128px;
-      max-width: 128px; }
-    .settings-container header.all-settings hr {
-      position: absolute;
-      border: 1px solid #bbb;
-      left: 0px;
-      bottom: -0.5px;
-      right: 0px;
-      padding: 0;
-      margin: 0; }
-    .settings-container header.all-settings nav {
-      position: absolute;
-      right: 0px;
-      bottom: 0px; }
-      .settings-container header.all-settings nav ul {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        margin: 0;
-        padding: 0;
-        margin-right: 5px; }
-        .settings-container header.all-settings nav ul li {
-          display: -webkit-box;
-          display: -ms-flexbox;
-          display: flex;
-          -webkit-box-align: center;
-              -ms-flex-align: center;
-                  align-items: center;
-          -webkit-box-pack: center;
-              -ms-flex-pack: center;
-                  justify-content: center;
-          margin: 0;
-          padding: 0;
-          margin-right: 5px;
-          padding: 8px 15px;
-          background-color: #CCCCCC;
-          border-bottom: 1px solid #bbb; }
-          .settings-container header.all-settings nav ul li a {
-            color: #777777;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 13px; }
-          .settings-container header.all-settings nav ul li span.tool-indicator {
-            background: #ccc;
-            border: 1px solid #979797;
-            display: block;
-            width: 9px;
-            height: 9px;
-            border-radius: 9px;
-            margin-right: 6px; }
-            .settings-container header.all-settings nav ul li span.tool-indicator.tool-active {
-              background: #6DD51B; }
-            .settings-container header.all-settings nav ul li span.tool-indicator.tool-env-active {
-              background: #FDAC00; }
-          .settings-container header.all-settings nav ul li.active {
-            color: black;
-            background-color: #F1F1F1;
-            border: 1px solid #bbb;
-            border-bottom: 0px solid rgba(0, 0, 0, 0); }
-            .settings-container header.all-settings nav ul li.active a {
-              color: black; }
-  .settings-container .settings-body {
-    margin: 20px 20px; }
-
 .ic-Super-toggle__label {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
@@ -268,6 +165,52 @@
             transform: scale(0.1);
     opacity: 0; }
 
+.toggle-warning {
+  display: inline-block;
+  vertical-align: middle; }
+  .toggle-warning .ic-Super-toggle__input:focus ~ label .ic-Super-toggle-switch::after {
+    -webkit-box-shadow: inset 0 0 0 1px white, inset 0 0 0 3px #5b6c79, 0 3px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 0 1px white, inset 0 0 0 3px #5b6c79, 0 3px 6px rgba(0, 0, 0, 0.3); }
+  .toggle-warning .ic-Super-toggle__input:checked ~ label .ic-Super-toggle-switch {
+    background: #ffaa10;
+    border-color: #ffaa10; }
+  .toggle-warning .ic-Super-toggle__input:checked ~ label .ic-Super-toggle-option-LEFT {
+    color: white; }
+    .toggle-warning .ic-Super-toggle__input:checked ~ label .ic-Super-toggle-option-LEFT .ic-Super-toggle__svg > * {
+      fill: white; }
+  .toggle-warning .ic-Super-toggle__input:checked ~ label .ic-Super-toggle-option-RIGHT {
+    color: white; }
+    .toggle-warning .ic-Super-toggle__input:checked ~ label .ic-Super-toggle-option-RIGHT .ic-Super-toggle__svg > * {
+      fill: white; }
+  .toggle-warning .ic-Super-toggle__input:checked:focus ~ label .ic-Super-toggle-switch::after {
+    -webkit-box-shadow: inset 0 0 0 1px white, inset 0 0 0 3px #ffaa10, 0 3px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 0 1px white, inset 0 0 0 3px #ffaa10, 0 3px 6px rgba(0, 0, 0, 0.3); }
+  .toggle-warning .ic-Super-toggle-switch {
+    width: 60px;
+    height: 30px;
+    background: #5b6c79;
+    border: 2px solid #5b6c79;
+    border-radius: 17px; }
+    .ic-Form-group.ic-Form-group--horizontal .toggle-warning .ic-Super-toggle-switch {
+      -webkit-box-flex: 0;
+          -ms-flex: 0 0 60px;
+              flex: 0 0 60px; }
+    .toggle-warning .ic-Super-toggle-switch:after {
+      background-color: white;
+      width: 30px;
+      height: 30px; }
+  .toggle-warning .ic-Super-toggle-option-LEFT {
+    color: white; }
+    .toggle-warning .ic-Super-toggle-option-LEFT .ic-Super-toggle__svg > * {
+      fill: white; }
+  .toggle-warning .ic-Super-toggle-option-RIGHT {
+    color: white; }
+    .toggle-warning .ic-Super-toggle-option-RIGHT .ic-Super-toggle__svg > * {
+      fill: white; }
+  .toggle-warning .ic-Super-toggle__svg {
+    max-width: 15px;
+    max-height: 15px; }
+
 .ic-Super-toggle--ui-switch {
   display: inline-block;
   vertical-align: middle; }
@@ -346,6 +289,133 @@
          -o-transform: scale(1.1);
             transform: scale(1.1); }
 
+.settings-container {
+  margin: 0px 0px 0px -20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif; }
+  .settings-container header {
+    position: relative;
+    background-image: url(../img/settings-bg.svg);
+    background-position: left center;
+    background-size: cover;
+    height: 100px;
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .settings-container header > img {
+      margin: 0px 20px;
+      width: 126px;
+      height: 96px;
+      max-width: 126px;
+      max-height: 96px; }
+    .settings-container header h1 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
+      text-transform: uppercase; }
+  .settings-container header.all-settings {
+    position: relative;
+    height: 124px;
+    background-image: url(../img/settings-bg-large.svg);
+    overflow: hidden; }
+    .settings-container header.all-settings > img {
+      margin: 0;
+      position: absolute;
+      left: 23px;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+           -o-transform: translateY(-50%);
+              transform: translateY(-50%);
+      width: 128px;
+      max-width: 128px; }
+    .settings-container header.all-settings hr {
+      position: absolute;
+      border: 1px solid #bbb;
+      left: 0px;
+      bottom: -0.5px;
+      right: 0px;
+      padding: 0;
+      margin: 0; }
+    .settings-container header.all-settings nav.tabs {
+      position: absolute;
+      right: 0px;
+      bottom: 0px; }
+      .settings-container header.all-settings nav.tabs ul {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        margin: 0;
+        padding: 0;
+        margin-right: 5px; }
+        .settings-container header.all-settings nav.tabs ul li {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-align: center;
+              -ms-flex-align: center;
+                  align-items: center;
+          -webkit-box-pack: center;
+              -ms-flex-pack: center;
+                  justify-content: center;
+          margin: 0;
+          padding: 0;
+          margin-right: 5px;
+          padding: 8px 15px;
+          background-color: #CCCCCC;
+          border-bottom: 1px solid #bbb; }
+          .settings-container header.all-settings nav.tabs ul li a {
+            color: #777777;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px; }
+          .settings-container header.all-settings nav.tabs ul li span.tool-indicator {
+            background: #ccc;
+            border: 1px solid #979797;
+            display: block;
+            width: 9px;
+            height: 9px;
+            border-radius: 9px;
+            margin-right: 6px; }
+            .settings-container header.all-settings nav.tabs ul li span.tool-indicator.tool-active {
+              background: #6DD51B; }
+            .settings-container header.all-settings nav.tabs ul li span.tool-indicator.tool-env-active {
+              background: #FDAC00; }
+          .settings-container header.all-settings nav.tabs ul li.active {
+            color: black;
+            background-color: #F1F1F1;
+            border: 1px solid #bbb;
+            border-bottom: 0px solid rgba(0, 0, 0, 0); }
+            .settings-container header.all-settings nav.tabs ul li.active a {
+              color: black; }
+      @media (max-width: 70.24em) {
+        .settings-container header.all-settings nav.tabs {
+          display: none; } }
+    .settings-container header.all-settings nav.dropdown {
+      display: none;
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      padding: 10px 15px; }
+      .settings-container header.all-settings nav.dropdown > div {
+        margin-right: 10px;
+        color: #777777;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 1.05em; }
+      @media (max-width: 70.24em) {
+        .settings-container header.all-settings nav.dropdown {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex; } }
+  .settings-container .settings-body {
+    margin: 20px 20px; }
+
 .button-warning {
   background: #dd9000 !important;
   border-color: #dd9000 #b97800 #b97800 !important;
@@ -410,9 +480,30 @@
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center; }
+    @media (max-width: 48.9275em) {
+      .ilab-settings-toggle table.form-table tr {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        -webkit-box-align: start;
+            -ms-flex-align: start;
+                align-items: flex-start; } }
+    .ilab-settings-toggle table.form-table tr th {
+      min-width: 200px;
+      max-width: 200px; }
+    @media (max-width: 48.9275em) {
+      .ilab-settings-toggle table.form-table tr {
+        margin-bottom: 20px; }
+        .ilab-settings-toggle table.form-table tr th {
+          margin-bottom: 10px; } }
 
 .ilab-settings-button {
   display: -webkit-box;

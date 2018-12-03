@@ -684,8 +684,8 @@ class ImgixTool extends DynamicImagesTool {
 			return $meta;
 		}
 
-        if (apply_filters('ilab_rekognition_enabled', false)) {
-		    if (apply_filters('ilab_rekognition_detects_faces', false)) {
+        if (apply_filters('ilab_vision_enabled', false)) {
+		    if (apply_filters('ilab_vision_detects_faces', false)) {
 		        return $meta;
             }
         }

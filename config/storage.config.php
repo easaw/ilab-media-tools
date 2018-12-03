@@ -113,11 +113,22 @@ return [
 							"ilab-media-storage-provider" => ["google"]
 						]
 					],
-					"ilab-media-s3-bucket" => [
-						"title" => "Bucket",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_BUCKET</strong>",
-						"type" => "text-field",
-					],
+                    "ilab-media-s3-bucket" => [
+                        "title" => "Bucket",
+                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_BUCKET</strong>",
+                        "type" => "text-field",
+                        "conditions" => [
+                            "ilab-media-storage-provider" => ["!google"]
+                        ]
+                    ],
+                    "ilab-media-google-bucket" => [
+                        "title" => "Bucket",
+                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_CLOUD_GOOGLE_BUCKET</strong>",
+                        "type" => "text-field",
+                        "conditions" => [
+                            "ilab-media-storage-provider" => ["google"]
+                        ]
+                    ],
 					"ilab-media-s3-region" => [
 						"title" => "Region",
 						"description" => "The region that your bucket is in.  Setting this is only really useful if you are using compatible S3 services, and not if you are using Amazon S3 itself.  If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_REGION</strong>",

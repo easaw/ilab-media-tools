@@ -63,7 +63,8 @@ class GoogleStorage implements StorageInterface {
 
 	//region Constructor
 	public function __construct() {
-		$this->bucket = EnvironmentOptions::Option('ilab-media-s3-bucket', [
+		$this->bucket = EnvironmentOptions::Option('ilab-media-google-bucket', [
+		    'ILAB_CLOUD_GOOGLE_BUCKET',
 			'ILAB_AWS_S3_BUCKET',
 			'ILAB_CLOUD_BUCKET'
 		]);

@@ -41,6 +41,8 @@ class ToolsManager
 	//region Constructor
 
     public function __construct() {
+        MigrationsManager::instance()->migrate();
+
 	    $this->tools=[];
 
         foreach(static::$registeredTools as $toolName => $toolInfo) {
@@ -50,10 +52,6 @@ class ToolsManager
 
         if (isset(static::$registeredTools['troubleshooting'])) {
             $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
-        }
-
-        foreach($this->tools as $key => $tool) {
-            $tool->setup();
         }
 
         add_action('admin_menu', function() {
@@ -108,6 +106,14 @@ class ToolsManager
         });
     }
 
+    protected function setup() {
+        foreach($this->tools as $key => $tool) {
+            $tool->setup();
+        }
+
+        MigrationsManager::instance()->displayMigrationErrors();
+    }
+
     //endregion
 
 	//region Static Methods
@@ -120,6 +126,7 @@ class ToolsManager
         if (!isset(self::$instance)) {
             $class=__CLASS__;
             self::$instance = new $class();
+            self::$instance->setup();
         }
 
         return self::$instance;

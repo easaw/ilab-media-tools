@@ -17,6 +17,7 @@
 namespace ILAB\MediaCloud\Cloud\Vision\Driver\GoogleCloudVision;
 
 use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\Vision\Annotation;
 use Google\Cloud\Vision\VisionClient;
 use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Cloud\Vision\VisionDriver;
@@ -79,7 +80,14 @@ class GoogleCloudVisionDriver extends VisionDriver {
             return false;
         }
 
-        if (!$this->getClient()) {
+        $client = null;
+        if (!empty($this->credentials) && is_array($this->credentials)) {
+            $client = new VisionClient([
+                'keyFile' => $this->credentials
+            ]);
+        }
+
+        if(empty($client)) {
             $this->enabledError = "Invalid Google Cloud Vision credentials.";
             return false;
         }
@@ -154,9 +162,138 @@ class GoogleCloudVisionDriver extends VisionDriver {
 
         $image = $client->image($urlOrResource, $features);
         $result = $client->annotate($image);
-        vomit($result);
+        if (!empty($result)) {
+            return $this->processResults($meta, $postID, $result);
+        }
 
         return $meta;
+    }
+
+    /**
+     * @param $meta
+     * @param $postID
+     * @param $results Annotation
+     * @return mixed
+     */
+    private function processResults($meta, $postID, $results) {
+        $info = $results->info();
+
+        if (!empty($info['faceAnnotations'])) {
+            $width = (int)arrayPath($meta, 'width');
+            $height = (int)arrayPath($meta, 'height');
+
+            if (!empty($width) && !empty($height)) {
+                $faces = [];
+                foreach($info['faceAnnotations'] as $faceAnnotation) {
+                    $vertices = arrayPath($faceAnnotation, 'boundingPoly/vertices', []);
+                    if (!empty($vertices)) {
+                        $left = floatval($vertices[0]['x']) / floatval($width);
+                        $top = floatval($vertices[0]['y']) / floatval($height);
+                        $fwidth = (floatval($vertices[2]['x']) - floatval($vertices[0]['x'])) / floatval($width);
+                        $fheight = (floatval($vertices[2]['y']) - floatval($vertices[0]['y'])) / floatval($height);
+
+                        $faces[] = [
+                            'BoundingBox' => [
+                                'Left' => $left,
+                                'Top' => $top,
+                                'Width' => $fwidth,
+                                'Height' => $fheight
+                            ]
+                        ];
+                    }
+                }
+
+                if (!empty($faces)) {
+                    $meta['faces'] = $faces;
+                }
+            } else {
+                Logger::warning("Meta does not include size information for face detection.");
+            }
+        }
+
+        if (!empty($info['labelAnnotations'])) {
+            $tags = $this->getTags($info['labelAnnotations'], ($this->config->detectLabelsConfidence() / 100.0));
+
+            if (!empty($tags)) {
+                $this->processTags($tags, $this->config->detectLabelsTax(), $postID);
+                Logger::info( 'Detect Labels', $tags);
+            } else {
+                Logger::info( 'Detect Labels: None found.');
+            }
+        }
+
+        if (!empty($info['logoAnnotations'])) {
+            $tags = $this->getTags($info['logoAnnotations'], ($this->config->detectLabelsConfidence() / 100.0));
+
+            if (!empty($tags)) {
+                $this->processTags($tags, $this->config->detectLabelsTax(), $postID);
+                Logger::info( 'Detect Logos', $tags);
+            } else {
+                Logger::info( 'Detect Logos: None found.');
+            }
+        }
+
+        if (!empty($info['landmarkAnnotations'])) {
+            $tags = $this->getTags($info['landmarkAnnotations'], ($this->config->detectLabelsConfidence() / 100.0));
+
+            if (!empty($tags)) {
+                $this->processTags($tags, $this->config->detectLabelsTax(), $postID);
+                Logger::info( 'Detect Landmarks', $tags);
+            } else {
+                Logger::info( 'Detect Landmarks: None found.');
+            }
+        }
+
+        if (!empty($info['safeSearchAnnotation'])) {
+            $tags = [];
+            foreach($info['safeSearchAnnotation'] as $key => $safeSearch) {
+                if ($this->getModerationLevel($safeSearch) >= $this->config->detectExplicitConfidence()) {
+                    $tags[] = [
+                        'tag' => $key
+                    ];
+                }
+            }
+
+            if (!empty($tags)) {
+                $this->processTags($tags, $this->config->detectExplicitTax(), $postID);
+                Logger::info( 'Detect Moderation', $tags);
+            } else {
+                Logger::info( 'Detect Moderation: None found.');
+            }
+        }
+
+        return $meta;
+    }
+
+    private function getModerationLevel($safeSearch) {
+        if ($safeSearch == 'VERY_UNLIKELY') {
+            return 25;
+        } else if ($safeSearch == 'UNLIKELY') {
+            return 50;
+        } else if ($safeSearch == 'POSSIBLE') {
+            return 70;
+        } else if ($safeSearch == 'LIKELY') {
+            return 80;
+        } else if ($safeSearch == 'VERY_LIKELY') {
+            return 90;
+        }
+
+        return 0;
+    }
+
+    private function getTags($annotations, $confidence) {
+        $tags = [];
+        foreach($annotations as $annotation) {
+            if ($annotation['score'] > $confidence) {
+                if (!in_array($annotation['description'], $this->config->ignoredTags())) {
+                    $tags[] = [
+                        'tag' => $annotation['description']
+                    ];
+                }
+            }
+        }
+
+        return $tags;
     }
 
 

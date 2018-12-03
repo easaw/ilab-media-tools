@@ -14,11 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\Tools\Rekognition\CLI;
+namespace ILAB\MediaCloud\Tools\Vision\CLI;
 
 use ILAB\MediaCloud\CLI\Command;
+use ILAB\MediaCloud\Cloud\Storage\StorageManager;
+use ILAB\MediaCloud\Cloud\Vision\VisionManager;
 use ILAB\MediaCloud\Tasks\BatchManager;
-use ILAB\MediaCloud\Tools\Rekognition\RekognitionTool;
+use ILAB\MediaCloud\Tools\Rekognition\VisionTool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 
 if (!defined('ABSPATH')) { header('Location: /'); die; }
@@ -27,7 +29,7 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
  * Functions related to Amazon Rekognition
  * @package ILAB\MediaCloud\CLI\Rekognition
  */
-class RekognitionCLICommands extends Command {
+class VisionCLICommands extends Command {
 	/**
 	 * Processes the media library with Rekognition
 	 *
@@ -37,11 +39,11 @@ class RekognitionCLICommands extends Command {
 	 * @param $assoc_args
 	 */
 	public function process($args, $assoc_args) {
-		/** @var RekognitionTool $tool */
-		$tool = ToolsManager::instance()->tools['rekognition'];
+		/** @var VisionTool $tool */
+		$tool = ToolsManager::instance()->tools['vision'];
 
 		if (!$tool || !$tool->enabled()) {
-			Command::Error('Rekognition tool is not enabled in Media Cloud or the settings are incorrect.');
+			Command::Error('Vision tool is not enabled in Media Cloud or the settings are incorrect.');
 			return;
 		}
 
@@ -71,13 +73,13 @@ SQL;
 
 		$postCount = count($posts);
 		if($postCount > 0) {
-		    BatchManager::instance()->reset('rekognizer');
+		    BatchManager::instance()->reset('vision');
 
 
-            BatchManager::instance()->setStatus('rekognizer', true);
-            BatchManager::instance()->setTotalCount('rekognizer', $postCount);
-            BatchManager::instance()->setCurrent('rekognizer', 1);
-            BatchManager::instance()->setShouldCancel('rekognizer', false);
+            BatchManager::instance()->setStatus('vision', true);
+            BatchManager::instance()->setTotalCount('vision', $postCount);
+            BatchManager::instance()->setCurrent('vision', 1);
+            BatchManager::instance()->setShouldCancel('vision', false);
 
 			Command::Info("Total posts found: %Y{$postCount}.", true);
 
@@ -86,8 +88,8 @@ SQL;
 				$upload_file = get_attached_file($postId);
 				$fileName = basename($upload_file);
 
-                BatchManager::instance()->setCurrentFile('rekognizer', $fileName);
-                BatchManager::instance()->setCurrent('rekognizer', $i);
+                BatchManager::instance()->setCurrentFile('vision', $fileName);
+                BatchManager::instance()->setCurrent('vision', $i);
 
 				Command::Info("%w[%C{$i}%w of %C{$postCount}%w] %NProcessing %Y$fileName%N %w(%N$postId%w)%N ... ");
 
@@ -97,7 +99,7 @@ SQL;
 					continue;
 				}
 
-				if (!isset($data['s3'])) {
+				if (!isset($data['s3']) && (VisionManager::driver() == 'rekognition')) {
 					Command::info( 'Missing cloud storage metadata, skipping.', true);
 					continue;
 				}
@@ -108,12 +110,12 @@ SQL;
 				Command::Info("%YDone%N.", true);
 			}
 
-            BatchManager::instance()->reset('rekognizer');
+            BatchManager::instance()->reset('vision');
 		}
 	}
 
 	public static function Register() {
-		\WP_CLI::add_command('rekognition', __CLASS__);
+		\WP_CLI::add_command('vision', __CLASS__);
 	}
 
 }

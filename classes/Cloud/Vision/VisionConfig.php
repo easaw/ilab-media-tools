@@ -16,6 +16,7 @@
 
 namespace ILAB\MediaCloud\Cloud\Vision;
 
+use ILAB\MediaCloud\Tools\MigrationsManager;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
 use League\Flysystem\AdapterInterface;
@@ -57,7 +58,7 @@ class VisionConfig {
 
     //region Constructor
     public function __construct() {
-        $this->valid = !$this->migrateSettings();
+        $this->valid = !MigrationsManager::instance()->hasDeprecatedEnvironment('vision');
 
         $this->detectLabels = EnvironmentOptions::Option('ilab-vision-detect-labels', null, false);
         $this->detectLabelsTax = EnvironmentOptions::Option('ilab-vision-detect-labels-tax', null, 'post_tag');
@@ -104,33 +105,6 @@ class VisionConfig {
             });
         }
     }
-
-    private function migrateSettings() {
-        EnvironmentOptions::TransitionOptions('vision', '3.0.0', [
-            'ilab-media-s3-rekognition-detect-labels' => 'ilab-vision-detect-labels',
-            'ilab-media-s3-rekognition-detect-labels-tax' => 'ilab-vision-detect-labels-tax',
-            'ilab-media-s3-rekognition-detect-labels-confidence' => 'ilab-vision-detect-labels-confidence',
-            'ilab-media-s3-rekognition-detect-moderation-labels' => 'ilab-vision-detect-moderation-labels',
-            'ilab-media-s3-rekognition-detect-moderation-labels-tax' => 'ilab-vision-detect-moderation-labels-tax',
-            'ilab-media-s3-rekognition-detect-moderation-labels-confidence' => 'ilab-vision-detect-moderation-labels-confidence',
-            'ilab-media-s3-rekognition-detect-celebrity' => 'ilab-vision-detect-celebrity',
-            'ilab-media-s3-rekognition-detect-celebrity-tax' => 'ilab-vision-detect-celebrity-tax',
-            'ilab-media-s3-rekognition-detect-faces' => 'ilab-vision-detect-faces',
-            'ilab-media-s3-rekognition-ignored-tags' => 'ilab-vision-ignored-tags'
-        ]);
-
-        return EnvironmentOptions::DeprecatedEnvironmentVariables('Vision', [
-            'ILAB_AWS_REKOGNITION_DETECT_LABELS' => 'ILAB_VISION_DETECT_LABELS',
-            'ILAB_AWS_REKOGNITION_DETECT_LABELS_TAX' => 'ILAB_VISION_DETECT_LABELS_TAX',
-            'ILAB_AWS_REKOGNITION_DETECT_LABELS_CONFIDENCE' => 'ILAB_VISION_DETECT_LABELS_CONFIDENCE',
-            'ILAB_AWS_REKOGNITION_MODERATION_LABELS' => 'ILAB_VISION_MODERATION_LABELS',
-            'ILAB_AWS_REKOGNITION_MODERATION_LABELS_TAX' => 'ILAB_VISION_MODERATION_LABELS_TAX',
-            'ILAB_AWS_REKOGNITION_MODERATION_LABELS_CONFIDENCE' => 'ILAB_VISION_MODERATION_LABELS_CONFIDENCE',
-            'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY' => 'ILAB_VISION_DETECT_CELEBRITY',
-            'ILAB_AWS_REKOGNITION_DETECT_CELEBRITY_TAX' => 'ILAB_VISION_DETECT_CELEBRITY_TAX',
-            'ILAB_AWS_REKOGNITION_DETECT_FACES' => 'ILAB_VISION_DETECT_FACES'
-        ]);
-    }
     //endregion
 
     //region Properties
@@ -156,7 +130,7 @@ class VisionConfig {
     }
 
     public function detectExplicitTax() {
-        return $this->detectLabels;
+        return $this->detectExplicitTax;
     }
 
     public function detectExplicitConfidence() {

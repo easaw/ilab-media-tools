@@ -91,7 +91,7 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("imgix", include ILAB_CONFIG_DIR.'/imgix.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("glide", include ILAB_CONFIG_DIR.'/glide.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("media-upload", include ILAB_CONFIG_DIR.'/media-upload.config.php');
-\ILAB\MediaCloud\Tools\ToolsManager::registerTool("rekognition", include ILAB_CONFIG_DIR.'/rekognition.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("vision", include ILAB_CONFIG_DIR.'/vision.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("crop", include ILAB_CONFIG_DIR.'/crop.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("debugging", include ILAB_CONFIG_DIR.'/debugging.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("troubleshooting", include ILAB_CONFIG_DIR.'/troubleshooting.config.php');
@@ -114,7 +114,7 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 
 //Register Batch Processes
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('storage', \ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess::class);
-\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('rekognizer', \ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('vision', \ILAB\MediaCloud\Tools\Vision\Batch\ImportVisionBatchProcess::class);
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('thumbnails', \ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess::class);
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('glide-cache', \ILAB\MediaCloud\Tools\Glide\Batch\ClearCacheBatchProcess::class);
 
@@ -126,6 +126,6 @@ register_deactivation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::insta
 
 if (defined( 'WP_CLI' ) && class_exists('\WP_CLI')) {
     \ILAB\MediaCloud\Tools\Storage\CLI\StorageCommands::Register();
-	\ILAB\MediaCloud\Tools\Rekognition\CLI\RekognitionCLICommands::Register();
+	\ILAB\MediaCloud\Tools\Vision\CLI\VisionCLICommands::Register();
 	\ILAB\MediaCloud\Tools\Glide\CLI\GlideCommands::Register();
 }

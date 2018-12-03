@@ -12,7 +12,7 @@
 // **********************************************************************
 
 
-namespace ILAB\MediaCloud\Tools\Rekognition\Batch;
+namespace ILAB\MediaCloud\Tools\Vision\Batch;
 
 use ILAB\MediaCloud\Tasks\BackgroundProcess;
 use ILAB\MediaCloud\Tasks\BatchManager;
@@ -22,15 +22,13 @@ use ILAB\MediaCloud\Utilities\Logging\Logger;
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
 /**
- * Class ILABRekognizerProcess
- *
  * Background processing job for processing existing media with AWS Rekognizer
  */
-class ImportRekognitionBatchProcess extends BackgroundProcess {
-	protected $action = 'ilab_rekognizer_import_process';
+class ImportVisionBatchProcess extends BackgroundProcess {
+	protected $action = 'ilab_vision_import_process';
 
 	protected function shouldHandle() {
-	    return !BatchManager::instance()->shouldCancel('rekognizer');
+	    return !BatchManager::instance()->shouldCancel('vision');
 	}
 
 	public function task($item) {
@@ -45,9 +43,9 @@ class ImportRekognitionBatchProcess extends BackgroundProcess {
 		$index = $item['index'];
 		$post_id = $item['post'];
 
-        BatchManager::instance()->setCurrentID('rekognizer', $post_id);
+        BatchManager::instance()->setCurrentID('vision', $post_id);
 
-		BatchManager::instance()->setCurrent('rekognizer', $index + 1);
+		BatchManager::instance()->setCurrent('vision', $index + 1);
 
 		$data = wp_get_attachment_metadata($post_id);
 
@@ -62,16 +60,16 @@ class ImportRekognitionBatchProcess extends BackgroundProcess {
 		}
 
 		$fileName = basename($data['file']);
-		BatchManager::instance()->setCurrentFile('rekognizer', $fileName);
+		BatchManager::instance()->setCurrentFile('vision', $fileName);
 
 
-		$rekognizerTool = ToolsManager::instance()->tools['rekognition'];
-		$data = $rekognizerTool->processImageMeta($data, $post_id);
+		$visionTool = ToolsManager::instance()->tools['vision'];
+		$data = $visionTool->processImageMeta($data, $post_id);
 		wp_update_attachment_metadata($post_id, $data);
 
 
         $endTime = microtime(true) - $startTime;
-        BatchManager::instance()->incrementTotalTime('rekognizer', $endTime);
+        BatchManager::instance()->incrementTotalTime('vision', $endTime);
 
 		return false;
 	}
@@ -83,7 +81,7 @@ class ImportRekognitionBatchProcess extends BackgroundProcess {
 
 	protected function complete() {
 		Logger::info( 'Task complete');
-		BatchManager::instance()->reset('rekognizer');
+		BatchManager::instance()->reset('vision');
 		parent::complete();
 	}
 
@@ -92,23 +90,23 @@ class ImportRekognitionBatchProcess extends BackgroundProcess {
 
 		parent::cancel_process();
 
-        BatchManager::instance()->reset('rekognizer');
+        BatchManager::instance()->reset('vision');
 	}
 
 	public static function cancelAll() {
 		Logger::info( 'Cancel all processes');
 
-		wp_clear_scheduled_hook('wp_ilab_rekognizer_import_process_cron');
+		wp_clear_scheduled_hook('wp_ilab_vision_import_process_cron');
 
 		global $wpdb;
 
-		$res = $wpdb->get_results("select * from {$wpdb->options} where option_name like 'wp_ilab_rekognizer_import_process_batch_%'");
+		$res = $wpdb->get_results("select * from {$wpdb->options} where option_name like 'wp_ilab_vision_import_process_batch_%'");
 		foreach($res as $batch) {
 			Logger::info( "Deleting batch {$batch->option_name}");
 			delete_option($batch->option_name);
 		}
 
-        BatchManager::instance()->reset('rekognizer');
+        BatchManager::instance()->reset('vision');
 
 		Logger::info( "Current cron", get_option( 'cron', []));
 		Logger::info( 'End cancel all processes');

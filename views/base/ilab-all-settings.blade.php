@@ -2,7 +2,7 @@
     <header class="all-settings">
         <img src="{{ILAB_PUB_IMG_URL}}/icon-cloud-w-type.svg">
         <hr>
-        <nav>
+        <nav class="tabs">
             <ul>
                 @foreach($tools as $key => $atool)
                 @if(!empty($atool->toolInfo['settings']))
@@ -19,6 +19,16 @@
                 @endif
                 @endforeach
             </ul>
+        </nav>
+        <nav class="dropdown">
+            <div>Settings:</div>
+            <select id="ilab-media-settings-nav">
+                @foreach($tools as $key => $atool)
+                    @if(!empty($atool->toolInfo['settings']))
+                    <option value="{{admin_url('admin.php?page=media-cloud-settings&tab='.$key)}}" {{($tab == $key) ? 'selected' : ''}}>{{$atool->toolInfo['name']}}</option>
+                    @endif
+                @endforeach
+            </select>
         </nav>
     </header>
     <div class="settings-body">
@@ -126,6 +136,10 @@
                     }
                 });
             });
+        });
+
+        $('#ilab-media-settings-nav').on('change', function(e){
+           document.location = $(this).val();
         });
     })(jQuery);
 </script>

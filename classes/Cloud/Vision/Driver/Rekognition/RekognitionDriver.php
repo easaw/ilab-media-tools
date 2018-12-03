@@ -69,6 +69,15 @@ class RekognitionDriver extends VisionDriver {
             'ILAB_AWS_S3_ACCESS_SECRET',
             'ILAB_CLOUD_ACCESS_SECRET'
         ]);
+
+        $region = EnvironmentOptions::Option('ilab-media-s3-region', [
+            'ILAB_AWS_S3_REGION',
+            'ILAB_CLOUD_REGION'
+        ], 'auto');
+
+        if($region != 'auto') {
+            $this->region = $region;
+        }
     }
 
     /**
