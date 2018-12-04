@@ -385,7 +385,7 @@ abstract class Tool {
         foreach($groups as $group => $groupInfo)  {
             $groupWatch = !empty($groupInfo['watch']);
 
-            $this->registerSettingsSection($group,$groupInfo['title'],$groupInfo['description']);
+            $this->registerSettingsSection($group,$groupInfo['title'],arrayPath($groupInfo, 'description', null));
             if (isset($groupInfo['options']))  {
                 foreach($groupInfo['options'] as $option => $optionInfo)  {
                     $optionWatch = !empty($optionInfo['watch']);
