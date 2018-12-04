@@ -37,9 +37,6 @@
         </nav>
     </header>
     <div class="settings-body">
-        <div class="settings-description">
-            {!! $tool->toolInfo['description'] !!}
-        </div>
         <div class="ilab-notification-container"></div>
         <form action='options.php' method='post' autocomplete="off">
             <?php
@@ -54,6 +51,9 @@
                         </td>
                     </tr>
                     @if(!empty($tool->toolInfo['related']))
+                    <tr>
+                        <td colspan="2" style="width:100%; padding: 0;"><hr></td>
+                    </tr>
                     @foreach($tool->toolInfo['related'] as $relatedKey)
                         <?php $relatedTool = $manager->tools[$relatedKey]; if (empty($relatedTool)) { continue; } ?>
                         <tr>

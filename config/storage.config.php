@@ -19,7 +19,7 @@ return [
 	"class" => "ILAB\\MediaCloud\\Tools\\Storage\\StorageTool",
 	"env" => "ILAB_MEDIA_S3_ENABLED",
 	"dependencies" => [],
-    "related" => ["media-upload"],
+    "related" => ["media-upload", "crop"],
     "compatibleImageOptimizers" => [
         "shortpixel" => "shortpixel-image-optimiser/wp-shortpixel.php",
         "smush" => "wp-smushit/wp-smush.php",

@@ -23,7 +23,7 @@ return [
 		"storage",
         "!glide"
 	],
-    "related" => ["media-upload"],
+    "related" => ["media-upload", "crop"],
 	"helpers" => [
 		"ilab-imgix-helpers.php"
 	],
@@ -101,7 +101,7 @@ return [
 					],
 					"ilab-media-imgix-detect-faces" => [
 						"title" => "Detect Faces",
-						"description" => "After each upload Media Cloud will use Imgix's face detection API to detect faces in the image.  This can be used with Focus Crop in the image editor, or on the front-end however you choose.  <strong>Note:</strong> If you are relying on this functionality, the better option would be to use the <a href='admin.php?page=media-tools-rekognition'>Rekognition</a> tool.  It is more accurate with less false positives.  If Rekognition is enabled, this setting is ignored in favor of Rekognition's results.",
+						"description" => "After each upload Media Cloud will use Imgix's face detection API to detect faces in the image.  This can be used with Focus Crop in the image editor, or on the front-end however you choose.  <strong>Note:</strong> If you are relying on this functionality, the better option would be to use the <a href='admin.php?page=media-cloud-settings&tab=vision'>Vision</a> tool.  It is more accurate with less false positives.  If Vision is enabled, this setting is ignored in favor of Vision's results.",
 						"type" => "checkbox",
 						"default" => false
 					]

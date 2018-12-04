@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
 return [
     "id" => "vision",
     "name" => "Vision",
-	"description" => "Uses Amazon's Rekognition AI or Google's Cloud Vision service to automatically tag your uploaded images.",
+	"description" => "Uses Amazon's Rekognition AI or Google's Cloud Vision service to automatically tag and categorize your uploaded images.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Vision\\VisionTool",
 	"env" => "ILAB_VISION_ENABLED",
     "batchTools" => [
@@ -29,11 +29,11 @@ return [
             "ilab-media-s3-aws-settings" => [
                 "watch" => true,
                 "title" => "Provider Settings",
-                "description" => "To get cloud storage working, you'll have to supply your credentials, specify the bucket and so on.  However, the better way of doing it, would be to place that information in a .env file, instead of storing it in the database.",
+                "description" => "Select which Vision provider and supply any required credentials.  <strong>Note, these credentials are shared with Cloud Storage.</strong>  Changing credentials here will change your cloud storage credentials.  However, you can mix and match providers, meaning you can use Google Cloud Vision with Amazon S3 or DigitalOcean or any other cloud storage provider.  Amazon Rekognition, however, must be used with Amazon S3.",
                 "options" => [
                     "ilab-vision-provider" => [
                         "title" => "Vision Provider",
-                        "description" => "Specify the service you are using for vision processing.  If you are supplying this value through a .env file, the key is: <strong>ILAB_VISION_PROVIDER</strong>.",
+                        "description" => "Specify the service you are using for vision processing.",
                         "type" => "select",
                         "options" => [
                             "rekognition" => "Amazon Rekognition",
@@ -42,7 +42,6 @@ return [
                     ],
                     "ilab-media-s3-access-key" => [
                         "title" => "Access Key",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_ACCESS_KEY</strong>",
                         "type" => "text-field",
                         "conditions" => [
                             "ilab-vision-provider" => ["!google"]
@@ -50,7 +49,6 @@ return [
                     ],
                     "ilab-media-s3-secret" => [
                         "title" => "Secret",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_ACCESS_SECRET</strong>",
                         "type" => "password",
                         "conditions" => [
                             "ilab-vision-provider" => ["!google"]
@@ -58,7 +56,7 @@ return [
                     ],
                     "ilab-media-s3-bucket" => [
                         "title" => "Bucket",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_BUCKET</strong>",
+                        "description" => "The bucket you wish to store your media in.  Must not be blank.",
                         "type" => "text-field",
                         "conditions" => [
                             "ilab-vision-provider" => ["!google"]
@@ -66,7 +64,7 @@ return [
                     ],
                     "ilab-media-s3-region" => [
                         "title" => "Region",
-                        "description" => "The region that your bucket is in.  Setting this is only really useful if you are using compatible S3 services, and not if you are using Amazon S3 itself.  If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_REGION</strong>",
+                        "description" => "The region that your bucket is in.  Set to 'auto' to have Media Cloud automatically determine what region your bucket is in.  Note that Rekognition is only available in <a target='_blank' href='https://aws.amazon.com/rekognition/faqs/'>select regions</a> and your S3 bucket must be in one of those regions.",
                         "type" => "select",
                         "options" => [
                             "auto" => "Automatic",
@@ -91,7 +89,7 @@ return [
                     ],
                     "ilab-media-google-credentials" => [
                         "title" => "Credentials",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_CLOUD_GOOGLE_CREDENTIALS</strong>",
+                        "description" => "To create the appropriate credentials, <a target='_blank' href='https://cloud.google.com/video-intelligence/docs/common/auth#set_up_a_service_account'>follow this tutorial</a>.  Once you've created the credentials and downloaded the resulting JSON, copy and paste the <strong>contents</strong> of the JSON file into this text field.",
                         "type" => "text-area",
                         "conditions" => [
                             "ilab-vision-provider" => ["google"]
@@ -100,8 +98,7 @@ return [
                 ]
             ],
 			"ilab-media-s3-vision-settings" => [
-				"title" => "Vision Settings",
-				"description" => "After you upload files to S3, those files will then be processed through the AWS Rekognition service.  The following settings control that process.  It's important to note that your S3 bucket must be in the same region that you are using the Rekognition service in.  Also, each option you select counts as 1 api call.  If you select detect faces, describe object <em>and</em> image moderation you will be using the service 3 times.",
+				"title" => "Vision Options",
 				"options" => [
 					"ilab-vision-detect-labels" => [
 						"title" => "Detect Labels",

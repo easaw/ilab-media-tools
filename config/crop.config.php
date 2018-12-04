@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
 return [
     "id" => "crop",
     "name" => "Crop Tool",
-	"description" => "Provides an easy to use tool for manually cropping images for all image sizes.",
+	"description" => "Provides an advanced and easy to use image crop tool that works with or without cloud storage.",
 	"class" => "ILAB\\MediaCloud\\Tools\\Crop\\CropTool",
 	"dependencies" => [],
 	"env" => "ILAB_MEDIA_CROP_ENABLED",
@@ -29,6 +29,7 @@ return [
 				"options" => [
 					"ilab-media-crop-quality" => [
 						"title" => "Crop Quality",
+                        "description" => "The jpeg compression quality to use for any images cropped with the tool.",
 						"type" => "number",
                         "default" => 100
 					]
