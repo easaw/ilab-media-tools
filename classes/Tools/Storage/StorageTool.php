@@ -1185,7 +1185,9 @@ class StorageTool extends Tool {
         $shouldUseCustomPrefix = (!empty(StorageSettings::prefixFormat()) && apply_filters('ilab_storage_should_use_custom_prefix', true));
 
         if (!$preserveFilePath && !isset($data['prefix']) && !$shouldUseCustomPrefix) {
-            $prefix = trailingslashit(pathinfo($data['file'], PATHINFO_DIRNAME));
+            $fpath = pathinfo($data['file'],PATHINFO_DIRNAME);
+            $fpath = str_replace($upload_path, '', $fpath);
+            $prefix = trailingslashit(ltrim($fpath, DIRECTORY_SEPARATOR));
             if ($prefix == './') {
                 $prefix = trailingslashit(pathinfo($filename, PATHINFO_DIRNAME));
             }
@@ -1780,6 +1782,10 @@ class StorageTool extends Tool {
 				}
 			}
 		} else {
+            if (empty($data['file'])) {
+                $attachedFile = get_attached_file($postId);
+                $data['file'] = _wp_relative_upload_path($attachedFile);
+            }
 			$fileName = basename($data['file']);
 
 			if ($progressDelegate) {
