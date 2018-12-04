@@ -15,6 +15,7 @@ namespace ILAB\MediaCloud\Tools;
 use ILAB\MediaCloud\Tools\Debugging\TroubleshootingTool;
 use ILAB\MediaCloud\Utilities\NoticeManager;
 use ILAB\MediaCloud\Utilities\View;
+use function \ILAB\MediaCloud\Utilities\arrayPath;
 
 if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 
@@ -26,14 +27,23 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
 class ToolsManager
 {
 	//region Class variables
+
+    /** @var array Associative array of tool classes */
     private static $registeredTools = [];
+
+    /** @var ToolsManager The current instance */
     private static $instance;
+
+    /** @var Tool[] Array of current tools  */
     public $tools;
+
     //endregion
 
 	//region Constructor
-    public function __construct()
-    {
+
+    public function __construct() {
+        MigrationsManager::instance()->migrate();
+
 	    $this->tools=[];
 
         foreach(static::$registeredTools as $toolName => $toolInfo) {
@@ -45,24 +55,15 @@ class ToolsManager
             $this->tools['troubleshooting'] = new TroubleshootingTool('troubleshooting', static::$registeredTools['troubleshooting'], $this);
         }
 
-        foreach($this->tools as $key => $tool) {
-            $tool->setup();
-        }
-
         add_action('admin_menu', function() {
-            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-cloud-settings', [$this,'renderAllSettings'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTk4NCAxMTUycTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNWgtMTA4OHEtMTg1IDAtMzE2LjUtMTMxLjV0LTEzMS41LTMxNi41cTAtMTMyIDcxLTI0MS41dDE4Ny0xNjMuNXEtMi0yOC0yLTQzIDAtMjEyIDE1MC0zNjJ0MzYyLTE1MHExNTggMCAyODYuNSA4OHQxODcuNSAyMzBxNzAtNjIgMTY2LTYyIDEwNiAwIDE4MSA3NXQ3NSAxODFxMCA3NS00MSAxMzggMTI5IDMwIDIxMyAxMzQuNXQ4NCAyMzkuNXoiLz48L3N2Zz4=');
-            add_submenu_page( 'media-cloud-settings', 'Media Cloud Settings', 'Settings', 'manage_options', 'media-cloud-settings', [$this,'renderAllSettings']);
+            add_menu_page('Settings', 'Media Cloud', 'manage_options', 'media-cloud-settings', [$this,'renderSettings'],'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjA0OCAxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTk4NCAxMTUycTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNWgtMTA4OHEtMTg1IDAtMzE2LjUtMTMxLjV0LTEzMS41LTMxNi41cTAtMTMyIDcxLTI0MS41dDE4Ny0xNjMuNXEtMi0yOC0yLTQzIDAtMjEyIDE1MC0zNjJ0MzYyLTE1MHExNTggMCAyODYuNSA4OHQxODcuNSAyMzBxNzAtNjIgMTY2LTYyIDEwNiAwIDE4MSA3NXQ3NSAxODFxMCA3NS00MSAxMzggMTI5IDMwIDIxMyAxMzQuNXQ4NCAyMzkuNXoiLz48L3N2Zz4=');
+            add_submenu_page( 'media-cloud-settings', 'Media Cloud Settings', 'Settings', 'manage_options', 'media-cloud-settings', [$this,'renderSettings']);
 
-            $hasTools = false;
-            foreach($this->tools as $key => $tool)
-            {
+            foreach($this->tools as $key => $tool)  {
                 register_setting('ilab-media-tools',"ilab-media-tool-enabled-$key");
 
-                if ($key != 'troubleshooting') {
-                    add_settings_field("ilab-media-tool-enabled-$key",$tool->toolInfo['name'],[$this,'renderToolSettings'],'media-cloud-settings','ilab-media-tools',['key'=>$key]);
-                }
-
                 register_setting($tool->optionsGroup(),"ilab-media-tool-enabled-$key");
+
                 $tool->registerMenu('media-cloud-settings');
                 $tool->registerSettings();
 
@@ -71,21 +72,13 @@ class ToolsManager
                         register_setting($tool->optionsGroup(),"ilab-media-tool-enabled-$relatedKey");
                     }
                 }
-
-                if (!$hasTools && $tool->hasBatchTools()) {
-                    $hasTools = true;
-                }
             }
 
-            if ($hasTools) {
-                foreach($this->tools as $key => $tool) {
-                    $tool->registerToolMenu('media-cloud-settings');
-                }
+            foreach($this->tools as $key => $tool) {
+                $tool->registerBatchToolMenu('media-cloud-settings');
             }
 
 	        add_submenu_page( 'media-cloud-settings', 'Plugin Support', 'Help / Support', 'manage_options', 'media-tools-support', [$this,'renderSupport']);
-
-
         });
 
 	    add_filter('plugin_action_links_'.ILAB_PLUGIN_NAME, function($links) {
@@ -110,20 +103,31 @@ class ToolsManager
 
         add_action('admin_enqueue_scripts', function(){
             wp_enqueue_script('ilab-settings-js', ILAB_PUB_JS_URL . '/ilab-settings.js', ['jquery'], null, true );
+            wp_enqueue_style('ilab-media-settings-css', ILAB_PUB_CSS_URL . '/ilab-media-tools.settings.min.css' );
         });
     }
+
+    protected function setup() {
+        foreach($this->tools as $key => $tool) {
+            $tool->setup();
+        }
+
+        MigrationsManager::instance()->displayMigrationErrors();
+    }
+
     //endregion
 
 	//region Static Methods
+
     /**
      * Returns the singleton instance of the manager
      * @return ToolsManager
      */
-    public static function instance()
-    {
+    public static function instance() {
         if (!isset(self::$instance)) {
             $class=__CLASS__;
             self::$instance = new $class();
+            self::$instance->setup();
         }
 
         return self::$instance;
@@ -138,9 +142,11 @@ class ToolsManager
     public static function registerTool($identifier, $config) {
         static::$registeredTools[$identifier] = $config;
     }
+
     //endregion
 
 	//region Plugin installation
+
 	/**
 	 * Perform plugin installation
 	 */
@@ -156,9 +162,11 @@ class ToolsManager
 		foreach($this->tools as $key => $tool)
 			$tool->uninstall();
 	}
+
 	//endregion
 
 	//region Tool Settings
+
     /**
      * Determines if a tool is enabled or not
      *
@@ -171,6 +179,7 @@ class ToolsManager
 
         return false;
     }
+
     /**
      * Determines if a tool is enabled or not via environment settings
      *
@@ -183,14 +192,15 @@ class ToolsManager
 
         return false;
     }
+
 	//endregion
 
-
 	//region Settings
+
     /**
      * Render the options page
      */
-    public function renderAllSettings() {
+    public function renderSettings() {
         global $wp_settings_sections, $wp_settings_fields;
 
         if (!empty($_GET['tab']) && in_array($_GET['tab'], array_keys($this->tools))) {
@@ -212,7 +222,8 @@ class ToolsManager
 
             $sections[] = [
                 'title' => $section['title'],
-                'id' => $section['id']
+                'id' => $section['id'],
+                'description' => arrayPath($selectedTool->toolInfo, "settings/groups/{$section['id']}/description", null)
             ];
         }
 

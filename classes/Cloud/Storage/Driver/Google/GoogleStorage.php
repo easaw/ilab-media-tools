@@ -30,7 +30,8 @@ use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use ILAB\MediaCloud\Utilities\Logging\ErrorCollector;
 use ILAB\MediaCloud\Utilities\Logging\Logger;
 use ILAB\MediaCloud\Utilities\NoticeManager;
-use function PHPSTORM_META\type;
+use League\Flysystem\AdapterInterface;
+use Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter;
 
 if(!defined('ABSPATH')) {
 	header('Location: /');
@@ -55,11 +56,15 @@ class GoogleStorage implements StorageInterface {
 
 	/*** @var StorageClient */
 	private $client = null;
+
+    /** @var null|AdapterInterface */
+    protected $adapter = null;
 	//endregion
 
 	//region Constructor
 	public function __construct() {
-		$this->bucket = EnvironmentOptions::Option('ilab-media-s3-bucket', [
+		$this->bucket = EnvironmentOptions::Option('ilab-media-google-bucket', [
+		    'ILAB_CLOUD_GOOGLE_BUCKET',
 			'ILAB_AWS_S3_BUCKET',
 			'ILAB_CLOUD_BUCKET'
 		]);
@@ -154,9 +159,12 @@ class GoogleStorage implements StorageInterface {
 
 						Logger::info("Bucket does not exist.");
 					}
-				} catch (ServiceException $ex) {
-					Logger::error("Google Storage Error", ['exception' => $ex->getMessage()]);
-					StorageException::ThrowFromOther($ex);
+                } catch (\Exception $ex) {
+                    if ($errorCollector) {
+                        $errorCollector->addError("Error insuring that {$this->bucket} exists.  Message: ".$ex->getMessage());
+                    }
+
+                    Logger::error("Google Storage Error", ['exception' => $ex->getMessage()]);
 				}
 			}
 
@@ -183,12 +191,20 @@ class GoogleStorage implements StorageInterface {
 		}
 
 		if($this->settingsError) {
-			NoticeManager::instance()->displayAdminNotice('error', 'Your Google Storage settings are incorrect or the bucket does not exist.  Please verify your settings and update them.');
+            NoticeManager::instance()->displayAdminNotice('error', "Your Google Storage settings are incorrect, or your account doesn't have the correct permissions or the bucket does not exist.  Please verify your settings and update them.");
 			return false;
 		}
 
 		return true;
 	}
+
+    public function client() {
+        if ($this->client == null) {
+            $this->client = $this->getClient();
+        }
+
+        return $this->client;
+    }
 	//endregion
 
 	//region Client Creation
@@ -209,7 +225,8 @@ class GoogleStorage implements StorageInterface {
 		if (!empty($this->credentials) && is_array($this->credentials)) {
 			$client = new StorageClient([
 				                                  'projectId' => $this->credentials['project_id'],
-				                                  'keyFile' => $this->credentials
+				                                  'keyFile' => $this->credentials,
+                                                  'scopes' => StorageClient::READ_WRITE_SCOPE
 			                                  ]);
 		}
 
@@ -392,4 +409,16 @@ class GoogleStorage implements StorageInterface {
 		});
 	}
 	//endregion
+
+
+    //region Filesystem
+    public function adapter() {
+        if (!empty($this->adapter)) {
+            return $this->adapter;
+        }
+
+        $this->adapter = new GoogleStorageAdapter($this->client, $this->client->bucket($this->bucket));
+        return $this->adapter;
+    }
+    //endregion
 }

@@ -271,7 +271,15 @@ class S3Storage implements StorageInterface {
 
 		return true;
 	}
-	//endregion
+
+    public function client() {
+        if ($this->client == null) {
+            $this->client = $this->getClient();
+        }
+
+        return $this->client;
+    }
+    //endregion
 
 	//region Client Creation
 

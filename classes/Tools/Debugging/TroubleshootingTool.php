@@ -14,11 +14,12 @@
 namespace ILAB\MediaCloud\Tools\Debugging;
 
 use FasterImage\FasterImage;
+use ILAB\MediaCloud\Cloud\Storage\StorageException;
 use ILAB\MediaCloud\Cloud\Storage\StorageSettings;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Imgix\ImgixTool;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\Logging\DatabaseLogger;
@@ -35,7 +36,7 @@ if (!defined( 'ABSPATH')) { header( 'Location: /'); die; }
  *
  * Debugging tool.
  */
-class TroubleshootingTool extends ToolBase {
+class TroubleshootingTool extends Tool {
     public function __construct( $toolName, $toolInfo, $toolManager ) {
         parent::__construct( $toolName, $toolInfo, $toolManager );
 
@@ -57,7 +58,7 @@ class TroubleshootingTool extends ToolBase {
     }
 
     public function enabled() {
-        return $this->toolManager->toolEnabled('storage');
+        return true;
     }
 
     //region Trouble Shooting
@@ -151,7 +152,11 @@ class TroubleshootingTool extends ToolBase {
         $storageTool = ToolsManager::instance()->tools['storage'];
 
         $errorCollector = new ErrorCollector();
-        $isValid = $storageTool->client()->validateSettings($errorCollector);
+        try {
+            $isValid = $storageTool->client()->validateSettings($errorCollector);
+        } catch (\Exception $ex) {
+            $errorCollector->addError("Error validating client settings.  Message: ".$ex->getMessage());
+        }
 
         $html = View::render_view('debug/trouble-shooter-step.php', [
             'success' => $isValid,

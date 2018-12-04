@@ -4,7 +4,7 @@ Plugin Name: Media Cloud
 Plugin URI: https://github.com/interfacelab/ilab-media-tools
 Description: Automatically upload media to Amazon S3 and integrate with Imgix, a real-time image processing CDN.  Boosts site performance and simplifies workflows.
 Author: interfacelab
-Version: 2.1.19
+Version: 3.0.0
 Author URI: http://interfacelab.io
 */
 
@@ -91,7 +91,7 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("imgix", include ILAB_CONFIG_DIR.'/imgix.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("glide", include ILAB_CONFIG_DIR.'/glide.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("media-upload", include ILAB_CONFIG_DIR.'/media-upload.config.php');
-\ILAB\MediaCloud\Tools\ToolsManager::registerTool("rekognition", include ILAB_CONFIG_DIR.'/rekognition.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("vision", include ILAB_CONFIG_DIR.'/vision.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("crop", include ILAB_CONFIG_DIR.'/crop.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("debugging", include ILAB_CONFIG_DIR.'/debugging.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("troubleshooting", include ILAB_CONFIG_DIR.'/troubleshooting.config.php');
@@ -105,12 +105,16 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('google', \ILAB\MediaCloud\Cloud\Storage\Driver\Google\GoogleStorage::class);
 \ILAB\MediaCloud\Cloud\Storage\StorageManager::registerDriver('backblaze', \ILAB\MediaCloud\Cloud\Storage\Driver\Backblaze\BackblazeStorage::class);
 
+// Register Vision drivers
+\ILAB\MediaCloud\Cloud\Vision\VisionManager::registerDriver('rekognition', \ILAB\MediaCloud\Cloud\Vision\Driver\Rekognition\RekognitionDriver::class);
+\ILAB\MediaCloud\Cloud\Vision\VisionManager::registerDriver('google', \ILAB\MediaCloud\Cloud\Vision\Driver\GoogleCloudVision\GoogleCloudVisionDriver::class);
+
 // Make sure the NoticeManager is initialized
 \ILAB\MediaCloud\Utilities\NoticeManager::instance();
 
 //Register Batch Processes
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('storage', \ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess::class);
-\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('rekognizer', \ILAB\MediaCloud\Tools\Rekognition\Batch\ImportRekognitionBatchProcess::class);
+\ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('vision', \ILAB\MediaCloud\Tools\Vision\Batch\ImportVisionBatchProcess::class);
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('thumbnails', \ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess::class);
 \ILAB\MediaCloud\Tasks\BatchManager::registerBatchClass('glide-cache', \ILAB\MediaCloud\Tools\Glide\Batch\ClearCacheBatchProcess::class);
 
@@ -120,8 +124,8 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 register_activation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instance(), 'install']);
 register_deactivation_hook(__FILE__,[ \ILAB\MediaCloud\Tools\ToolsManager::instance(), 'uninstall']);
 
-if ( defined( 'WP_CLI' ) && \WP_CLI ) {
+if (defined( 'WP_CLI' ) && class_exists('\WP_CLI')) {
     \ILAB\MediaCloud\Tools\Storage\CLI\StorageCommands::Register();
-	\ILAB\MediaCloud\Tools\Rekognition\CLI\RekognitionCLICommands::Register();
+	\ILAB\MediaCloud\Tools\Vision\CLI\VisionCLICommands::Register();
 	\ILAB\MediaCloud\Tools\Glide\CLI\GlideCommands::Register();
 }

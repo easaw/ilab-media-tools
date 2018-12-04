@@ -22,7 +22,7 @@ use ILAB\MediaCloud\Cloud\Storage\UploadInfo;
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\Storage\Batch\ImportStorageBatchProcess;
 use ILAB\MediaCloud\Tools\Storage\Batch\RegenerateThumbnailBatchProcess;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use function ILAB\MediaCloud\Utilities\arrayPath;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use function ILAB\MediaCloud\Utilities\json_response;
@@ -42,7 +42,7 @@ if(!defined('ABSPATH')) {
  *
  * Storage Tool.
  */
-class StorageTool extends ToolBase {
+class StorageTool extends Tool {
 	//region Properties/Class Variables
 
 	/** @var array */
@@ -106,7 +106,7 @@ class StorageTool extends ToolBase {
     }
 	//endregion
 
-	//region ToolBase Overrides
+	//region Tool Overrides
 	public function enabled() {
 		$enabled = parent::enabled();
 
@@ -169,11 +169,11 @@ class StorageTool extends ToolBase {
                 }
 
                 if ($addFilter) {
-                    add_filter('upload_dir', [$this, 'getUploadDir']);
+                    add_filter('upload_dir', [$this, 'getUploadDir'], 1000);
                 }
 
                 return $file;
-            });
+            }, 1000);
 
 			add_action('delete_attachment', [$this, 'deleteAttachment'], 1000);
 			add_filter('wp_handle_upload', function ($upload, $context = 'upload') {
@@ -1063,8 +1063,71 @@ class StorageTool extends ToolBase {
 		$bucket = $info[0]['bucket'];
 		$file = $info[0]['key'];
 
-		return "http://s3-$region.amazonaws.com/$bucket/$file";
+		return "https://s3-$region.amazonaws.com/$bucket/$file";
 	}
+
+    /**
+     * Filter the content to replace CDN
+     * @param $content
+     *
+     * @return mixed
+     * @throws StorageException
+     */
+    public function filterContent($content) {
+        if (apply_filters('ilab_imgix_enabled', false)) {
+            return $content;
+        }
+
+        if (!preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
+            return $content;
+        }
+
+        $replacements = [];
+
+        foreach($matches[0] as $image) {
+            if (preg_match('/class\s*=\s*(?:[\"\']{1})([^\"\']+)(?:[\"\']{1})/m', $image, $matches)) {
+                $classes = explode(' ', $matches[1]);
+
+                $size = null;
+                $id = null;
+
+                foreach($classes as $class) {
+                    if (strpos($class, 'wp-image-') === 0) {
+                        $parts = explode('-', $class);
+                        $id = array_pop($parts);
+                    } else if (strpos($class, 'size-') === 0) {
+                        $size = str_replace('size-', '', $class);
+                    }
+                }
+
+                if (!empty($id) && is_numeric($id)) {
+                    if (preg_match("#src=['\"]+([^'\"]+)['\"]+#",$image, $srcMatches)) {
+                        $replacements[$id] = [
+                            'src' => $srcMatches[1],
+                            'size' => $size
+                        ];
+                    }
+                }
+            }
+        }
+
+        foreach($replacements as $id => $data) {
+            if (empty($data['size'])) {
+                $meta = wp_get_attachment_metadata($id);
+                $url = $this->getAttachmentURLFromMeta($meta);
+            } else {
+                $url = $this->forcedImageDownsize(false, $id, $data['size']);
+            }
+
+            if (empty($url) || ($url[0] == $data['src'])) {
+                continue;
+            }
+
+            $content = str_replace($data['src'], $url[0], $content);
+        }
+
+        return $content;
+    }
 
 	//endregion
 
@@ -1119,7 +1182,17 @@ class StorageTool extends ToolBase {
 			$this->deleteFile($key);
 		}
 
-        $prefix = ($preserveFilePath && isset($data['prefix'])) ? $data['prefix'].DIRECTORY_SEPARATOR : StorageSettings::prefix($id);
+        $shouldUseCustomPrefix = (!empty(StorageSettings::prefixFormat()) && apply_filters('ilab_storage_should_use_custom_prefix', true));
+
+        if (!$preserveFilePath && !isset($data['prefix']) && !$shouldUseCustomPrefix) {
+            $prefix = trailingslashit(pathinfo($data['file'], PATHINFO_DIRNAME));
+            if ($prefix == './') {
+                $prefix = trailingslashit(pathinfo($filename, PATHINFO_DIRNAME));
+            }
+        } else {
+            $prefix = ($preserveFilePath && isset($data['prefix'])) ? $data['prefix'].DIRECTORY_SEPARATOR : StorageSettings::prefix($id);
+        }
+
         $parts = explode('/', $filename);
         $bucketFilename = array_pop($parts);
 
@@ -1333,68 +1406,7 @@ class StorageTool extends ToolBase {
 		});
 	}
 
-	/**
-     * Filter the content to replace CDN
-	 * @param $content
-	 *
-	 * @return mixed
-     * @throws StorageException
-	 */
-	public function filterContent($content) {
-	    if (apply_filters('ilab_imgix_enabled', false)) {
-	        return $content;
-        }
 
-		if (!preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
-			return $content;
-		}
-
-		$replacements = [];
-
-        foreach($matches[0] as $image) {
-            if (preg_match('/class\s*=\s*(?:[\"\']{1})([^\"\']+)(?:[\"\']{1})/m', $image, $matches)) {
-                $classes = explode(' ', $matches[1]);
-
-                $size = null;
-                $id = null;
-
-                foreach($classes as $class) {
-                    if (strpos($class, 'wp-image-') === 0) {
-                        $parts = explode('-', $class);
-                        $id = array_pop($parts);
-                    } else if (strpos($class, 'size-') === 0) {
-                        $size = str_replace('size-', '', $class);
-                    }
-                }
-
-                if (!empty($id) && is_numeric($id)) {
-                    if (preg_match("#src=['\"]+([^'\"]+)['\"]+#",$image, $srcMatches)) {
-                        $replacements[$id] = [
-                            'src' => $srcMatches[1],
-                            'size' => $size
-                        ];
-                    }
-                }
-            }
-        }
-
-        foreach($replacements as $id => $data) {
-            if (empty($data['size'])) {
-                $meta = wp_get_attachment_metadata($id);
-                $url = $this->getAttachmentURLFromMeta($meta);
-            } else {
-                $url = $this->forcedImageDownsize(false, $id, $data['size']);
-            }
-
-            if (empty($url) || ($url[0] == $data['src'])) {
-                continue;
-            }
-
-            $content = str_replace($data['src'], $url[0], $content);
-        }
-
-        return $content;
-    }
 
     public function getMediaInfo() {
 	    if (!is_admin()) {

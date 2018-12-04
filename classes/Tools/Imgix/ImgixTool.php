@@ -13,9 +13,9 @@
 
 namespace ILAB\MediaCloud\Tools\Imgix;
 
-use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesToolBase;
+use ILAB\MediaCloud\Tools\DynamicImages\DynamicImagesTool;
 use ILAB\MediaCloud\Tools\Storage\StorageTool;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Tools\ToolsManager;
 use function ILAB\MediaCloud\Utilities\arrayPath;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
@@ -38,7 +38,7 @@ if(!defined('ABSPATH')) {
  *
  * Imgix tool.
  */
-class ImgixTool extends DynamicImagesToolBase {
+class ImgixTool extends DynamicImagesTool {
 	protected $imgixDomains;
 	protected $autoFormat;
 	protected $autoCompress;
@@ -64,11 +64,11 @@ class ImgixTool extends DynamicImagesToolBase {
     }
     //endregion
 
-	//region ToolBase Overrides
+	//region Tool Overrides
 	public function enabled() {
 		$enabled = parent::enabled();
 
-		if(!$this->getOption('ilab-media-imgix-domains')) {
+		if(!EnvironmentOptions::Option('ilab-media-imgix-domains')) {
 //			NoticeManager::instance()->displayAdminNotice('error', "To start using Imgix, you will need to <a href='admin.php?page=media-tools-imgix'>set it up</a>.", true, 'disable-ilab-imgix-warning');
 			return false;
 		}
@@ -84,7 +84,7 @@ class ImgixTool extends DynamicImagesToolBase {
 		parent::setup();
 
 		$this->noGifSizes = [];
-		$noGifSizes = $this->getOption('ilab-media-imgix-no-gif-sizes', null, '');
+		$noGifSizes = EnvironmentOptions::Option('ilab-media-imgix-no-gif-sizes', null, '');
 		$noGifSizesArray = explode("\n", $noGifSizes);
 		if(count($noGifSizesArray) <= 1) {
 			$noGifSizesArray = explode(',', $noGifSizes);
@@ -96,7 +96,7 @@ class ImgixTool extends DynamicImagesToolBase {
 		}
 
 		$this->imgixDomains = [];
-		$domains = $this->getOption('ilab-media-imgix-domains', null, '');
+		$domains = EnvironmentOptions::Option('ilab-media-imgix-domains', null, '');
 		$domain_lines = explode("\n", $domains);
 		if(count($domain_lines) <= 1) {
 			$domain_lines = explode(',', $domains);
@@ -684,8 +684,8 @@ class ImgixTool extends DynamicImagesToolBase {
 			return $meta;
 		}
 
-        if (apply_filters('ilab_rekognition_enabled', false)) {
-		    if (apply_filters('ilab_rekognition_detects_faces', false)) {
+        if (apply_filters('ilab_vision_enabled', false)) {
+		    if (apply_filters('ilab_vision_detects_faces', false)) {
 		        return $meta;
             }
         }

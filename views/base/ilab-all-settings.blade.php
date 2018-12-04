@@ -2,7 +2,7 @@
     <header class="all-settings">
         <img src="{{ILAB_PUB_IMG_URL}}/icon-cloud-w-type.svg">
         <hr>
-        <nav>
+        <nav class="tabs">
             <ul>
                 @foreach($tools as $key => $atool)
                 @if(!empty($atool->toolInfo['settings']))
@@ -20,6 +20,21 @@
                 @endforeach
             </ul>
         </nav>
+        <nav class="dropdown">
+            <div>Settings:</div>
+            <select id="ilab-media-settings-nav">
+                @foreach($tools as $key => $atool)
+                    @if(!empty($atool->toolInfo['settings']))
+                    <option value="{{admin_url('admin.php?page=media-cloud-settings&tab='.$key)}}" {{($tab == $key) ? 'selected' : ''}}>
+                        {{$atool->toolInfo['name']}}
+                        @if($atool->envEnabled() && !$atool->enabled())
+                            (Disabled)
+                        @endif
+                    </option>
+                    @endif
+                @endforeach
+            </select>
+        </nav>
     </header>
     <div class="settings-body">
         <div class="ilab-notification-container"></div>
@@ -32,16 +47,19 @@
                     <tr>
                         <th scope="row">Enable {{$tool->toolInfo['name']}}</th>
                         <td>
-                            @include('base/ilab-tool-settings', ['name' => $tab, 'manager' => $manager, 'tool' => $tool])
+                            @include('base/fields/enable-toggle', ['name' => $tab, 'manager' => $manager, 'tool' => $tool])
                         </td>
                     </tr>
                     @if(!empty($tool->toolInfo['related']))
+                    <tr>
+                        <td colspan="2" style="width:100%; padding: 0;"><hr></td>
+                    </tr>
                     @foreach($tool->toolInfo['related'] as $relatedKey)
                         <?php $relatedTool = $manager->tools[$relatedKey]; if (empty($relatedTool)) { continue; } ?>
                         <tr>
                             <th scope="row">Enable {{$relatedTool->toolInfo['name']}}</th>
                             <td>
-                                @include('base/ilab-tool-settings', ['name' => $relatedTool->toolInfo['id'], 'manager' => $manager, 'tool' => $relatedTool])
+                                @include('base/fields/enable-toggle', ['name' => $relatedTool->toolInfo['id'], 'manager' => $manager, 'tool' => $relatedTool])
                             </td>
                         </tr>
                     @endforeach
@@ -52,6 +70,9 @@
             <div class="ilab-settings-section">
                 @if(!empty($section['title']))
                 <h2>{{$section['title']}}</h2>
+                @endif
+                @if(!empty($section['description']))
+                <div class="section-description">{!! $section['description'] !!}</div>
                 @endif
                 <table class="form-table">
                     <?php do_settings_fields( $page, $section['id'] ) ?>
@@ -126,6 +147,10 @@
                     }
                 });
             });
+        });
+
+        $('#ilab-media-settings-nav').on('change', function(e){
+           document.location = $(this).val();
         });
     })(jQuery);
 </script>

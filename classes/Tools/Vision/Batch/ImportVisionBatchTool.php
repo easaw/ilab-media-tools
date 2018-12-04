@@ -11,20 +11,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-namespace ILAB\MediaCloud\Tools\Rekognition\Batch;
+namespace ILAB\MediaCloud\Tools\Vision\Batch;
 
 use ILAB\MediaCloud\Tasks\BatchManager;
 use ILAB\MediaCloud\Tools\BatchTool;
 use function ILAB\MediaCloud\Utilities\json_response;
 
-class ImportRekognitionBatchTool extends BatchTool {
+class ImportVisionBatchTool extends BatchTool {
     //region Properties
     /**
      * Name/ID of the batch
      * @return string
      */
     public function batchIdentifier() {
-        return 'rekognizer';
+        return 'vision';
     }
 
     /**
@@ -32,7 +32,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     public function title() {
-        return "Rekognizer Importer";
+        return "Vision Importer";
     }
 
     /**
@@ -40,7 +40,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     public function batchPrefix() {
-        return 'ilab_rekognizer_importer';
+        return 'ilab_vision_importer';
     }
 
     /**
@@ -48,7 +48,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     public function batchProcessClassName() {
-        return "\\ILAB\\MediaCloud\\Tools\\Rekognition\\Batch\\ImportRekognitionBatchProcess";
+        return "\\ILAB\\MediaCloud\\Tools\\Vision\\Batch\\ImportVisionBatchProcess";
     }
 
     /**
@@ -56,7 +56,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     public function instructionView() {
-        return 'importer/rekognition-instructions.php';
+        return 'importer/vision-instructions.php';
     }
 
     /**
@@ -64,7 +64,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     function menuSlug() {
-        return 'media-tools-rekognizer-importer';
+        return 'media-tools-vision-importer';
     }
     //endregion
 
@@ -75,7 +75,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return array
      */
     public function registerBulkActions($actions) {
-        $actions['ilab_rekognizer_process'] = 'Process with Rekognizer';
+        $actions['ilab_vision_process'] = 'Process with Vision';
         return $actions;
     }
 
@@ -88,7 +88,7 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return string
      */
     public function handleBulkActions($redirect_to, $action_name, $post_ids) {
-        if('ilab_rekognizer_process' === $action_name) {
+        if('ilab_vision_process' === $action_name) {
             $posts_to_import = [];
             if (count($post_ids) > 0) {
                 foreach($post_ids as $post_id) {
@@ -123,8 +123,8 @@ class ImportRekognitionBatchTool extends BatchTool {
      * @return array
      */
     protected function filterRenderData($data) {
-        $data['disabledText'] = 'enable Rekognizer';
-        $data['commandLine'] = 'wp rekognition process';
+        $data['disabledText'] = 'enable Vision';
+        $data['commandLine'] = 'wp vision process';
         $data['commandTitle'] = 'Process Images';
         $data['cancelCommandTitle'] = 'Cancel Processing';
 
@@ -155,9 +155,9 @@ class ImportRekognitionBatchTool extends BatchTool {
     //region BatchToolInterface
     public function toolInfo() {
         return [
-            'title' => 'Rekognizer Importer',
+            'title' => 'Vision Importer',
             'link' => admin_url('admin.php?page='.$this->menuSlug()),
-            'description' => 'Processes all of the media in your library through Amazon Rekognition to automatically tag and classify your media.  Images must be uploaded to S3 prior to running this tool.'
+            'description' => 'Processes all of the media in your library through Amazon Rekognition or Google Cloud Vision to automatically tag and classify your media.'
         ];
     }
     //endregion

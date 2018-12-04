@@ -58,4 +58,76 @@ final class EnvironmentOptions {
 
 		return get_option($optionName, $default);
 	}
+
+    /**
+     * Transitions options from older versions of the plugin to the new option name
+     *
+     * @param $optionGroup
+     * @param $version
+     * @param $options
+     */
+	public static function TransitionOptions($optionGroup, $version, $options) {
+	    $currentVersion = get_option("ilab_migration_transition_$optionGroup", null);
+	    if ($currentVersion == $version) {
+	        return;
+        }
+
+        foreach($options as $fromOptionName => $toOptionName) {
+            $val = get_option($fromOptionName, null);
+            if ($val !== null) {
+                update_option($toOptionName, $val);
+                delete_option($fromOptionName);
+            }
+        }
+
+        update_option("ilab_migration_transition_$optionGroup", $version);
+    }
+
+    /**
+     * Determines if any the following environment variables exist
+     * @param $envVars
+     * @return bool|array
+     */
+    public static function DeprecatedEnvironmentVariables($envVars) {
+        $exist = [];
+
+        foreach($envVars as $oldEndVar => $newEnvVar) {
+            $val = getenv($oldEndVar);
+            if ($val !== false) {
+                $exist[$oldEndVar] = $newEnvVar;
+            }
+        }
+
+        if (empty($exist)) {
+            return false;
+        }
+
+        return $exist;
+    }
+
+    /**
+     * Copies option values from one option to the other if the other is blank/empty/null
+     *
+     * @param $optionGroup
+     * @param $version
+     * @param $options
+     */
+    public static function CopyOptions($optionGroup, $version, $options) {
+        $currentVersion = get_option("ilab_migration_copy_$optionGroup", null);
+        if ($currentVersion == $version) {
+            return;
+        }
+
+        foreach($options as $fromOption => $toOption) {
+            $val = get_option($fromOption);
+            if ($val !== false) {
+                $toVal = get_option($toOption);
+                if ($toVal === false) {
+                    update_option($toOption, $val);
+                }
+            }
+        }
+
+        update_option("ilab_migration_copy_$optionGroup", $version);
+    }
 }

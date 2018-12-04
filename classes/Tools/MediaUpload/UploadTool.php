@@ -16,7 +16,7 @@ namespace ILAB\MediaCloud\Tools\MediaUpload;
 use ILAB\MediaCloud\Cloud\Storage\StorageInterface;
 use ILAB\MediaCloud\Cloud\Storage\StorageManager;
 use ILAB\MediaCloud\Cloud\Storage\StorageSettings;
-use ILAB\MediaCloud\Tools\ToolBase;
+use ILAB\MediaCloud\Tools\Tool;
 use ILAB\MediaCloud\Utilities\EnvironmentOptions;
 use function ILAB\MediaCloud\Utilities\json_response;
 use ILAB\MediaCloud\Utilities\View;
@@ -32,7 +32,7 @@ if(!defined('ABSPATH')) {
  *
  * Video Tool.
  */
-class UploadTool extends ToolBase {
+class UploadTool extends Tool {
 	//region Class Variables
 	/** @var StorageInterface */
 	private $client;
@@ -45,7 +45,7 @@ class UploadTool extends ToolBase {
         $this->testForUselessPlugins();
     }
 
-    //region ToolBase Overrides
+    //region Tool Overrides
 	public function setup() {
 		parent::setup();
 

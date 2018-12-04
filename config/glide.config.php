@@ -15,14 +15,14 @@ if (!defined('ABSPATH')) { header('Location: /'); die; }
 return [
     "id" => "glide",
     "name" => "Dynamic Images",
-    "description" => "Serves on-demand dynamic images through the <a href='http://glide.thephpleague.com'>Glide library</a>, similar to Imgix but local.",
+    "description" => "Serves on-demand dynamic images, similar to Imgix, but happening locally on your WordPress server.  Works with any cloud storage provider, or even without one.",
     "class" => "ILAB\\MediaCloud\\Tools\\Glide\\GlideTool",
     "env" => "ILAB_MEDIA_GLIDE_ENABLED",
     "dependencies" => [
         "crop",
         "!imgix"
     ],
-    "related" => ["media-upload"],
+    "related" => ["media-upload", "crop"],
     "helpers" => [
         "ilab-imgix-helpers.php"
     ],
@@ -47,11 +47,10 @@ return [
         "groups" => [
             "ilab-media-glide-general-settings" => [
                 "title" => "General Settings",
-                "description" => "Required settings for glide server to work.",
                 "options" => [
                     "ilab-media-glide-image-path" => [
                         "title" => "Image Path",
-                        "description" => "The base path for the generated image URLs.  This cannot be blank or empty.  This path is prepended to the URL for the generated images and when the URL is requested, the plugin will intercept them, render the dynamic image (if needed) and send the image to the requester.",
+                        "description" => "The base path for the generated image URLs.  This cannot be blank or empty.  This path is prepended to the URL for the generated images and when the URL is requested, the plugin will intercept them, render the dynamic image (if needed), or pull it from the cache (if previously rendered) and send the image to the requester.",
                         "type" => "text-field",
                         "default" => "/__images/"
                     ],
@@ -65,7 +64,6 @@ return [
             ],
             "ilab-media-glide-performance-settings" => [
                 "title" => "Performance Settings",
-                "description" => "Put your imgix image settings here",
                 "options" => [
                     "ilab-media-glide-cache-remote" => [
                         "title" => "Cache Master Images",
@@ -91,7 +89,6 @@ return [
             ],
             "ilab-media-glide-image-settings" => [
                 "title" => "Image Settings",
-                "description" => "Put your imgix image settings here",
                 "options" => [
                     "ilab-media-glide-default-quality" => [
                         "title" => "Lossy Image Quality",

@@ -174,6 +174,14 @@ class BackblazeStorage implements StorageInterface {
 
 		return true;
 	}
+
+    public function client() {
+        if ($this->client == null) {
+            $this->client = $this->getClient();
+        }
+
+        return $this->client;
+    }
 	//endregion
 
 	//region Client Creation
