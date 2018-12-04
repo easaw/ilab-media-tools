@@ -110,7 +110,7 @@ return [
 					],
                     "ilab-media-s3-bucket" => [
                         "title" => "Bucket",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_BUCKET</strong>",
+                        "description" => "The bucket you wish to store your media in.  Must not be blank.",
                         "type" => "text-field",
                         "conditions" => [
                             "ilab-media-storage-provider" => ["!google"]
@@ -118,7 +118,7 @@ return [
                     ],
                     "ilab-media-google-bucket" => [
                         "title" => "Bucket",
-                        "description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_CLOUD_GOOGLE_BUCKET</strong>",
+                        "description" => "The bucket you wish to store your media in.  Must not be blank.",
                         "type" => "text-field",
                         "conditions" => [
                             "ilab-media-storage-provider" => ["google"]
@@ -126,7 +126,7 @@ return [
                     ],
 					"ilab-media-s3-region" => [
 						"title" => "Region",
-						"description" => "The region that your bucket is in.  Setting this is only really useful if you are using compatible S3 services, and not if you are using Amazon S3 itself.  If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_REGION</strong>",
+						"description" => "The region that your bucket is in.  Set to 'auto' to have Media Cloud automatically determine what region your bucket is in.",
 						"type" => "select",
 						"options" => [
 							"auto" => "Automatic",
@@ -159,8 +159,8 @@ return [
 						]
 					],
 					"ilab-media-s3-endpoint" => [
-						"title" => "Custom Endpoint URL",
-						"description" => "If you are supplying this value through a .env file, or environment variables, the key is: <strong>ILAB_AWS_S3_ENDPOINT</strong>",
+						"title" => "Custom Endpoint",
+						"description" => "Some S3 compatible services use a custom API endpoint URL or server name.  For example, with a DigitalOcean space in NYC-3 region, this value would be <code>nyc3.digitaloceanspaces.com</code>",
 						"type" => "text-field",
 						"conditions" => [
 							"ilab-media-storage-provider" => ["!google", "!backblaze", "!s3", "!wasabi"]
