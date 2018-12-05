@@ -109,6 +109,24 @@ Note that image optimization plugins change how Media Cloud behaves.  When an im
 
 == Changelog ==
 
+= 2.1.23 =
+* Fix for non-image uploads not uploading
+* Fix for the storage importer skipping audio or video items when importing
+
+= 2.1.22 =
+* Fix for thumbnails not being uploaded when using a custom `upload_dir` filter
+* Fix for situations where your storage credentials don't work but you are unable to get Media Cloud "unstuck" from thinking the settings are bad
+* Fix for the troubleshooter tool not being available if storage settings are turned off
+
+= 2.1.21 =
+* Debug logger will now log all php errors and warnings
+* If you add a filter for WordPress's `upload_dir`, Media Cloud would ignore it.  It still does, but you can make it honor it by setting the Upload File Prefix setting to an empty value or return FALSE from the new `ilab_storage_should_use_custom_prefix` filter.
+
+= 2.1.20 =
+* Fixed EWWW Image Optimizer compatibility
+* Fixed compatibility with Offload S3 when transition to Media Cloud from that plugin
+* Fixed a bug for when you have the `wp-cli/wp-cli` package installed via composer when using Bedrock
+
 = 2.1.19 =
 * Completely revamped the importer, thumbnail regeneration and batch rekognition processor.
 * Added a setting in Storage Settings that allows you to specify the connection timeout for background processing for the importer and other batch tools.  This could be helpful in some hosting situations.  If you've been getting the `cURL 28` error, try increasing this setting.
