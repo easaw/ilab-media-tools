@@ -92,6 +92,7 @@ require_once('helpers/ilab-media-tool-geometry-helpers.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("glide", include ILAB_CONFIG_DIR.'/glide.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("media-upload", include ILAB_CONFIG_DIR.'/media-upload.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("vision", include ILAB_CONFIG_DIR.'/vision.config.php');
+\ILAB\MediaCloud\Tools\ToolsManager::registerTool("assets", include ILAB_CONFIG_DIR.'/assets.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("crop", include ILAB_CONFIG_DIR.'/crop.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("debugging", include ILAB_CONFIG_DIR.'/debugging.config.php');
 \ILAB\MediaCloud\Tools\ToolsManager::registerTool("troubleshooting", include ILAB_CONFIG_DIR.'/troubleshooting.config.php');

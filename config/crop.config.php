@@ -25,7 +25,6 @@ return [
 		"groups" => [
 			"ilab-media-crop-settings" => [
 				"title" => "Crop Settings",
-				"description" => "Put your crop settings here",
 				"options" => [
 					"ilab-media-crop-quality" => [
 						"title" => "Crop Quality",
